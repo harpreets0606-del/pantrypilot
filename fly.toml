@@ -1,0 +1,12 @@
+app = "pantrypilot-price-sync"
+primary_region = "syd"
+
+[build]
+
+[env]
+NODE_ENV = "production"
+TZ = "Australia/Sydney"
+
+[[vm]]
+size = "shared-cpu-1x"
+memory = "512mb"
