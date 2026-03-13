@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --import tsx/esm src/price-sync.ts",
-    "dev": "tsx src/price-sync.ts"
+    "start": "node --import tsx/esm src/cron-runner.ts",
+    "run-once": "node --import tsx/esm src/price-sync.ts",
+    "dev": "tsx src/cron-runner.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.43.1",
