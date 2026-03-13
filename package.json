@@ -1,0 +1,22 @@
+{
+  "name": "pantrypilot-price-sync",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --import tsx/esm src/price-sync.ts",
+    "dev": "tsx src/price-sync.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.43.1",
+    "pg": "^8.13.3",
+    "tsx": "^4.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/pg": "^8.11.11"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
