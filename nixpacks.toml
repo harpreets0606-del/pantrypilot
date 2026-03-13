@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "curl"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[start]
+cmd = "node --import tsx/esm src/price-sync.ts"
