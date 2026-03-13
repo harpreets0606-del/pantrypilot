@@ -329,7 +329,7 @@ function normaliseColes(p: ColesProduct) {
 
 // ─── Main sync loop ────────────────────────────────────────────────────────
 
-async function main() {
+export async function main() {
   console.log("=".repeat(72));
   console.log("  PANTRYPILOT — PRICE SYNC PIPELINE");
   console.log(`  ${new Date().toISOString()}`);
