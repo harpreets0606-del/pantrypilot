@@ -76,8 +76,8 @@ ACTION_TEMPLATE_MAP = {
     "[Z] Replenishment Reminder (Optislim)":   "RFAcvQ",   # weight mgmt fallback
 }
 
-# Only process [Z] flows
-Z_FLOW_NAMES = [
+# Exact flow names to process (excludes Triple Pixel variants)
+Z_FLOW_NAMES = {
     "[Z] Post-Purchase Series",
     "[Z] Flu Season - Winter Wellness",
     "[Z] Win-back - Lapsed Customers",
@@ -85,7 +85,7 @@ Z_FLOW_NAMES = [
     "[Z] Browse Abandonment",
     "[Z] Welcome Series - Website",
     "[Z] Replenishment - Reorder Reminders",
-]
+}
 
 
 # ── API helpers ───────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ def get_z_flows():
         r.raise_for_status()
         data = r.json()
         for f in data.get("data", []):
-            if any(name in f["attributes"]["name"] for name in Z_FLOW_NAMES):
+            if f["attributes"]["name"] in Z_FLOW_NAMES:
                 flows.append({"id": f["id"], "name": f["attributes"]["name"],
                                "status": f["attributes"]["status"]})
         url, params = data.get("links", {}).get("next"), {}
@@ -180,7 +180,11 @@ def main():
 
     for flow in flows:
         print(f"── {flow['name']}  [{flow['id']}]  ({flow['status']})")
-        actions = get_flow_actions(flow["id"])
+        try:
+            actions = get_flow_actions(flow["id"])
+        except Exception as e:
+            print(f"   ✗ Could not fetch actions: {e}\n")
+            continue
 
         for action in actions:
             aname = action["name"]
