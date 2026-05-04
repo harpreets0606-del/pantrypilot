@@ -256,15 +256,40 @@ def build_replenishment(tpl: dict) -> dict:
     rpl = tpl.get("[Z] Replenishment Reminder")
     subject = "{{ person.first_name|default:'friend' }}, time to restock?"
 
+    # Ordered so broader brand keywords come AFTER specific product keywords.
+    # "Magnesium" is intentionally before "Sanderson" and "GO Healthy" so that
+    # Sanderson Magnesium FX (4,240 orders) and GO Magnesium Sleep (2,217 orders)
+    # receive the correct 100-day supply window rather than the 90-day brand fallback.
+    #
+    # Delay = days after purchase to send reminder (i.e. just before supply runs out).
+    # Supply lengths:
+    #   Regaine 4-month pack      → 120 days  → remind at 110
+    #   Magnesium 120-tab pack    → 120 days  → remind at 100
+    #   Elevit 100-tab pack       → 100 days  → remind at  80
+    #   Sanderson (non-Mg) 90-day avg supply   → remind at  90
+    #   GO Healthy (non-Mg) 90-day avg supply  → remind at  90
+    #   Hayfexo 70-tab            →  70 days  → remind at  55
+    #   Clinicians 30-cap         →  30 days  → remind at  22
+    #   Goli gummies 60-pc        →  30 days  → remind at  22
+    #   LIVON 30-sachet           →  30 days  → remind at  22
+    #   Ensure 850 g powder       →  16 days  → remind at  12
+    #   Oracoat 40-pack           →  13 days  → remind at  10
+    #   Optifast 12-sachet pack   →  12 days  → remind at   9
+    #   Optislim 21-sachet pack   →  21 days  → remind at  15  (was 5 — fixed)
     products = [
-        ("Optislim",   5),
-        ("LIVON",     22),
-        ("Clinicians",22),
-        ("Magnesium", 100),
         ("Regaine",   110),
-        ("Elevit",    80),
-        ("Hayfexo",   55),
-        ("Ensure",    12),
+        ("Magnesium", 100),
+        ("Elevit",     80),
+        ("Sanderson",  90),
+        ("GO Healthy", 90),
+        ("Hayfexo",    55),
+        ("Clinicians", 22),
+        ("Goli",       22),
+        ("LIVON",      22),
+        ("Ensure",     12),
+        ("Oracoat",    10),
+        ("Optifast",    9),
+        ("Optislim",   15),
     ]
 
     def branch(keyword: str, days: int) -> list:
@@ -296,7 +321,14 @@ FLOW_BUILDERS = [
     # Flows 1 & 4 already created — only running the 3 that failed
     ("Flow 2 — Back in Stock",  build_back_in_stock,  ["[Z] Back in Stock Email 1","[Z] Back in Stock Email 2"]),
     ("Flow 3 — Post-Purchase",  build_post_purchase,  ["[Z] Post-Purchase Email 1","[Z] Post-Purchase Email 2","[Z] Post-Purchase Email 3","[Z] Post-Purchase Email 4"]),
-    ("Flow 5 — Replenishment",  build_replenishment,  ["[Z] Replenishment Reminder"]),
+    ("Flow 5 — Replenishment",  build_replenishment,  [
+        "[Z] Replenishment Reminder",
+        "[Z] Replenishment - Regaine",
+        "[Z] Replenishment - Optifast VLCD",
+        "[Z] Replenishment - Oracoat",
+        "[Z] Replenishment - Hayfexo Allergy",
+        "[Z] Replenishment - Vitamins and Supplements",
+    ]),
 ]
 
 
