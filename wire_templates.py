@@ -106,44 +106,41 @@ def get_z_flows():
     return flows
 
 
-def get_flow_actions(flow_id):
-    """Returns all actions in a flow. No query params - the sub-resource
-    endpoint rejects fields/page parameters in this API revision."""
+def get_send_email_actions(flow_id):
+    """Returns only SEND_EMAIL actions for a flow.
+    action_type is an attribute (uppercase: SEND_EMAIL / TIME_DELAY / BOOLEAN_BRANCH).
+    The message name lives inside the flow-message definition, not here.
+    """
     actions, url = [], f"{BASE_URL}/flows/{flow_id}/flow-actions"
     while url:
         r = requests.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
         data = r.json()
         for a in data.get("data", []):
-            attrs = a.get("attributes", {})
-            # DEBUG: print full action on first pass to reveal structure
-            if not actions:
-                import json as _json
-                print("  DEBUG action keys:", list(attrs.keys()))
-                print("  DEBUG sample:", _json.dumps(a, indent=2)[:600])
-            actions.append({"id": a["id"], "name": attrs.get("name", ""), "_attrs": attrs})
+            if a.get("attributes", {}).get("action_type") == "SEND_EMAIL":
+                actions.append({"id": a["id"]})
         url = data.get("links", {}).get("next")
         time.sleep(0.1)
     return actions
 
 
-def get_flow_messages(action_id):
-    """Returns list of flow-message dicts with id and current definition."""
-    msgs, url = [], f"{BASE_URL}/flow-actions/{action_id}/flow-messages"
-    while url:
-        r = requests.get(url, headers=HEADERS, timeout=15)
-        r.raise_for_status()
-        data = r.json()
-        for m in data.get("data", []):
-            attrs = m.get("attributes", {})
-            msgs.append({
-                "id": m["id"],
-                "channel": attrs.get("channel"),
-                "definition": attrs.get("definition", {}),
-            })
-        url = data.get("links", {}).get("next")
-        time.sleep(0.1)
-    return msgs
+def get_flow_message(action_id):
+    """Returns the first flow-message for an action with its id, name, and definition."""
+    r = requests.get(f"{BASE_URL}/flow-actions/{action_id}/flow-messages",
+                     headers=HEADERS, timeout=15)
+    r.raise_for_status()
+    data = r.json().get("data", [])
+    if not data:
+        return None
+    m = data[0]
+    attrs = m.get("attributes", {})
+    defn = attrs.get("definition", {})
+    # Message name is stored inside the definition under "name"
+    return {
+        "id": m["id"],
+        "name": defn.get("name", ""),
+        "definition": defn,
+    }
 
 
 def patch_message_template(msg_id, definition, new_template_id):
@@ -180,27 +177,29 @@ def main():
     for flow in flows:
         print(f"-- {flow['name']}  [{flow['id']}]  ({flow['status']})")
         try:
-            actions = get_flow_actions(flow["id"])
+            email_actions = get_send_email_actions(flow["id"])
         except Exception as e:
             print(f"   FAILED to fetch actions: {e}\n")
             continue
 
-        for action in actions:
-            aname = action["name"]
+        if not email_actions:
+            print(f"   (no SEND_EMAIL actions found)\n")
+            continue
+
+        for action in email_actions:
+            msg = get_flow_message(action["id"])
+            if not msg:
+                print(f"   ! action {action['id']}  (no flow-message found)")
+                continue
+
+            aname = msg["name"]
             tpl_id = ACTION_TEMPLATE_MAP.get(aname)
 
             if not tpl_id:
-                skipped.append(f"{flow['name']} / {aname}")
-                print(f"   ? {aname}  (no mapping - skip)")
+                skipped.append(f"{flow['name']} / {aname!r}")
+                print(f"   ? {aname!r}  (no mapping - skip)")
                 continue
 
-            msgs = get_flow_messages(action["id"])
-            if not msgs:
-                print(f"   ! {aname}  (no flow-messages found)")
-                continue
-
-            # There's typically one message per email action
-            msg = msgs[0]
             current_tpl = msg["definition"].get("template_id", "(none)")
 
             if current_tpl == tpl_id:
@@ -209,6 +208,7 @@ def main():
                 status = "WILL SET" if not APPLY else "SETTING"
                 print(f"   -> {aname}  [{status}]  {current_tpl} -> {tpl_id}")
                 updates.append((flow["name"], aname, msg["id"], msg["definition"], tpl_id))
+            time.sleep(0.1)
 
         print()
         time.sleep(0.1)
