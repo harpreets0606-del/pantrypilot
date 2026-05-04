@@ -166,7 +166,10 @@ def audit_html(flow_name, email_name, html):
 def _rendered_len(subject: str) -> int:
     """Estimate rendered subject length by replacing Jinja tags with a 5-char name."""
     import re as _re
-    rendered = _re.sub(r"\{\{[^}]+\}\}", "Alice", subject)
+    rendered = subject
+    rendered = _re.sub(r"\{\{\s*event\.ProductName[^}]*\}\}", "Regaine 4-Month Supply", rendered)
+    rendered = _re.sub(r"\{\{\s*person\.first_name[^}]*\}\}", "Michael", rendered)
+    rendered = _re.sub(r"\{\{[^}]+\}\}", "Michael", rendered)
     return len(rendered)
 
 
