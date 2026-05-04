@@ -38,8 +38,16 @@ COL_FRAC_RE   = re.compile(r'<td[^>]+width=["\']?(3[0-9]|4[0-9]|5[0-9])["\']?%',
 COL_STYLE_RE  = re.compile(r'width\s*:\s*(3[0-9]|4[0-9]|5[0-9])%', re.IGNORECASE)
 # "col" class on <td>
 COL_CLASS_RE  = re.compile(r'<td[^>]+class=["\'][^"\']*col[^"\']*["\']', re.IGNORECASE)
-# stacking rule in media query — col3/col2/col etc display:block
-STACK_RE      = re.compile(r'\.col\w*\s*\{[^}]*display\s*:\s*block', re.IGNORECASE)
+# stacking rule in media query — any of: .col* class, td[width=X%] attr selector,
+# .mobile-stack class, or generic display:block on a percentage-width td
+STACK_RE = re.compile(
+    r'(?:'
+    r'\.col\w*\s*\{[^}]*display\s*:\s*block'           # .col3 { display:block }
+    r'|\.mobile-stack\s*\{[^}]*display\s*:\s*block'     # .mobile-stack { display:block }
+    r'|td\[width=["\']?\d+%["\']?\][^{]*\{[^}]*display\s*:\s*block'  # td[width="33%"] { display:block }
+    r')',
+    re.IGNORECASE | re.DOTALL,
+)
 # font-size in px that is < 14
 SMALL_FONT_RE = re.compile(r'font-size\s*:\s*(\d+)px', re.IGNORECASE)
 # img width attribute > 600
@@ -92,12 +100,11 @@ def audit(name, html):
     if has_cols and not STACK_RE.search(html):
         issues.append("Multi-column layout detected but NO mobile stacking rule (.col* { display:block })")
 
-    # 4. Font sizes < 14px in non-header / non-fine-print positions
-    # Allow 11px in footer fine-print; flag anything 12-13px and below 11
-    small = [int(s) for s in SMALL_FONT_RE.findall(html) if int(s) < 12]
+    # 4. Font sizes < 10px — 11px is acceptable for footer fine-print, 9px is not
+    small = [int(s) for s in SMALL_FONT_RE.findall(html) if int(s) < 10]
     if small:
         unique = sorted(set(small))
-        issues.append(f"Font sizes very small (< 12px): {unique}px — may be hard to read on mobile")
+        issues.append(f"Font sizes < 10px found: {unique}px — too small even for footer fine-print (min 11px)")
 
     # 5. Images wider than 600px (hard-coded)
     for m in IMG_WIDTH_RE.finditer(html):
