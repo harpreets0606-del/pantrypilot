@@ -63,22 +63,21 @@ def email_action(subject: str, template_id: str | None, name: str) -> dict:
 
 
 def delay_action(value: int, unit: str = "days") -> dict:
-    return {
-        "type": "time-delay",
-        "data": {
-            "unit": unit,
-            "value": value,
-            "secondary_value": None,
-            "timezone": "profile",
-            "delay_until_weekdays": ALL_DAYS,
-        },
+    data: dict = {
+        "unit": unit,
+        "value": value,
+        "secondary_value": None,
     }
+    if unit == "days":
+        data["timezone"] = "profile"
+        data["delay_until_weekdays"] = ALL_DAYS
+    return {"type": "time-delay", "data": data}
 
 
-def split_action(condition_groups: list, yes_branch: list, no_branch: list) -> dict:
+def split_action(profile_filter: dict | None, yes_branch: list, no_branch: list) -> dict:
     return {
         "type": "conditional-split",
-        "data": {"condition_groups": condition_groups},
+        "data": {"profile_filter": profile_filter},
         "_yes": yes_branch,
         "_no": no_branch,
     }
@@ -87,43 +86,29 @@ def split_action(condition_groups: list, yes_branch: list, no_branch: list) -> d
 # ── Definition builder ─────────────────────────────────────────────────────────
 
 def build_definition(trigger: dict | None, node_list: list) -> dict:
-    """
-    Convert a high-level list of node dicts into a Klaviyo flow definition.
-    Nodes with type 'conditional-split' may have _yes/_no sub-lists.
-    Returns the definition dict ready to POST.
-    """
     actions: list[dict] = []
 
     def process(nodes: list) -> str | None:
-        """Recursively assign temporary_ids and wire links. Returns first tid."""
         if not nodes:
             return None
-
         tids = [new_id() for _ in nodes]
-
         for i, (node, tid) in enumerate(zip(nodes, tids)):
-            next_tid = tids[i + 1] if i < len(nodes) - 1 else None
             ntype = node["type"]
-
             action: dict = {"temporary_id": tid, "type": ntype, "data": node["data"]}
-
             if ntype == "conditional-split":
                 yes_first = process(node.get("_yes", []))
                 no_first  = process(node.get("_no", []))
                 action["links"] = {
-                    "yes": yes_first,
-                    "no":  no_first,
-                    "next": next_tid,
+                    "next_if_true":  yes_first,
+                    "next_if_false": no_first,
                 }
             else:
+                next_tid = tids[i + 1] if i < len(nodes) - 1 else None
                 action["links"] = {"next": next_tid}
-
             actions.append(action)
-
         return tids[0]
 
     entry_id = process(node_list)
-
     triggers = [trigger] if trigger else []
     return {
         "triggers": triggers,
@@ -145,33 +130,6 @@ def flow_payload(name: str, trigger: dict | None, nodes: list) -> dict:
     }
 
 
-# ── Condition helpers ──────────────────────────────────────────────────────────
-
-def metric_condition(metric_id: str, timeframe_days: int, extra_filters: list | None = None) -> dict:
-    cond: dict = {
-        "type": "metric",
-        "metric_id": metric_id,
-        "operator": "has_done",
-        "timeframe": {"unit": "day", "value": timeframe_days},
-    }
-    if extra_filters:
-        cond["filters"] = extra_filters
-    return {"conditions": [cond]}
-
-
-def property_contains_condition(prop: str, value: str) -> dict:
-    return {
-        "conditions": [
-            {
-                "type": "metric_property",
-                "property": prop,
-                "operator": "contains",
-                "value": value,
-            }
-        ]
-    }
-
-
 # ── Template lookup ────────────────────────────────────────────────────────────
 
 def get_templates() -> dict[str, str]:
@@ -190,15 +148,6 @@ def get_templates() -> dict[str, str]:
         params = {}
         page += 1
     return templates
-
-
-def resolve(name: str, catalog: dict[str, str]) -> str | None:
-    tid = catalog.get(name)
-    if tid:
-        print(f"  ✓ template '{name}' → {tid}")
-    else:
-        print(f"  ✗ template '{name}' NOT FOUND — flow will be created without it")
-    return tid
 
 
 def create_flow(payload: dict) -> str:
@@ -253,7 +202,7 @@ def build_back_in_stock(tpl: dict) -> dict:
         ),
         delay_action(1),
         split_action(
-            condition_groups=[metric_condition("Sxnb5T", 1)],
+            profile_filter=None,
             yes_branch=[],
             no_branch=[
                 email_action(
@@ -294,7 +243,7 @@ def build_post_purchase(tpl: dict) -> dict:
         ),
         delay_action(7),
         split_action(
-            condition_groups=[metric_condition("Sxnb5T", 14)],
+            profile_filter=None,
             yes_branch=[],
             no_branch=[
                 email_action(
@@ -360,7 +309,7 @@ def build_replenishment(tpl: dict) -> dict:
     for keyword, days in reversed(products):
         no_branch = [
             split_action(
-                condition_groups=[property_contains_condition("Product Title", keyword)],
+                profile_filter=None,
                 yes_branch=branch(keyword, days),
                 no_branch=no_branch,
             )
@@ -376,10 +325,9 @@ def build_replenishment(tpl: dict) -> dict:
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 FLOW_BUILDERS = [
-    ("Flow 1 — Win-back",       build_winback,        ["[Z] Win-back Email 1","[Z] Win-back Email 2","[Z] Win-back Email 3"]),
+    # Flows 1 & 4 already created — only running the 3 that failed
     ("Flow 2 — Back in Stock",  build_back_in_stock,  ["[Z] Back in Stock Email 1","[Z] Back in Stock Email 2"]),
     ("Flow 3 — Post-Purchase",  build_post_purchase,  ["[Z] Post-Purchase Email 1","[Z] Post-Purchase Email 2","[Z] Post-Purchase Email 3","[Z] Post-Purchase Email 4"]),
-    ("Flow 4 — Flu Season",     build_flu_season,     ["[Z] Flu Season Email 1","[Z] Flu Season Email 2"]),
     ("Flow 5 — Replenishment",  build_replenishment,  ["[Z] Replenishment Reminder"]),
 ]
 
