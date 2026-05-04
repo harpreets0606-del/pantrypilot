@@ -344,9 +344,9 @@ def edit_link(flow_id: str) -> str:
 # Current draft flow IDs to delete before recreating:
 FLOWS_TO_DELETE = [
     "U6e3uf",  # [Z] Flu Season - Winter Wellness
-    "XvPhNr",  # [Z] Replenishment - Reorder Reminders
-    "SKyFTB",  # [Z] Back in Stock
-    "YtmmNC",  # [Z] Post-Purchase Series
+    "XKmyJE",  # [Z] Replenishment - Reorder Reminders
+    "UqpyKS",  # [Z] Back in Stock
+    "Vvb9ik",  # [Z] Post-Purchase Series
     "YdtALs",  # [Z] Win-back - Lapsed Customers
 ]
 

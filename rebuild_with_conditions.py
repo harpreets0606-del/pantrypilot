@@ -359,9 +359,9 @@ def edit_link(flow_id: str) -> str:
 
 # ── Current flow IDs to delete ─────────────────────────────────────────────────
 FLOWS_TO_DELETE = {
-    "Seu9Gy": "[Z] Back in Stock",
-    "QTNN7U": "[Z] Post-Purchase Series",
-    "TGnZPt": "[Z] Replenishment - Reorder Reminders",
+    "UqpyKS": "[Z] Back in Stock",
+    "Vvb9ik": "[Z] Post-Purchase Series",
+    "XKmyJE": "[Z] Replenishment - Reorder Reminders",
 }
 
 
