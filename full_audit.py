@@ -391,25 +391,14 @@ def audit_flow(flow_id, flow_name):
     time.sleep(0.2)
 
 
-def discover_flow_ids() -> dict:
-    """Returns {name: id} for all [Z] flows in the account."""
-    found = {}
-    url = f"{BASE_URL}/flows"
-    params = {"fields[flow]": "name", "page[size]": 100}
-    while url:
-        r = requests.get(url, headers=HEADERS, params=params, timeout=15)
-        if not r.ok:
-            print(f"WARNING: could not list flows: {r.status_code}")
-            break
-        data = r.json()
-        for item in data.get("data", []):
-            name = item["attributes"]["name"]
-            if name.startswith("[Z]"):
-                found[name] = item["id"]
-        url = data.get("links", {}).get("next")
-        params = {}
-        time.sleep(0.2)
-    return found
+# Known flow IDs — updated after each rebuild via fix_all_flows.py
+KNOWN_FLOW_IDS = {
+    "[Z] Back in Stock":                      "RbJz8x",
+    "[Z] Post-Purchase Series":               "U4W3bu",
+    "[Z] Flu Season - Winter Wellness":       "RueAmA",
+    "[Z] Win-back - Lapsed Customers":        "W9RVV2",
+    "[Z] Replenishment - Reorder Reminders":  "VsdCWZ",
+}
 
 
 def main():
@@ -417,8 +406,8 @@ def main():
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
-    print("Discovering [Z] flow IDs...")
-    name_to_id = discover_flow_ids()
+    print("Loading [Z] flow IDs...")
+    name_to_id = KNOWN_FLOW_IDS
     target_names = set(EXPECTED_FLOW_CONFIG.keys())
     for name in target_names:
         if name in name_to_id:
