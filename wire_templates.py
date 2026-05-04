@@ -107,22 +107,17 @@ def get_z_flows():
 
 
 def get_flow_actions(flow_id):
-    """Returns all send-email actions in a flow.
-    action_type is not a valid sparse field — we detect email actions by
-    checking whether they have flow-messages (only send-email actions do).
-    """
+    """Returns all actions in a flow. No query params — the sub-resource
+    endpoint rejects fields/page parameters in this API revision."""
     actions, url = [], f"{BASE_URL}/flows/{flow_id}/flow-actions"
-    params = {"fields[flow-action]": "name", "page[size]": 50}
     while url:
-        r = requests.get(url, headers=HEADERS, params=params, timeout=15)
+        r = requests.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
         data = r.json()
         for a in data.get("data", []):
             attrs = a.get("attributes", {})
-            name = attrs.get("name", "")
-            # Include all — filter to email-only when fetching messages
-            actions.append({"id": a["id"], "name": name})
-        url, params = data.get("links", {}).get("next"), {}
+            actions.append({"id": a["id"], "name": attrs.get("name", "")})
+        url = data.get("links", {}).get("next")
         time.sleep(0.1)
     return actions
 
@@ -130,9 +125,8 @@ def get_flow_actions(flow_id):
 def get_flow_messages(action_id):
     """Returns list of flow-message dicts with id and current definition."""
     msgs, url = [], f"{BASE_URL}/flow-actions/{action_id}/flow-messages"
-    params = {"fields[flow-message]": "label,channel,definition", "page[size]": 10}
     while url:
-        r = requests.get(url, headers=HEADERS, params=params, timeout=15)
+        r = requests.get(url, headers=HEADERS, timeout=15)
         r.raise_for_status()
         data = r.json()
         for m in data.get("data", []):
@@ -142,7 +136,7 @@ def get_flow_messages(action_id):
                 "channel": attrs.get("channel"),
                 "definition": attrs.get("definition", {}),
             })
-        url, params = data.get("links", {}).get("next"), {}
+        url = data.get("links", {}).get("next")
         time.sleep(0.1)
     return msgs
 
