@@ -1,19 +1,22 @@
 """
-Rebuilds Back in Stock, Post-Purchase, and Replenishment flows with real
-conditional-split filter conditions.
+Rebuilds Back in Stock, Post-Purchase, and Replenishment flows with
+fully configured conditional-split filter conditions.
 
-Strategy:
-  1. Probe Klaviyo's filter format by creating and immediately deleting a
-     tiny test flow with each candidate format until one is accepted.
-  2. Use the confirmed format to delete and recreate the 3 flows with
-     fully configured split conditions.
+Condition format discovered from existing [Z] Cart Abandonment and
+[Z] Welcome Series flows in the account (type: "profile-metric").
 
 Split conditions:
-  Back in Stock    -- "Has placed Placed Order at least once since flow start"
-  Post-Purchase    -- "Has placed Placed Order at least twice since flow start"
-                      (first order triggered the flow; second = repeat buyer)
-  Replenishment    -- "Trigger event Item Names contains <keyword>"
-                      (one split per product, 13 total)
+  Back in Stock  -- Has placed Placed Order >= 1 time since flow start
+                    YES (bought) -> exit  |  NO (hasn't bought) -> Email 2
+
+  Post-Purchase  -- Has placed Placed Order >= 2 times since flow start
+                    (first order triggered the flow; second = repeat buyer)
+                    YES (repeat buyer) -> exit  |  NO -> Email 4 (review)
+
+  Replenishment  -- Has placed trigger metric with Item Names containing
+                    <keyword> >= 1 time since flow start
+                    YES (this product) -> product delay + email
+                    NO -> next product split
 
 Usage:
     $env:KLAVIYO_API_KEY="pk_xxx"
@@ -39,135 +42,60 @@ HEADERS = {
 
 ALL_DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
-# ── Placed Order metric (used for Back-in-Stock and Post-Purchase splits) ──────
-PLACED_ORDER_METRIC_ID = "Sxnb5T"
-
-# ── Replenishment trigger metric ───────────────────────────────────────────────
+PLACED_ORDER_METRIC_ID  = "Sxnb5T"
 REPLENISHMENT_METRIC_ID = "UWP7cZ"
 
-# ── Candidate profile_filter formats to probe ─────────────────────────────────
-# We try each until Klaviyo accepts the flow creation. Ordered most-likely first.
 
-def _placed_order_filter_v1(min_count: int) -> dict:
-    """condition_groups / metric / has-done style"""
+# ── Filter builders (confirmed format from existing account flows) ─────────────
+
+def placed_order_filter(min_count: int) -> dict:
+    """Has placed Placed Order >= min_count times since flow start."""
     return {
         "condition_groups": [{
             "conditions": [{
-                "type": "metric",
-                "metric": {"type": "metric", "id": PLACED_ORDER_METRIC_ID},
-                "operator": "has-done",
-                "value": min_count,
-                "timeframe": {"type": "since-flow-start"},
-                "filter": {"type": "all", "conditions": []},
-            }]
-        }]
-    }
-
-def _placed_order_filter_v2(min_count: int) -> dict:
-    """Alternate: metric_id at top level"""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "metric",
+                "type": "profile-metric",
                 "metric_id": PLACED_ORDER_METRIC_ID,
-                "operator": "has-done",
-                "value": min_count,
-                "timeframe": {"type": "since-flow-start"},
-                "filter": {"type": "all", "conditions": []},
+                "measurement": "count",
+                "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "greater-than",
+                    "value": min_count - 1,  # >0 means >=1; >1 means >=2
+                },
+                "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start",
+                },
+                "metric_filters": None,
             }]
         }]
     }
 
-def _placed_order_filter_v3(min_count: int) -> dict:
-    """Alternate: uses 'at-least' key"""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "metric",
-                "metric_id": PLACED_ORDER_METRIC_ID,
-                "operator": "has-done",
-                "at-least": min_count,
-                "timeframe": "since-flow-start",
-            }]
-        }]
-    }
 
-def _item_name_filter_v1(keyword: str) -> dict:
-    """Trigger event property: nested filter"""
+def replenishment_filter(keyword: str) -> dict:
+    """Has placed trigger metric with Item Names containing keyword since flow start."""
     return {
         "condition_groups": [{
             "conditions": [{
-                "type": "trigger",
-                "definition": {
-                    "filter": {
-                        "type": "all",
-                        "conditions": [{
-                            "type": "property",
-                            "definition": {
-                                "property": "Item Names",
-                                "operator": "contains",
-                                "value": keyword,
-                            }
-                        }]
-                    }
-                }
-            }]
-        }]
-    }
-
-def _item_name_filter_v2(keyword: str) -> dict:
-    """Trigger event property: flat style"""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "trigger-event-property",
-                "property": "Item Names",
-                "operator": "contains",
-                "value": keyword,
-            }]
-        }]
-    }
-
-def _item_name_filter_v3(keyword: str) -> dict:
-    """Event property with metric_id"""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "event-property",
+                "type": "profile-metric",
                 "metric_id": REPLENISHMENT_METRIC_ID,
-                "filter": {
-                    "type": "all",
-                    "conditions": [{
-                        "property": "Item Names",
+                "measurement": "count",
+                "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "greater-than",
+                    "value": 0,
+                },
+                "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start",
+                },
+                "metric_filters": [{
+                    "property": "Item Names",
+                    "filter": {
+                        "type": "string",
                         "operator": "contains",
                         "value": keyword,
-                    }]
-                }
-            }]
-        }]
-    }
-
-def _item_name_filter_v4(keyword: str) -> dict:
-    """Metric with where clause"""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "metric",
-                "metric": {"type": "metric", "id": REPLENISHMENT_METRIC_ID},
-                "operator": "has-done",
-                "value": 1,
-                "timeframe": {"type": "since-flow-start"},
-                "filter": {
-                    "type": "all",
-                    "conditions": [{
-                        "type": "event-property",
-                        "definition": {
-                            "property": "Item Names",
-                            "operator": "contains",
-                            "value": keyword,
-                        }
-                    }]
-                }
+                    },
+                }],
             }]
         }]
     }
@@ -262,95 +190,13 @@ def flow_payload(name: str, trigger, nodes: list) -> dict:
     }}}
 
 
-# ── Format probing ─────────────────────────────────────────────────────────────
-
-def try_create_flow(payload: dict) -> tuple:
-    """Returns (flow_id, None) on success or (None, error_text) on failure."""
-    r = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload, timeout=30)
-    if r.ok:
-        return r.json()["data"]["id"], None
-    return None, f"HTTP {r.status_code}: {r.text[:300]}"
-
-
-def delete_flow(flow_id: str) -> None:
-    requests.delete(f"{BASE_URL}/flows/{flow_id}", headers=HEADERS, timeout=15)
-
-
-def probe_placed_order_format() -> dict | None:
-    """Creates a minimal test flow to find the accepted placed-order filter format."""
-    print("  Probing placed-order filter format...")
-    candidates = [
-        ("v1", _placed_order_filter_v1(1)),
-        ("v2", _placed_order_filter_v2(1)),
-        ("v3", _placed_order_filter_v3(1)),
-    ]
-    for label, pf in candidates:
-        reset_ids()
-        nodes = [
-            split_action(pf, yes_branch=[], no_branch=[
-                email_action("test", None, "_probe_email")
-            ])
-        ]
-        payload = flow_payload(
-            "__PROBE_DELETE_ME__",
-            {"type": "metric", "id": PLACED_ORDER_METRIC_ID},
-            nodes,
-        )
-        fid, err = try_create_flow(payload)
-        if fid:
-            print(f"    Accepted format: {label}")
-            delete_flow(fid)
-            time.sleep(0.3)
-            return pf
-        print(f"    Rejected {label}: {err[:100]}")
-        time.sleep(0.3)
-    return None
-
-
-def probe_item_name_format(keyword: str = "Regaine") -> dict | None:
-    """Creates a minimal test flow to find the accepted item-name filter format."""
-    print("  Probing item-name filter format...")
-    candidates = [
-        ("v1", _item_name_filter_v1(keyword)),
-        ("v2", _item_name_filter_v2(keyword)),
-        ("v3", _item_name_filter_v3(keyword)),
-        ("v4", _item_name_filter_v4(keyword)),
-    ]
-    for label, pf in candidates:
-        reset_ids()
-        nodes = [
-            split_action(pf, yes_branch=[
-                email_action("test", None, "_probe_email")
-            ], no_branch=[])
-        ]
-        payload = flow_payload(
-            "__PROBE_DELETE_ME__",
-            {"type": "metric", "id": REPLENISHMENT_METRIC_ID},
-            nodes,
-        )
-        fid, err = try_create_flow(payload)
-        if fid:
-            print(f"    Accepted format: {label}")
-            delete_flow(fid)
-            time.sleep(0.3)
-            return pf
-        print(f"    Rejected {label}: {err[:100]}")
-        time.sleep(0.3)
-    return None
-
-
-# ── Flow builders ──────────────────────────────────────────────────────────────
+# ── Template map ───────────────────────────────────────────────────────────────
 
 TPL_MAP = {
     "[Z] Post-Purchase Email 1": "RHfcDs",
     "[Z] Post-Purchase Email 2": "Sy929J",
     "[Z] Post-Purchase Email 3": "UNjrA4",
     "[Z] Post-Purchase Email 4": "SQD3nM",
-    "[Z] Flu Season Email 1":    "SMDszN",
-    "[Z] Flu Season Email 2":    "WALe6F",
-    "[Z] Win-back Email 1":      "RDNsnL",
-    "[Z] Win-back Email 2":      "YuYX38",
-    "[Z] Win-back Email 3":      "VEpKb4",
     "[Z] Back in Stock Email 1": "UCeqPt",
     "[Z] Back in Stock Email 2": "XXcqNf",
     "[Z] Replenishment Reminder":                          "UXVWhK",
@@ -370,18 +216,21 @@ TPL_MAP = {
 }
 
 
-def build_back_in_stock(placed_order_pf: dict) -> dict:
+# ── Flow builders ──────────────────────────────────────────────────────────────
+
+def build_back_in_stock() -> dict:
     reset_ids()
     nodes = [
         email_action(
-            "{{ event.ProductName }} is back! 🎉",
+            "{{ event.ProductName }} is back! \U0001f389",
             TPL_MAP["[Z] Back in Stock Email 1"],
             "[Z] Back in Stock Email 1",
         ),
         delay_action(1),
-        # Split: Has placed order since notification? YES=exit, NO=send Email 2
         split_action(
-            profile_filter=placed_order_pf,
+            # YES: has placed order since notification -> exit (they bought)
+            # NO:  hasn't ordered yet -> send Email 2
+            profile_filter=placed_order_filter(1),
             yes_branch=[],
             no_branch=[
                 email_action(
@@ -399,7 +248,7 @@ def build_back_in_stock(placed_order_pf: dict) -> dict:
     )
 
 
-def build_post_purchase(repeat_order_pf: dict) -> dict:
+def build_post_purchase() -> dict:
     reset_ids()
     nodes = [
         delay_action(1, "hours"),
@@ -421,9 +270,10 @@ def build_post_purchase(repeat_order_pf: dict) -> dict:
             "[Z] Post-Purchase Email 3",
         ),
         delay_action(7),
-        # Split: Placed another order (repeat buyer)? YES=exit, NO=review request
         split_action(
-            profile_filter=repeat_order_pf,
+            # YES: placed 2+ orders since flow start (repeat buyer) -> exit
+            # NO:  only original order -> send Email 4 (review request)
+            profile_filter=placed_order_filter(2),
             yes_branch=[],
             no_branch=[
                 email_action(
@@ -436,12 +286,12 @@ def build_post_purchase(repeat_order_pf: dict) -> dict:
     ]
     return flow_payload(
         "[Z] Post-Purchase Series",
-        {"type": "metric", "id": "Sxnb5T"},
+        {"type": "metric", "id": PLACED_ORDER_METRIC_ID},
         nodes,
     )
 
 
-def build_replenishment(item_name_pf_fn) -> dict:
+def build_replenishment() -> dict:
     reset_ids()
     rpl = TPL_MAP["[Z] Replenishment Reminder"]
     subject = "{{ person.first_name|default:'friend' }}, time to restock?"
@@ -473,7 +323,9 @@ def build_replenishment(item_name_pf_fn) -> dict:
     for keyword, days in reversed(products):
         no_branch = [
             split_action(
-                profile_filter=item_name_pf_fn(keyword),
+                # YES: this order contained the keyword -> use product-specific delay
+                # NO:  try next product keyword
+                profile_filter=replenishment_filter(keyword),
                 yes_branch=branch(keyword, days),
                 no_branch=no_branch,
             )
@@ -486,16 +338,31 @@ def build_replenishment(item_name_pf_fn) -> dict:
     )
 
 
-# ── Current flow IDs to delete ─────────────────────────────────────────────────
-FLOWS_TO_DELETE = {
-    "SKyFTB": "[Z] Back in Stock",
-    "YtmmNC": "[Z] Post-Purchase Series",
-    "XvPhNr": "[Z] Replenishment - Reorder Reminders",
-}
+# ── API helpers ────────────────────────────────────────────────────────────────
+
+def create_flow(payload: dict) -> tuple:
+    r = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload, timeout=30)
+    if r.ok:
+        return r.json()["data"]["id"], None
+    return None, f"HTTP {r.status_code}: {r.text[:500]}"
+
+
+def delete_flow(flow_id: str) -> None:
+    r = requests.delete(f"{BASE_URL}/flows/{flow_id}", headers=HEADERS, timeout=15)
+    if not r.ok and r.status_code != 404:
+        print(f"    Warning: delete {flow_id} returned {r.status_code}")
 
 
 def edit_link(flow_id: str) -> str:
     return f"https://www.klaviyo.com/flow/{flow_id}/edit"
+
+
+# ── Current flow IDs to delete ─────────────────────────────────────────────────
+FLOWS_TO_DELETE = {
+    "Seu9Gy": "[Z] Back in Stock",
+    "QTNN7U": "[Z] Post-Purchase Series",
+    "TGnZPt": "[Z] Replenishment - Reorder Reminders",
+}
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -505,116 +372,55 @@ def main():
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
-    print("Step 1: Probing accepted filter formats")
-    print("-" * 50)
-
-    placed_order_pf = probe_placed_order_format()
-    if not placed_order_pf:
-        print()
-        print("FAILED: Could not find an accepted placed-order filter format.")
-        print("The Klaviyo API rejected all format candidates.")
-        print("Open Back in Stock and Post-Purchase in the Klaviyo UI and")
-        print("manually set the split condition to: Has placed order >= 1 time since flow start.")
-        placed_order_pf = None
-
-    item_name_pf = probe_item_name_format()
-    if not item_name_pf:
-        print()
-        print("FAILED: Could not find an accepted item-name filter format.")
-        print("The Klaviyo API rejected all format candidates.")
-        print("Replenishment splits will need manual configuration in the UI.")
-        item_name_pf_fn = lambda k: None
-    else:
-        # item_name_pf holds the accepted format with keyword="Regaine".
-        # Create a factory function that substitutes the keyword.
-        accepted_fmt_str = json.dumps(item_name_pf)
-        def item_name_pf_fn(keyword: str) -> dict:
-            return json.loads(accepted_fmt_str.replace('"Regaine"', json.dumps(keyword)))
-
-    print()
-    print("Step 2: Deleting existing flows")
+    print("Deleting existing flows")
     print("-" * 50)
     for fid, name in FLOWS_TO_DELETE.items():
         print(f"  Deleting {fid} ({name})...", end=" ")
-        try:
-            delete_flow(fid)
-            print("deleted")
-        except Exception as e:
-            print(f"failed: {e}")
+        delete_flow(fid)
+        print("done")
         time.sleep(0.3)
 
     print()
-    print("Step 3: Recreating flows with conditions")
+    print("Recreating flows with conditions")
     print("-" * 50)
 
     results = []
-
-    # Back in Stock
-    print("  Building [Z] Back in Stock...")
-    pf_bis = placed_order_pf  # Has placed order >= 1 since flow start
-    payload = build_back_in_stock(pf_bis)
-    fid, err = try_create_flow(payload)
-    if fid:
-        print(f"    Created: {fid}  {edit_link(fid)}")
-        results.append(("[Z] Back in Stock", fid, None))
-    else:
-        print(f"    FAILED: {err}")
-        results.append(("[Z] Back in Stock", None, err))
-    time.sleep(0.5)
-
-    # Post-Purchase — split checks >= 2 placed orders since flow start (first order triggered flow)
-    print("  Building [Z] Post-Purchase Series...")
-    if placed_order_pf:
-        # Clone and bump the value to 2
-        pf_pp_str = json.dumps(placed_order_pf)
-        # Replace the value:1 with value:2 (repeat buyer check)
-        pf_pp = json.loads(pf_pp_str.replace('"value": 1', '"value": 2')
-                                     .replace('"at-least": 1', '"at-least": 2'))
-    else:
-        pf_pp = None
-    payload = build_post_purchase(pf_pp)
-    fid, err = try_create_flow(payload)
-    if fid:
-        print(f"    Created: {fid}  {edit_link(fid)}")
-        results.append(("[Z] Post-Purchase Series", fid, None))
-    else:
-        print(f"    FAILED: {err}")
-        results.append(("[Z] Post-Purchase Series", None, err))
-    time.sleep(0.5)
-
-    # Replenishment
-    print("  Building [Z] Replenishment - Reorder Reminders...")
-    payload = build_replenishment(item_name_pf_fn)
-    fid, err = try_create_flow(payload)
-    if fid:
-        print(f"    Created: {fid}  {edit_link(fid)}")
-        results.append(("[Z] Replenishment - Reorder Reminders", fid, None))
-    else:
-        print(f"    FAILED: {err}")
-        results.append(("[Z] Replenishment - Reorder Reminders", None, err))
+    for label, builder in [
+        ("[Z] Back in Stock",              build_back_in_stock),
+        ("[Z] Post-Purchase Series",       build_post_purchase),
+        ("[Z] Replenishment",              build_replenishment),
+    ]:
+        print(f"  Building {label}...")
+        payload = builder()
+        fid, err = create_flow(payload)
+        if fid:
+            print(f"    Created: {fid}  {edit_link(fid)}")
+            results.append((label, fid, None))
+        else:
+            print(f"    FAILED: {err}")
+            results.append((label, None, err))
+        time.sleep(0.5)
 
     print()
     print("=" * 60)
     print("SUMMARY")
     print("=" * 60)
-    all_ok = True
     for name, fid, err in results:
         if fid:
             print(f"  OK  {name}")
             print(f"      {edit_link(fid)}")
         else:
             print(f"  FAIL {name}: {err}")
-            all_ok = False
         print()
 
-    if not all_ok:
-        print("Some flows failed. Paste the FAIL lines above so the format")
-        print("can be corrected and the script re-run.")
-    else:
+    ok_ids = {name: fid for name, fid, err in results if fid}
+    if len(ok_ids) == 3:
         print("All 3 flows rebuilt with filter conditions.")
         print()
-        print("UPDATE klaviyo_flows.py FLOWS_TO_DELETE with these new IDs")
-        print("so future rebuilds target the right flows.")
+        print("Update FLOWS_TO_DELETE in this script with the new IDs above")
+        print("if you need to run it again.")
+    else:
+        print("Some flows failed - check the error above.")
 
 
 if __name__ == "__main__":
