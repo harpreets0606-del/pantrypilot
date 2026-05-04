@@ -130,38 +130,6 @@ def flow_payload(name: str, trigger: dict | None, nodes: list) -> dict:
     }
 
 
-# ── Template lookup ────────────────────────────────────────────────────────────
-
-def get_templates() -> dict[str, str]:
-    templates: dict[str, str] = {}
-    url = f"{BASE_URL}/templates"
-    params: dict = {"page[size]": 10}
-    page = 1
-    while url:
-        print(f"  Fetching page {page}…", flush=True)
-        resp = requests.get(url, headers=HEADERS, params=params, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        for item in data.get("data", []):
-            templates[item["attributes"]["name"]] = item["id"]
-        url = data.get("links", {}).get("next")
-        params = {}
-        page += 1
-    return templates
-
-
-def create_flow(payload: dict) -> str:
-    resp = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload, timeout=15)
-    if not resp.ok:
-        print(f"  ERROR {resp.status_code}: {resp.text}")
-        resp.raise_for_status()
-    return resp.json()["data"]["id"]
-
-
-def edit_link(flow_id: str) -> str:
-    return f"https://www.klaviyo.com/flow/{flow_id}/edit"
-
-
 # ── Flow definitions ───────────────────────────────────────────────────────────
 
 def build_winback(tpl: dict) -> dict:
@@ -337,20 +305,9 @@ def main():
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
-    print("Fetching templates from Klaviyo…")
-    try:
-        catalog = get_templates()
-    except requests.HTTPError as e:
-        print(f"Failed: {e}\n{e.response.text}")
-        sys.exit(1)
-    print(f"Found {len(catalog)} templates.\n")
-
+    # Templates with [Z] prefix don't exist yet — skipping lookup.
+    # Link templates manually in Klaviyo after they're created.
     tpl_map: dict[str, str] = {}
-    all_names = [n for _, _, names in FLOW_BUILDERS for n in names]
-    for name in dict.fromkeys(all_names):
-        tid = catalog.get(name)
-        if tid:
-            tpl_map[name] = tid
 
     results = []
     for label, builder, _ in FLOW_BUILDERS:
