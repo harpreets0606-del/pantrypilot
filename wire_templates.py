@@ -38,27 +38,27 @@ APPLY = "--apply" in sys.argv
 # for pre-existing flows (Browse Abandonment, Welcome Series).
 
 MESSAGE_TEMPLATE_MAP = {
-    # Post-Purchase Series (X3N28f) - names set in klaviyo_flows.py
+    # Post-Purchase Series (YtmmNC) - names set in klaviyo_flows.py
     "[Z] Post-Purchase Email 1": "RHfcDs",
     "[Z] Post-Purchase Email 2": "Sy929J",
     "[Z] Post-Purchase Email 3": "UNjrA4",
     "[Z] Post-Purchase Email 4": "SQD3nM",
 
-    # Flu Season (U9Di23) - names set in klaviyo_flows.py
+    # Flu Season (U6e3uf) - names set in klaviyo_flows.py
     "[Z] Flu Season Email 1":    "SMDszN",
     "[Z] Flu Season Email 2":    "WALe6F",
 
-    # Win-Back (YwLCkq) - names set in klaviyo_flows.py
+    # Win-Back (YdtALs) - names set in klaviyo_flows.py
     "[Z] Win-back Email 1":      "RDNsnL",
     "[Z] Win-back Email 2":      "YuYX38",
     "[Z] Win-back Email 3":      "VEpKb4",
     "[Z] Win-back Email 4":      "VqvY8S",
 
-    # Back in Stock (WvqdR2) - names set in klaviyo_flows.py
+    # Back in Stock (SKyFTB) - names set in klaviyo_flows.py
     "[Z] Back in Stock Email 1": "UCeqPt",
     "[Z] Back in Stock Email 2": "XXcqNf",
 
-    # Replenishment (V3RBGv) - names set in klaviyo_flows.py
+    # Replenishment (XvPhNr) - names set in klaviyo_flows.py
     "[Z] Replenishment Reminder (Regaine)":    "SkCfgY",
     "[Z] Replenishment Reminder (Magnesium)":  "UXVWhK",
     "[Z] Replenishment Reminder (Elevit)":     "UXVWhK",

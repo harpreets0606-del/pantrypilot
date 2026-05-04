@@ -343,11 +343,11 @@ def edit_link(flow_id: str) -> str:
 #
 # Current draft flow IDs to delete before recreating:
 FLOWS_TO_DELETE = [
-    "U9Di23",  # [Z] Flu Season - Winter Wellness
-    "V3RBGv",  # [Z] Replenishment - Reorder Reminders
-    "WvqdR2",  # [Z] Back in Stock
-    "X3N28f",  # [Z] Post-Purchase Series
-    "YwLCkq",  # [Z] Win-back - Lapsed Customers
+    "U6e3uf",  # [Z] Flu Season - Winter Wellness
+    "XvPhNr",  # [Z] Replenishment - Reorder Reminders
+    "SKyFTB",  # [Z] Back in Stock
+    "YtmmNC",  # [Z] Post-Purchase Series
+    "YdtALs",  # [Z] Win-back - Lapsed Customers
 ]
 
 # Template IDs for each flow message name used in the builders below
