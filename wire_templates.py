@@ -124,8 +124,11 @@ def get_send_email_actions(flow_id):
     return actions
 
 
+_msg_debug_done = False
+
 def get_flow_message(action_id):
     """Returns the first flow-message for an action with its id, name, and definition."""
+    global _msg_debug_done
     r = requests.get(f"{BASE_URL}/flow-actions/{action_id}/flow-messages",
                      headers=HEADERS, timeout=15)
     r.raise_for_status()
@@ -133,12 +136,21 @@ def get_flow_message(action_id):
     if not data:
         return None
     m = data[0]
+    if not _msg_debug_done:
+        import json as _j
+        print("  MSG DEBUG:", _j.dumps(m, indent=2)[:1200])
+        _msg_debug_done = True
     attrs = m.get("attributes", {})
     defn = attrs.get("definition", {})
-    # Message name is stored inside the definition under "name"
+    # Try multiple locations where name might live
+    name = (defn.get("name")
+            or defn.get("label")
+            or attrs.get("name")
+            or attrs.get("label")
+            or "")
     return {
         "id": m["id"],
-        "name": defn.get("name", ""),
+        "name": name,
         "definition": defn,
     }
 
