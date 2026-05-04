@@ -6,7 +6,7 @@ flow-message IDs, then PATCHes the template_id onto each message.
 
 Usage:
     $env:KLAVIYO_API_KEY="pk_xxx"
-    py wire_templates.py            # dry run — shows what would change
+    py wire_templates.py            # dry run - shows what would change
     py wire_templates.py --apply    # applies all template assignments
 """
 
@@ -26,7 +26,7 @@ HEADERS = {
 
 APPLY = "--apply" in sys.argv
 
-# ── Template mapping: flow action name → template ID ─────────────────────────
+# -- Template mapping: flow action name -> template ID -------------------------
 #
 # Action names come from the `name` field in email_action() in klaviyo_flows.py
 # Replenishment uses "Vitamins and Supplements" as the generic fallback for
@@ -53,14 +53,14 @@ ACTION_TEMPLATE_MAP = {
     "[Z] Back in Stock Email 1": "UCeqPt",
     "[Z] Back in Stock Email 2": "XXcqNf",
 
-    # Browse Abandonment (RtiVC5) — Email 2 only (Email 1 has no [Z] template)
+    # Browse Abandonment (RtiVC5) - Email 2 only (Email 1 has no [Z] template)
     "[Z] Browse Abandonment Email 2": "QZmDDY",
 
-    # Welcome Series (SehWRt) — Emails 4 & 5 only (1–3 have no [Z] templates)
+    # Welcome Series (SehWRt) - Emails 4 & 5 only (1-3 have no [Z] templates)
     "[Z] Welcome Series Email 4":     "SnDfrv",
     "[Z] Welcome Series Email 5":     "UZWWsg",
 
-    # Replenishment (V3RBGv) — product-specific
+    # Replenishment (V3RBGv) - product-specific
     "[Z] Replenishment Reminder (Regaine)":    "SkCfgY",
     "[Z] Replenishment Reminder (Magnesium)":  "UXVWhK",   # generic vitamins
     "[Z] Replenishment Reminder (Elevit)":     "UXVWhK",   # generic vitamins
@@ -88,7 +88,7 @@ Z_FLOW_NAMES = {
 }
 
 
-# ── API helpers ───────────────────────────────────────────────────────────────
+# -- API helpers ---------------------------------------------------------------
 
 def get_z_flows():
     flows, url = [], f"{BASE_URL}/flows"
@@ -107,7 +107,7 @@ def get_z_flows():
 
 
 def get_flow_actions(flow_id):
-    """Returns all actions in a flow. No query params — the sub-resource
+    """Returns all actions in a flow. No query params - the sub-resource
     endpoint rejects fields/page parameters in this API revision."""
     actions, url = [], f"{BASE_URL}/flows/{flow_id}/flow-actions"
     while url:
@@ -162,7 +162,7 @@ def patch_message_template(msg_id, definition, new_template_id):
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:300]}")
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ----------------------------------------------------------------------
 
 def main():
     if not API_KEY:
@@ -178,11 +178,11 @@ def main():
     skipped = []  # action names not in our map
 
     for flow in flows:
-        print(f"── {flow['name']}  [{flow['id']}]  ({flow['status']})")
+        print(f"-- {flow['name']}  [{flow['id']}]  ({flow['status']})")
         try:
             actions = get_flow_actions(flow["id"])
         except Exception as e:
-            print(f"   ✗ Could not fetch actions: {e}\n")
+            print(f"   FAILED to fetch actions: {e}\n")
             continue
 
         for action in actions:
@@ -191,7 +191,7 @@ def main():
 
             if not tpl_id:
                 skipped.append(f"{flow['name']} / {aname}")
-                print(f"   ? {aname}  (no mapping — skip)")
+                print(f"   ? {aname}  (no mapping - skip)")
                 continue
 
             msgs = get_flow_messages(action["id"])
@@ -204,10 +204,10 @@ def main():
             current_tpl = msg["definition"].get("template_id", "(none)")
 
             if current_tpl == tpl_id:
-                print(f"   ✓ {aname}  →  already {tpl_id}")
+                print(f"   OK {aname}  (already {tpl_id})")
             else:
                 status = "WILL SET" if not APPLY else "SETTING"
-                print(f"   → {aname}  [{status}]  {current_tpl} → {tpl_id}")
+                print(f"   -> {aname}  [{status}]  {current_tpl} -> {tpl_id}")
                 updates.append((flow["name"], aname, msg["id"], msg["definition"], tpl_id))
 
         print()
@@ -218,22 +218,22 @@ def main():
     if skipped:
         print(f"\nActions with no template mapping ({len(skipped)}):")
         for s in skipped:
-            print(f"  • {s}")
+            print(f"  - {s}")
 
     if not APPLY:
         print("\nRun with --apply to apply all changes.")
         return
 
-    print("\nApplying…")
+    print("\nApplying...")
     ok, fail = 0, 0
     for flow_name, action_name, msg_id, definition, tpl_id in updates:
-        print(f"  {msg_id}  {action_name}…", end=" ")
+        print(f"  {msg_id}  {action_name}...", end=" ")
         try:
             patch_message_template(msg_id, definition, tpl_id)
-            print("✓")
+            print("OK")
             ok += 1
         except Exception as e:
-            print(f"✗ {e}")
+            print(f"FAIL {e}")
             fail += 1
         time.sleep(0.3)
 
