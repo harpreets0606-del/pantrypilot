@@ -27,51 +27,48 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-FLOWS = {
-    "UqpyKS": "[Z] Back in Stock",
-    "Vvb9ik": "[Z] Post-Purchase Series",
-    "XKmyJE": "[Z] Replenishment - Reorder Reminders",
-    "U6e3uf": "[Z] Flu Season - Winter Wellness",
-    "YdtALs": "[Z] Win-back - Lapsed Customers",
-}
-
+# Flow IDs are auto-discovered by name in main(); this is the name->config map.
+# Replenishment has 16 products (added FLASH, Razene, Omeprazole).
 EXPECTED_FLOW_CONFIG = {
-    "UqpyKS": {
+    "[Z] Back in Stock": {
         "trigger_type": "metric",
         "expected_emails": 2,
         "expected_splits": 1,
         "expected_delays": 1,
-        "delay_sequence": [("days",1)],
+        "delay_sequence": [("days", 1)],
     },
-    "Vvb9ik": {
+    "[Z] Post-Purchase Series": {
         "trigger_type": "metric",
         "expected_emails": 4,
         "expected_splits": 1,
         "expected_delays": 4,
-        "delay_sequence": [("hours",1),("days",3),("days",4),("days",7)],
+        "delay_sequence": [("hours", 1), ("days", 3), ("days", 4), ("days", 7)],
     },
-    "XKmyJE": {
+    "[Z] Replenishment - Reorder Reminders": {
         "trigger_type": "metric",
-        "expected_emails": 13,
-        "expected_splits": 13,
-        "expected_delays": 13,
-        "delay_sequence": None,  # too complex to enumerate
+        "expected_emails": 16,
+        "expected_splits": 16,
+        "expected_delays": 16,
+        "delay_sequence": None,
     },
-    "U6e3uf": {
+    "[Z] Flu Season - Winter Wellness": {
         "trigger_type": "Added to List",
         "expected_emails": 2,
         "expected_splits": 0,
         "expected_delays": 1,
-        "delay_sequence": [("days",7)],
+        "delay_sequence": [("days", 7)],
     },
-    "YdtALs": {
+    "[Z] Win-back - Lapsed Customers": {
         "trigger_type": "Added to List",
         "expected_emails": 3,
         "expected_splits": 0,
         "expected_delays": 2,
-        "delay_sequence": [("days",7),("days",7)],
+        "delay_sequence": [("days", 7), ("days", 7)],
     },
 }
+
+# Populated by main() after auto-discovering flow IDs
+FLOWS: dict[str, str] = {}  # {id: name}
 
 issues = []   # (flow_name, severity, category, detail)
 passes = []   # (flow_name, category, detail)
@@ -166,17 +163,26 @@ def audit_html(flow_name, email_name, html):
         flag(flow_name, "ERROR", "Content", f"{pf}: placeholder URLs found: {placeholder[:3]}")
 
 
+def _rendered_len(subject: str) -> int:
+    """Estimate rendered subject length by replacing Jinja tags with a 5-char name."""
+    import re as _re
+    rendered = _re.sub(r"\{\{[^}]+\}\}", "Alice", subject)
+    return len(rendered)
+
+
 def audit_subject(flow_name, email_name, subject):
     if not subject:
         flag(flow_name, "ERROR", "Subject", f"{email_name}: subject line is empty")
         return
-    length = len(subject)
+    length = _rendered_len(subject)
+    raw_length = len(subject)
+    label = f"{length} chars rendered" + (f", {raw_length} raw" if raw_length != length else "")
     if length < 20:
-        flag(flow_name, "WARN", "Subject", f"{email_name}: subject very short ({length} chars): {subject!r}")
+        flag(flow_name, "WARN", "Subject", f"{email_name}: subject very short ({label}): {subject!r}")
     elif length > 60:
-        flag(flow_name, "WARN", "Subject", f"{email_name}: subject long ({length} chars) — may truncate on mobile: {subject!r}")
+        flag(flow_name, "WARN", "Subject", f"{email_name}: subject long ({label}) - may truncate on mobile: {subject!r}")
     else:
-        ok(flow_name, "Subject", f"{email_name}: subject length OK ({length} chars)")
+        ok(flow_name, "Subject", f"{email_name}: subject length OK ({label})")
 
     # Spam trigger words
     spam_words = ["free", "buy now", "act now", "limited time", "click here", "!!!"]
@@ -310,7 +316,7 @@ def audit_flow(flow_id, flow_name):
     splits  = [a for a in actions if a.get("type") == "conditional-split"]
     delays  = [a for a in actions if a.get("type") == "time-delay"]
 
-    cfg = EXPECTED_FLOW_CONFIG.get(flow_id, {})
+    cfg = EXPECTED_FLOW_CONFIG.get(flow_name, {})
 
     # Status
     if status == "draft":
@@ -385,13 +391,53 @@ def audit_flow(flow_id, flow_name):
     time.sleep(0.2)
 
 
+def discover_flow_ids() -> dict:
+    """Returns {name: id} for all [Z] flows in the account."""
+    found = {}
+    url = f"{BASE_URL}/flows"
+    params = {"fields[flow]": "name", "page[size]": 100}
+    while url:
+        r = requests.get(url, headers=HEADERS, params=params, timeout=15)
+        if not r.ok:
+            print(f"WARNING: could not list flows: {r.status_code}")
+            break
+        data = r.json()
+        for item in data.get("data", []):
+            name = item["attributes"]["name"]
+            if name.startswith("[Z]"):
+                found[name] = item["id"]
+        url = data.get("links", {}).get("next")
+        params = {}
+        time.sleep(0.2)
+    return found
+
+
 def main():
     if not API_KEY:
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
+    print("Discovering [Z] flow IDs...")
+    name_to_id = discover_flow_ids()
+    target_names = set(EXPECTED_FLOW_CONFIG.keys())
+    for name in target_names:
+        if name in name_to_id:
+            FLOWS[name_to_id[name]] = name
+            print(f"  {name_to_id[name]}  {name}")
+        else:
+            print(f"  NOT FOUND: {name}")
+
+    missing = target_names - set(name_to_id.keys())
+    if missing:
+        print(f"\nWARNING: {len(missing)} flow(s) not found in account:")
+        for m in missing:
+            print(f"  - {m}")
+
+    print()
     print("Running deep audit of all 5 flows...")
-    print("(This fetches each flow definition + all 22 template HTMLs — takes ~60s)\n")
+    total_emails = sum(EXPECTED_FLOW_CONFIG[n]["expected_emails"]
+                       for n in EXPECTED_FLOW_CONFIG)
+    print(f"(Fetches each flow definition + all {total_emails} template HTMLs — takes ~90s)\n")
 
     for flow_id, flow_name in FLOWS.items():
         print(f"  Auditing {flow_name}...")
