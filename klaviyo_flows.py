@@ -315,12 +315,32 @@ def build_replenishment(tpl: dict) -> dict:
     )
 
 
+# ── API helpers ────────────────────────────────────────────────────────────────
+
+def create_flow(payload: dict) -> str:
+    r = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload, timeout=30)
+    if not r.ok:
+        raise RuntimeError(f"HTTP {r.status_code}: {r.text[:400]}")
+    return r.json()["data"]["id"]
+
+
+def delete_flow(flow_id: str) -> None:
+    r = requests.delete(f"{BASE_URL}/flows/{flow_id}", headers=HEADERS, timeout=30)
+    if not r.ok and r.status_code != 404:
+        raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
+
+
+def edit_link(flow_id: str) -> str:
+    return f"https://www.klaviyo.com/flow/{flow_id}/edit"
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
+# Flows 1–4 already exist.  Only (re)creating Flow 5 — Replenishment.
+# Set DELETE_BEFORE_CREATE to the existing flow ID to replace it cleanly.
+DELETE_BEFORE_CREATE = "XAbNpu"   # old replenishment flow with outdated branches
+
 FLOW_BUILDERS = [
-    # Flows 1 & 4 already created — only running the 3 that failed
-    ("Flow 2 — Back in Stock",  build_back_in_stock,  ["[Z] Back in Stock Email 1","[Z] Back in Stock Email 2"]),
-    ("Flow 3 — Post-Purchase",  build_post_purchase,  ["[Z] Post-Purchase Email 1","[Z] Post-Purchase Email 2","[Z] Post-Purchase Email 3","[Z] Post-Purchase Email 4"]),
     ("Flow 5 — Replenishment",  build_replenishment,  [
         "[Z] Replenishment Reminder",
         "[Z] Replenishment - Regaine",
@@ -337,8 +357,15 @@ def main():
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
-    # Templates with [Z] prefix don't exist yet — skipping lookup.
-    # Link templates manually in Klaviyo after they're created.
+    if DELETE_BEFORE_CREATE:
+        print(f"Deleting old flow {DELETE_BEFORE_CREATE}…")
+        try:
+            delete_flow(DELETE_BEFORE_CREATE)
+            print(f"  ✓ Deleted {DELETE_BEFORE_CREATE}")
+        except Exception as e:
+            print(f"  ✗ Delete failed (continuing anyway): {e}")
+        print()
+
     tpl_map: dict[str, str] = {}
 
     results = []
