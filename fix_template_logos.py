@@ -200,14 +200,15 @@ def main():
                     lambda m: m.group(1) + CORRECT_LOGO_URL + m.group(3), html
                 )
                 if n == 0:
-                    # No alt-based slot found — replace first <img> src if it's a
-                    # shopify CDN image in the first 3000 chars (likely the header)
+                    # No alt-based slot found — replace first <img> src in the
+                    # first 3000 chars (header area). Accepts both Shopify CDN and
+                    # Klaviyo CloudFront URLs (d3k81ch9hvuctc.cloudfront.net).
                     snippet = html[:3000]
                     m = ANY_IMG_RE.search(snippet)
-                    if m and "cdn.shopify.com" in m.group(1):
+                    if m and ("cdn.shopify.com" in m.group(1) or "cloudfront.net" in m.group(1)):
                         new_html = html.replace(m.group(1), CORRECT_LOGO_URL, 1)
                     else:
-                        print("⚠ Could not locate logo slot — skipping (fix manually)")
+                        print("⚠ Could not locate logo slot — skipping (fix manually in Klaviyo UI)")
                         continue
                 update_template_html(t["id"], t["name"], new_html)
                 print("✓")
