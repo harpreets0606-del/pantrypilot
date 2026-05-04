@@ -31,15 +31,17 @@ def get_templates() -> dict[str, str]:
     templates: dict[str, str] = {}
     url = f"{BASE_URL}/templates"
     params = {"page[size]": 10}
+    page = 1
     while url:
-        resp = requests.get(url, headers=HEADERS, params=params)
+        print(f"  Fetching page {page}…", flush=True)
+        resp = requests.get(url, headers=HEADERS, params=params, timeout=15)
         resp.raise_for_status()
         data = resp.json()
         for item in data.get("data", []):
             templates[item["attributes"]["name"]] = item["id"]
-        # follow cursor pagination
         url = data.get("links", {}).get("next")
-        params = {}  # next URL already contains params
+        params = {}
+        page += 1
     return templates
 
 
