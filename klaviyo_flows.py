@@ -1,21 +1,22 @@
 """
-Creates 5 Klaviyo email flows via the Klaviyo REST API (revision 2024-10-15).
+Creates 5 Klaviyo email flows via the Klaviyo REST API (revision 2024-10-15.pre).
 
 Usage:
-    KLAVIYO_API_KEY=pk_xxx python klaviyo_flows.py
-    OR set KLAVIYO_KEY directly in the script below.
+    $env:KLAVIYO_API_KEY="pk_xxx"
+    py klaviyo_flows.py
 """
 
-import os
-import sys
-import json
-import time
-import requests
+import os, sys, json, time, requests
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-API_KEY = os.environ.get("KLAVIYO_API_KEY", "YOUR_PRIVATE_KEY_HERE")
-REVISION = "2024-10-15"
-BASE_URL = "https://a.klaviyo.com/api"
+API_KEY   = os.environ.get("KLAVIYO_API_KEY", "")
+REVISION  = "2024-10-15.pre"
+BASE_URL  = "https://a.klaviyo.com/api"
+
+# Pulled from your existing flows — change if needed
+FROM_EMAIL  = "hello@bargainchemist.co.nz"
+FROM_LABEL  = "Bargain Chemist"
+REPLY_TO    = "orders@bargainchemist.co.nz"
 
 HEADERS = {
     "Authorization": f"Klaviyo-API-Key {API_KEY}",
@@ -24,13 +25,159 @@ HEADERS = {
     "Accept": "application/json",
 }
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+ALL_DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
+
+# ── ID counter ─────────────────────────────────────────────────────────────────
+_counter = 0
+
+def new_id() -> str:
+    global _counter
+    _counter += 1
+    return str(_counter)
+
+def reset_ids():
+    global _counter
+    _counter = 0
+
+# ── Action builders ────────────────────────────────────────────────────────────
+
+def email_action(subject: str, template_id: str | None, name: str) -> dict:
+    msg = {
+        "from_email": FROM_EMAIL,
+        "from_label": FROM_LABEL,
+        "reply_to_email": REPLY_TO,
+        "cc_email": None,
+        "bcc_email": None,
+        "subject_line": subject,
+        "preview_text": "",
+        "smart_sending_enabled": True,
+        "transactional": False,
+        "add_tracking_params": True,
+        "custom_tracking_params": None,
+        "additional_filters": None,
+        "name": name,
+    }
+    if template_id:
+        msg["template_id"] = template_id
+    return {"type": "send-email", "data": {"message": msg, "status": "draft"}}
+
+
+def delay_action(value: int, unit: str = "days") -> dict:
+    return {
+        "type": "time-delay",
+        "data": {
+            "unit": unit,
+            "value": value,
+            "secondary_value": None,
+            "timezone": "profile",
+            "delay_until_weekdays": ALL_DAYS,
+        },
+    }
+
+
+def split_action(condition_groups: list, yes_branch: list, no_branch: list) -> dict:
+    return {
+        "type": "conditional-split",
+        "data": {"condition_groups": condition_groups},
+        "_yes": yes_branch,
+        "_no": no_branch,
+    }
+
+
+# ── Definition builder ─────────────────────────────────────────────────────────
+
+def build_definition(trigger: dict | None, node_list: list) -> dict:
+    """
+    Convert a high-level list of node dicts into a Klaviyo flow definition.
+    Nodes with type 'conditional-split' may have _yes/_no sub-lists.
+    Returns the definition dict ready to POST.
+    """
+    actions: list[dict] = []
+
+    def process(nodes: list) -> str | None:
+        """Recursively assign temporary_ids and wire links. Returns first tid."""
+        if not nodes:
+            return None
+
+        tids = [new_id() for _ in nodes]
+
+        for i, (node, tid) in enumerate(zip(nodes, tids)):
+            next_tid = tids[i + 1] if i < len(nodes) - 1 else None
+            ntype = node["type"]
+
+            action: dict = {"temporary_id": tid, "type": ntype, "data": node["data"]}
+
+            if ntype == "conditional-split":
+                yes_first = process(node.get("_yes", []))
+                no_first  = process(node.get("_no", []))
+                action["links"] = {
+                    "yes": yes_first,
+                    "no":  no_first,
+                    "next": next_tid,
+                }
+            else:
+                action["links"] = {"next": next_tid}
+
+            actions.append(action)
+
+        return tids[0]
+
+    entry_id = process(node_list)
+
+    triggers = [trigger] if trigger else []
+    return {
+        "triggers": triggers,
+        "profile_filter": None,
+        "actions": actions,
+        "entry_action_id": entry_id,
+    }
+
+
+def flow_payload(name: str, trigger: dict | None, nodes: list) -> dict:
+    return {
+        "data": {
+            "type": "flow",
+            "attributes": {
+                "name": name,
+                "definition": build_definition(trigger, nodes),
+            },
+        }
+    }
+
+
+# ── Condition helpers ──────────────────────────────────────────────────────────
+
+def metric_condition(metric_id: str, timeframe_days: int, extra_filters: list | None = None) -> dict:
+    cond: dict = {
+        "type": "metric",
+        "metric_id": metric_id,
+        "operator": "has_done",
+        "timeframe": {"unit": "day", "value": timeframe_days},
+    }
+    if extra_filters:
+        cond["filters"] = extra_filters
+    return {"conditions": [cond]}
+
+
+def property_contains_condition(prop: str, value: str) -> dict:
+    return {
+        "conditions": [
+            {
+                "type": "metric_property",
+                "property": prop,
+                "operator": "contains",
+                "value": value,
+            }
+        ]
+    }
+
+
+# ── Template lookup ────────────────────────────────────────────────────────────
 
 def get_templates() -> dict[str, str]:
-    """Return {template_name: template_id} for all templates in the account."""
     templates: dict[str, str] = {}
     url = f"{BASE_URL}/templates"
-    params = {"page[size]": 10}
+    params: dict = {"page[size]": 10}
     page = 1
     while url:
         print(f"  Fetching page {page}…", flush=True)
@@ -45,22 +192,17 @@ def get_templates() -> dict[str, str]:
     return templates
 
 
-def resolve_templates(names: list[str], catalog: dict[str, str]) -> dict[str, str]:
-    """Map template names → IDs, printing a warning for any not found."""
-    result: dict[str, str] = {}
-    for name in names:
-        tid = catalog.get(name)
-        if tid:
-            result[name] = tid
-            print(f"  ✓ template '{name}' → {tid}")
-        else:
-            print(f"  ✗ template '{name}' NOT FOUND — will omit from flow")
-    return result
+def resolve(name: str, catalog: dict[str, str]) -> str | None:
+    tid = catalog.get(name)
+    if tid:
+        print(f"  ✓ template '{name}' → {tid}")
+    else:
+        print(f"  ✗ template '{name}' NOT FOUND — flow will be created without it")
+    return tid
 
 
 def create_flow(payload: dict) -> str:
-    """POST /api/flows and return the new flow ID."""
-    resp = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload)
+    resp = requests.post(f"{BASE_URL}/flows", headers=HEADERS, json=payload, timeout=15)
     if not resp.ok:
         print(f"  ERROR {resp.status_code}: {resp.text}")
         resp.raise_for_status()
@@ -71,96 +213,27 @@ def edit_link(flow_id: str) -> str:
     return f"https://www.klaviyo.com/flow/{flow_id}/edit"
 
 
-# ── Node-building primitives ───────────────────────────────────────────────────
-
-def email_node(name: str, subject: str, template_id: str | None) -> dict:
-    content: dict = {
-        "type": "send_email",
-        "name": name,
-        "settings": {
-            "subject": subject,
-            "from_email": "",   # Klaviyo fills from account default
-            "from_name": "",
-        },
-    }
-    if template_id:
-        content["settings"]["template_id"] = template_id
-    return content
-
-
-def delay_node(hours: int | None = None, days: int | None = None) -> dict:
-    if days is not None:
-        hours = days * 24
-    return {
-        "type": "time_delay",
-        "settings": {
-            "delay": {
-                "unit": "hours",
-                "value": hours,
-            }
-        },
-    }
-
-
-def conditional_split_node(
-    name: str,
-    condition_group: dict,
-) -> dict:
-    return {
-        "type": "conditional_split",
-        "name": name,
-        "settings": {
-            "condition_groups": [condition_group],
-        },
-    }
-
-
-# Klaviyo flow payload wrapper
-def flow_payload(
-    name: str,
-    trigger: dict,
-    action_nodes: list[dict],
-) -> dict:
-    return {
-        "data": {
-            "type": "flow",
-            "attributes": {
-                "name": name,
-                "trigger_type": trigger["type"],
-                "trigger_id": trigger.get("id"),
-                "status": "draft",
-                "archived": False,
-                "action_nodes": action_nodes,
-            },
-        }
-    }
-
-
 # ── Flow definitions ───────────────────────────────────────────────────────────
 
-def build_winback(tpl: dict[str, str]) -> dict:
-    """
-    Flow 1: Win-back
-    email1 → delay 7d → email2 → delay 7d → email3
-    Trigger: segment Srd5Qr
-    """
+def build_winback(tpl: dict) -> dict:
+    reset_ids()
     nodes = [
-        email_node(
-            "[Z] Win-back Email 1",
+        email_action(
             "We miss you, {{ person.first_name|default:'friend' }} 👋",
             tpl.get("[Z] Win-back Email 1"),
+            "[Z] Win-back Email 1",
         ),
-        delay_node(days=7),
-        email_node(
-            "[Z] Win-back Email 2",
+        delay_action(7),
+        email_action(
             "Here's something for you, {{ person.first_name|default:'friend' }}",
             tpl.get("[Z] Win-back Email 2"),
+            "[Z] Win-back Email 2",
         ),
-        delay_node(days=7),
-        email_node(
-            "[Z] Win-back Email 3",
+        delay_action(7),
+        email_action(
             "Last chance — we'd hate to say goodbye",
             tpl.get("[Z] Win-back Email 3"),
+            "[Z] Win-back Email 3",
         ),
     ]
     return flow_payload(
@@ -170,50 +243,26 @@ def build_winback(tpl: dict[str, str]) -> dict:
     )
 
 
-def build_back_in_stock(tpl: dict[str, str]) -> dict:
-    """
-    Flow 2: Back in Stock
-    email1 → delay 24h → conditional_split → YES=end / NO=email2
-    Trigger: metric USbQRB
-    """
-    placed_order_condition = {
-        "conditions": [
-            {
-                "type": "metric",
-                "metric_id": "Sxnb5T",  # Placed Order
-                "operator": "has_done",
-                "timeframe": {"type": "relative", "quantity": 1, "unit": "day"},
-                "filters": [
-                    {
-                        "property": "ProductName",
-                        "operator": "equals",
-                        "value": "{{ event.ProductName }}",
-                    }
-                ],
-            }
-        ]
-    }
-
+def build_back_in_stock(tpl: dict) -> dict:
+    reset_ids()
     nodes = [
-        email_node(
-            "[Z] Back in Stock Email 1",
+        email_action(
             "{{ event.ProductName }} is back! 🎉",
             tpl.get("[Z] Back in Stock Email 1"),
+            "[Z] Back in Stock Email 1",
         ),
-        delay_node(hours=24),
-        {
-            "type": "conditional_split",
-            "name": "Placed order for same product in last 1 day?",
-            "settings": {"condition_groups": [placed_order_condition]},
-            "yes_branch": [],  # end
-            "no_branch": [
-                email_node(
-                    "[Z] Back in Stock Email 2",
+        delay_action(1),
+        split_action(
+            condition_groups=[metric_condition("Sxnb5T", 1)],
+            yes_branch=[],
+            no_branch=[
+                email_action(
                     "Still available — but selling fast",
                     tpl.get("[Z] Back in Stock Email 2"),
+                    "[Z] Back in Stock Email 2",
                 )
             ],
-        },
+        ),
     ]
     return flow_payload(
         "[Z] Back in Stock",
@@ -222,57 +271,39 @@ def build_back_in_stock(tpl: dict[str, str]) -> dict:
     )
 
 
-def build_post_purchase(tpl: dict[str, str]) -> dict:
-    """
-    Flow 3: Post-Purchase
-    delay 1h → email1 → delay 3d → email2 → delay 4d → email3 →
-    delay 7d → conditional_split → YES=end / NO=email4
-    Trigger: metric Sxnb5T
-    """
-    placed_order_14d = {
-        "conditions": [
-            {
-                "type": "metric",
-                "metric_id": "Sxnb5T",
-                "operator": "has_done",
-                "timeframe": {"type": "relative", "quantity": 14, "unit": "day"},
-            }
-        ]
-    }
-
+def build_post_purchase(tpl: dict) -> dict:
+    reset_ids()
     nodes = [
-        delay_node(hours=1),
-        email_node(
-            "[Z] Post-Purchase Email 1",
+        delay_action(1, "hours"),
+        email_action(
             "Thank you {{ person.first_name|default:'friend' }} — your order is confirmed 🙌",
             tpl.get("[Z] Post-Purchase Email 1"),
+            "[Z] Post-Purchase Email 1",
         ),
-        delay_node(days=3),
-        email_node(
-            "[Z] Post-Purchase Email 2",
+        delay_action(3),
+        email_action(
             "Getting the most from your order",
             tpl.get("[Z] Post-Purchase Email 2"),
+            "[Z] Post-Purchase Email 2",
         ),
-        delay_node(days=4),
-        email_node(
-            "[Z] Post-Purchase Email 3",
+        delay_action(4),
+        email_action(
             "{{ person.first_name|default:'friend' }}, customers also loved these",
             tpl.get("[Z] Post-Purchase Email 3"),
+            "[Z] Post-Purchase Email 3",
         ),
-        delay_node(days=7),
-        {
-            "type": "conditional_split",
-            "name": "Placed order in last 14 days?",
-            "settings": {"condition_groups": [placed_order_14d]},
-            "yes_branch": [],  # end
-            "no_branch": [
-                email_node(
-                    "[Z] Post-Purchase Email 4",
+        delay_action(7),
+        split_action(
+            condition_groups=[metric_condition("Sxnb5T", 14)],
+            yes_branch=[],
+            no_branch=[
+                email_action(
                     "How did we do, {{ person.first_name|default:'friend' }}?",
                     tpl.get("[Z] Post-Purchase Email 4"),
+                    "[Z] Post-Purchase Email 4",
                 )
             ],
-        },
+        ),
     ]
     return flow_payload(
         "[Z] Post-Purchase Series",
@@ -281,23 +312,19 @@ def build_post_purchase(tpl: dict[str, str]) -> dict:
     )
 
 
-def build_flu_season(tpl: dict[str, str]) -> dict:
-    """
-    Flow 4: Flu Season
-    email1 → delay 7d → email2
-    Trigger: segment VGQby3
-    """
+def build_flu_season(tpl: dict) -> dict:
+    reset_ids()
     nodes = [
-        email_node(
-            "[Z] Flu Season Email 1",
+        email_action(
             "Stay well this winter, {{ person.first_name|default:'friend' }} 🛡️",
             tpl.get("[Z] Flu Season Email 1"),
+            "[Z] Flu Season Email 1",
         ),
-        delay_node(days=7),
-        email_node(
-            "[Z] Flu Season Email 2",
+        delay_action(7),
+        email_action(
             "Have you booked your flu vaccine yet?",
             tpl.get("[Z] Flu Season Email 2"),
+            "[Z] Flu Season Email 2",
         ),
     ]
     return flow_payload(
@@ -307,30 +334,13 @@ def build_flu_season(tpl: dict[str, str]) -> dict:
     )
 
 
-def _repl_branch(keyword: str, delay_days: int, tpl_id: str | None) -> list[dict]:
-    """One branch of the replenishment conditional split."""
-    return [
-        delay_node(days=delay_days),
-        email_node(
-            f"[Z] Replenishment Reminder ({keyword})",
-            "{{ person.first_name|default:'friend' }}, time to restock?",
-            tpl_id,
-        ),
-    ]
-
-
-def build_replenishment(tpl: dict[str, str]) -> dict:
-    """
-    Flow 5: Replenishment
-    Nested conditional splits on Product Title, each branch:
-      contains X → delay N days → email
-    Falls through to end on no match.
-    Trigger: metric UWP7cZ
-    """
-    rpl_tpl = tpl.get("[Z] Replenishment Reminder")
+def build_replenishment(tpl: dict) -> dict:
+    reset_ids()
+    rpl = tpl.get("[Z] Replenishment Reminder")
+    subject = "{{ person.first_name|default:'friend' }}, time to restock?"
 
     products = [
-        ("Optislim",  5),
+        ("Optislim",   5),
         ("LIVON",     22),
         ("Clinicians",22),
         ("Magnesium", 100),
@@ -340,112 +350,78 @@ def build_replenishment(tpl: dict[str, str]) -> dict:
         ("Ensure",    12),
     ]
 
-    def contains_condition(keyword: str) -> dict:
-        return {
-            "conditions": [
-                {
-                    "type": "property",
-                    "property": "Product Title",
-                    "operator": "contains",
-                    "value": keyword,
-                }
-            ]
-        }
+    def branch(keyword: str, days: int) -> list:
+        return [
+            delay_action(days),
+            email_action(subject, rpl, f"[Z] Replenishment Reminder ({keyword})"),
+        ]
 
-    # Build from the innermost (last) product outward so each split's
-    # no_branch contains the next split (or ends for the final else).
-    current_no_branch: list[dict] = []  # final else → end
-
-    for keyword, delay_days in reversed(products):
-        split = {
-            "type": "conditional_split",
-            "name": f"Product contains '{keyword}'?",
-            "settings": {"condition_groups": [contains_condition(keyword)]},
-            "yes_branch": _repl_branch(keyword, delay_days, rpl_tpl),
-            "no_branch": current_no_branch,
-        }
-        current_no_branch = [split]
-
-    # The outermost split is the single top-level action node
-    nodes = current_no_branch
+    no_branch: list = []
+    for keyword, days in reversed(products):
+        no_branch = [
+            split_action(
+                condition_groups=[property_contains_condition("Product Title", keyword)],
+                yes_branch=branch(keyword, days),
+                no_branch=no_branch,
+            )
+        ]
 
     return flow_payload(
         "[Z] Replenishment - Reorder Reminders",
         {"type": "metric", "id": "UWP7cZ"},
-        nodes,
+        no_branch,
     )
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 FLOW_BUILDERS = [
-    (
-        "Flow 1 — Win-back",
-        build_winback,
-        ["[Z] Win-back Email 1", "[Z] Win-back Email 2", "[Z] Win-back Email 3"],
-    ),
-    (
-        "Flow 2 — Back in Stock",
-        build_back_in_stock,
-        ["[Z] Back in Stock Email 1", "[Z] Back in Stock Email 2"],
-    ),
-    (
-        "Flow 3 — Post-Purchase",
-        build_post_purchase,
-        [
-            "[Z] Post-Purchase Email 1",
-            "[Z] Post-Purchase Email 2",
-            "[Z] Post-Purchase Email 3",
-            "[Z] Post-Purchase Email 4",
-        ],
-    ),
-    (
-        "Flow 4 — Flu Season",
-        build_flu_season,
-        ["[Z] Flu Season Email 1", "[Z] Flu Season Email 2"],
-    ),
-    (
-        "Flow 5 — Replenishment",
-        build_replenishment,
-        ["[Z] Replenishment Reminder"],
-    ),
+    ("Flow 1 — Win-back",       build_winback,        ["[Z] Win-back Email 1","[Z] Win-back Email 2","[Z] Win-back Email 3"]),
+    ("Flow 2 — Back in Stock",  build_back_in_stock,  ["[Z] Back in Stock Email 1","[Z] Back in Stock Email 2"]),
+    ("Flow 3 — Post-Purchase",  build_post_purchase,  ["[Z] Post-Purchase Email 1","[Z] Post-Purchase Email 2","[Z] Post-Purchase Email 3","[Z] Post-Purchase Email 4"]),
+    ("Flow 4 — Flu Season",     build_flu_season,     ["[Z] Flu Season Email 1","[Z] Flu Season Email 2"]),
+    ("Flow 5 — Replenishment",  build_replenishment,  ["[Z] Replenishment Reminder"]),
 ]
 
 
 def main():
-    if API_KEY == "YOUR_PRIVATE_KEY_HERE":
-        print("ERROR: Set your Klaviyo API key via the KLAVIYO_API_KEY env var or edit API_KEY in this script.")
+    if not API_KEY:
+        print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
     print("Fetching templates from Klaviyo…")
     try:
-        template_catalog = get_templates()
-    except requests.HTTPError as exc:
-        print(f"Failed to fetch templates: {exc}\n{exc.response.text}")
+        catalog = get_templates()
+    except requests.HTTPError as e:
+        print(f"Failed: {e}\n{e.response.text}")
         sys.exit(1)
+    print(f"Found {len(catalog)} templates.\n")
 
-    print(f"Found {len(template_catalog)} templates.\n")
+    tpl_map: dict[str, str] = {}
+    all_names = [n for _, _, names in FLOW_BUILDERS for n in names]
+    for name in dict.fromkeys(all_names):
+        tid = catalog.get(name)
+        if tid:
+            tpl_map[name] = tid
 
     results = []
-
-    for label, builder, needed_tpl_names in FLOW_BUILDERS:
+    for label, builder, _ in FLOW_BUILDERS:
         print(f"─── {label} ───────────────────────────────")
-        tpl_map = resolve_templates(needed_tpl_names, template_catalog)
         payload = builder(tpl_map)
-        print(f"  Creating flow '{payload['data']['attributes']['name']}'…")
+        name = payload["data"]["attributes"]["name"]
+        print(f"  Creating '{name}'…")
         try:
             flow_id = create_flow(payload)
             link = edit_link(flow_id)
             print(f"  ✓ Created → {flow_id}")
             print(f"  Edit:    {link}")
             results.append((label, flow_id, link, None))
-        except Exception as exc:
-            print(f"  ✗ FAILED: {exc}")
-            results.append((label, None, None, str(exc)))
+        except Exception as e:
+            print(f"  ✗ FAILED: {e}")
+            results.append((label, None, None, str(e)))
         print()
-        time.sleep(0.5)  # gentle rate-limit courtesy
+        time.sleep(0.5)
 
-    # ── Summary ──
     print("═" * 60)
     print("SUMMARY")
     print("═" * 60)
