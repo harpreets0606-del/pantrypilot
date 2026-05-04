@@ -107,16 +107,21 @@ def get_z_flows():
 
 
 def get_flow_actions(flow_id):
+    """Returns all send-email actions in a flow.
+    action_type is not a valid sparse field — we detect email actions by
+    checking whether they have flow-messages (only send-email actions do).
+    """
     actions, url = [], f"{BASE_URL}/flows/{flow_id}/flow-actions"
-    params = {"fields[flow-action]": "name,action_type", "page[size]": 50}
+    params = {"fields[flow-action]": "name", "page[size]": 50}
     while url:
         r = requests.get(url, headers=HEADERS, params=params, timeout=15)
         r.raise_for_status()
         data = r.json()
         for a in data.get("data", []):
             attrs = a.get("attributes", {})
-            if attrs.get("action_type") == "send-email":
-                actions.append({"id": a["id"], "name": attrs.get("name", "")})
+            name = attrs.get("name", "")
+            # Include all — filter to email-only when fetching messages
+            actions.append({"id": a["id"], "name": name})
         url, params = data.get("links", {}).get("next"), {}
         time.sleep(0.1)
     return actions
