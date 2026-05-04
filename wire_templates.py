@@ -116,7 +116,12 @@ def get_flow_actions(flow_id):
         data = r.json()
         for a in data.get("data", []):
             attrs = a.get("attributes", {})
-            actions.append({"id": a["id"], "name": attrs.get("name", "")})
+            # DEBUG: print full action on first pass to reveal structure
+            if not actions:
+                import json as _json
+                print("  DEBUG action keys:", list(attrs.keys()))
+                print("  DEBUG sample:", _json.dumps(a, indent=2)[:600])
+            actions.append({"id": a["id"], "name": attrs.get("name", ""), "_attrs": attrs})
         url = data.get("links", {}).get("next")
         time.sleep(0.1)
     return actions
