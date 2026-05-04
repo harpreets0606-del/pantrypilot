@@ -293,9 +293,10 @@ def build_replenishment(tpl: dict) -> dict:
     ]
 
     def branch(keyword: str, days: int) -> list:
+        tpl_id = tpl.get(f"[Z] Replenishment Reminder ({keyword})", rpl)
         return [
             delay_action(days),
-            email_action(subject, rpl, f"[Z] Replenishment Reminder ({keyword})"),
+            email_action(subject, tpl_id, f"[Z] Replenishment Reminder ({keyword})"),
         ]
 
     no_branch: list = []
@@ -336,19 +337,51 @@ def edit_link(flow_id: str) -> str:
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
-# Flows 1–4 already exist.  Only (re)creating Flow 5 — Replenishment.
-# Set DELETE_BEFORE_CREATE to the existing flow ID to replace it cleanly.
-DELETE_BEFORE_CREATE = "XAbNpu"   # old replenishment flow with outdated branches
+# All 5 draft [Z] flows are rebuilt with templates pre-populated.
+# The REST API does not allow updating flow message templates after creation,
+# so the only way is to delete and recreate with template_id in the payload.
+#
+# Current draft flow IDs to delete before recreating:
+FLOWS_TO_DELETE = [
+    "U9Di23",  # [Z] Flu Season - Winter Wellness
+    "V3RBGv",  # [Z] Replenishment - Reorder Reminders
+    "WvqdR2",  # [Z] Back in Stock
+    "X3N28f",  # [Z] Post-Purchase Series
+    "YwLCkq",  # [Z] Win-back - Lapsed Customers
+]
+
+# Template IDs for each flow message name used in the builders below
+TPL_MAP: dict[str, str] = {
+    # Post-Purchase
+    "[Z] Post-Purchase Email 1": "RHfcDs",
+    "[Z] Post-Purchase Email 2": "Sy929J",
+    "[Z] Post-Purchase Email 3": "UNjrA4",
+    "[Z] Post-Purchase Email 4": "SQD3nM",
+    # Flu Season
+    "[Z] Flu Season Email 1":    "SMDszN",
+    "[Z] Flu Season Email 2":    "WALe6F",
+    # Win-Back
+    "[Z] Win-back Email 1":      "RDNsnL",
+    "[Z] Win-back Email 2":      "YuYX38",
+    "[Z] Win-back Email 3":      "VEpKb4",
+    # Back in Stock
+    "[Z] Back in Stock Email 1": "UCeqPt",
+    "[Z] Back in Stock Email 2": "XXcqNf",
+    # Replenishment — product-specific + generic fallback
+    "[Z] Replenishment Reminder": "UXVWhK",  # generic fallback
+    "[Z] Replenishment - Regaine":                    "SkCfgY",
+    "[Z] Replenishment - Hayfexo Allergy":            "RyVVZV",
+    "[Z] Replenishment - Oracoat":                    "STBhAz",
+    "[Z] Replenishment - Optifast VLCD":              "RFAcvQ",
+    "[Z] Replenishment - Vitamins and Supplements":   "UXVWhK",
+}
 
 FLOW_BUILDERS = [
-    ("Flow 5 — Replenishment",  build_replenishment,  [
-        "[Z] Replenishment Reminder",
-        "[Z] Replenishment - Regaine",
-        "[Z] Replenishment - Optifast VLCD",
-        "[Z] Replenishment - Oracoat",
-        "[Z] Replenishment - Hayfexo Allergy",
-        "[Z] Replenishment - Vitamins and Supplements",
-    ]),
+    ("Flow 1 — Post-Purchase",   build_post_purchase,  []),
+    ("Flow 2 — Flu Season",      build_flu_season,     []),
+    ("Flow 3 — Win-Back",        build_winback,        []),
+    ("Flow 4 — Back in Stock",   build_back_in_stock,  []),
+    ("Flow 5 — Replenishment",   build_replenishment,  []),
 ]
 
 
@@ -357,16 +390,18 @@ def main():
         print("ERROR: Set KLAVIYO_API_KEY env var.")
         sys.exit(1)
 
-    if DELETE_BEFORE_CREATE:
-        print(f"Deleting old flow {DELETE_BEFORE_CREATE}…")
+    # Delete all existing draft flows first
+    print(f"Deleting {len(FLOWS_TO_DELETE)} existing draft flows...")
+    for fid in FLOWS_TO_DELETE:
+        print(f"  Deleting {fid}...", end=" ")
         try:
-            delete_flow(DELETE_BEFORE_CREATE)
-            print(f"  ✓ Deleted {DELETE_BEFORE_CREATE}")
+            delete_flow(fid)
+            print("deleted")
         except Exception as e:
-            print(f"  ✗ Delete failed (continuing anyway): {e}")
-        print()
+            print(f"failed (continuing): {e}")
+    print()
 
-    tpl_map: dict[str, str] = {}
+    tpl_map: dict[str, str] = TPL_MAP
 
     results = []
     for label, builder, _ in FLOW_BUILDERS:
