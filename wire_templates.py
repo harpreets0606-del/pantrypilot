@@ -147,14 +147,53 @@ def get_flow_message(action_id):
 
 
 def assign_template(msg_id, template_id):
-    """Assigns a template to a flow-message via the JSON:API relationship endpoint."""
-    payload = {"data": {"type": "template", "id": template_id}}
-    r = requests.patch(
-        f"{BASE_URL}/flow-messages/{msg_id}/relationships/template",
-        headers=HEADERS, json=payload, timeout=30,
+    """Assigns a template to a flow-message.
+    Klaviyo uses a dedicated action endpoint (same pattern as campaign-message-assign-template).
+    Falls back to PATCH on main resource with relationships if action endpoint fails.
+    """
+    # Strategy 1: POST to flow-message-assign-template action endpoint
+    payload = {
+        "data": {
+            "type": "flow-message-assign-template",
+            "relationships": {
+                "flow-message": {"data": {"type": "flow-message", "id": msg_id}},
+                "template":     {"data": {"type": "template",      "id": template_id}},
+            },
+        }
+    }
+    r = requests.post(f"{BASE_URL}/flow-message-assign-template/",
+                      headers=HEADERS, json=payload, timeout=30)
+    if r.ok or r.status_code == 204:
+        return
+
+    # Strategy 2: PATCH main resource with relationships
+    payload2 = {
+        "data": {
+            "type": "flow-message",
+            "id": msg_id,
+            "relationships": {
+                "template": {"data": {"type": "template", "id": template_id}}
+            },
+        }
+    }
+    r2 = requests.patch(f"{BASE_URL}/flow-messages/{msg_id}",
+                        headers=HEADERS, json=payload2, timeout=30)
+    if r2.ok or r2.status_code == 204:
+        return
+
+    # Strategy 3: PUT on relationship endpoint
+    payload3 = {"data": {"type": "template", "id": template_id}}
+    r3 = requests.put(f"{BASE_URL}/flow-messages/{msg_id}/relationships/template",
+                      headers=HEADERS, json=payload3, timeout=30)
+    if r3.ok or r3.status_code == 204:
+        return
+
+    raise RuntimeError(
+        f"All strategies failed.\n"
+        f"  S1 ({r.status_code}): {r.text[:200]}\n"
+        f"  S2 ({r2.status_code}): {r2.text[:200]}\n"
+        f"  S3 ({r3.status_code}): {r3.text[:200]}"
     )
-    if not r.ok:
-        raise RuntimeError(f"HTTP {r.status_code}: {r.text[:300]}")
 
 
 # -- Main ----------------------------------------------------------------------
