@@ -452,19 +452,20 @@ def get_z_flow_ids() -> dict:
     """Returns {name: id} for all [Z] flows currently in the account."""
     found = {}
     url = f"{BASE_URL}/flows"
-    params = {"fields[flow]": "name", "page[size]": 100}
+    params = {"fields[flow]": "name"}
     while url:
         r = requests.get(url, headers=HEADERS, params=params, timeout=15)
         if not r.ok:
-            print(f"  WARNING: could not list flows: {r.status_code}")
+            print(f"  WARNING: could not list flows ({r.status_code}): {r.text[:200]}")
             break
         data = r.json()
         for item in data.get("data", []):
             name = item["attributes"]["name"]
             if name.startswith("[Z]"):
                 found[name] = item["id"]
-        url = data.get("links", {}).get("next")
-        params = {}   # next URL already includes params
+        next_url = (data.get("links") or {}).get("next")
+        url = next_url if next_url and next_url != url else None
+        params = {}
         time.sleep(0.2)
     return found
 
