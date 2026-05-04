@@ -6,14 +6,23 @@
   "scripts": {
     "start": "node --import tsx/esm src/cron-runner.ts",
     "run-once": "node --import tsx/esm src/price-sync.ts",
-    "dev": "tsx src/cron-runner.ts"
+    "dev": "tsx src/cron-runner.ts",
+    "dashboard": "node --import tsx/esm src/dashboard-server.ts",
+    "dashboard:dev": "tsx watch src/dashboard-server.ts"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.43.1",
+    "express": "^5.2.1",
+    "google-ads-api": "^23.0.0",
     "pg": "^8.13.3",
     "tsx": "^4.19.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11"
   },

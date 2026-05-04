@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bargain Chemist – Marketing Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #4f8ef7;
+      --accent2: #34d399;
+      --accent3: #f59e0b;
+      --accent4: #f87171;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --ads-color: #4285f4;
+      --ga4-color: #e37400;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #4f8ef7, #34d399);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    h1 { font-size: 18px; font-weight: 600; }
+    .subtitle { font-size: 12px; color: var(--muted); }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .refresh-btn {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity .2s;
+    }
+    .refresh-btn:hover { opacity: .85; }
+    .refresh-btn.loading { opacity: .6; cursor: wait; }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+
+    .last-updated { font-size: 12px; color: var(--muted); }
+
+    main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      margin-top: 28px;
+    }
+    .section-header:first-child { margin-top: 0; }
+
+    .section-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .badge-ads { background: rgba(66,133,244,.2); color: var(--ads-color); }
+    .badge-ga4 { background: rgba(227,116,0,.2); color: var(--ga4-color); }
+
+    .section-title { font-size: 16px; font-weight: 600; }
+
+    /* KPI cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.ads::before { background: var(--ads-color); }
+    .kpi-card.ga4::before { background: var(--ga4-color); }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .kpi-sub { font-size: 12px; color: var(--muted); }
+    .kpi-icon {
+      position: absolute;
+      top: 16px; right: 16px;
+      font-size: 20px;
+      opacity: .4;
+    }
+
+    /* Charts grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .chart-card.full { grid-column: 1 / -1; }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    canvas { max-height: 260px; }
+
+    /* Campaign table */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--surface2);
+    }
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:hover { background: var(--surface2); }
+
+    td { padding: 12px 16px; }
+
+    .status-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-enabled { background: rgba(52,211,153,.15); color: var(--accent2); }
+
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .error-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--accent4);
+    }
+    .error-state .icon { font-size: 32px; margin-bottom: 8px; }
+    .error-state a { color: var(--accent); }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 4px;
+      height: 28px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">💊</div>
+    <div>
+      <h1>Bargain Chemist</h1>
+      <div class="subtitle">Marketing Dashboard</div>
+    </div>
+  </div>
+  <div class="header-controls">
+    <div class="status-dot"></div>
+    <span class="last-updated" id="lastUpdated">Loading…</span>
+    <select id="dateRange" onchange="loadAll()">
+      <option value="7daysAgo|LAST_7_DAYS">Last 7 days</option>
+      <option value="14daysAgo|LAST_14_DAYS">Last 14 days</option>
+      <option value="30daysAgo|LAST_30_DAYS" selected>Last 30 days</option>
+      <option value="90daysAgo|LAST_90_DAYS">Last 90 days</option>
+    </select>
+    <button class="refresh-btn" onclick="loadAll()" id="refreshBtn">
+      ↻ Refresh
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Google Ads Section -->
+  <div class="section-header">
+    <span class="section-badge badge-ads">Google Ads</span>
+    <span class="section-title">Paid Search Performance</span>
+  </div>
+
+  <div class="kpi-grid" id="adsKpis">
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+    <div class="kpi-card ads"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <div class="chart-title">Daily Clicks & Spend (Last 30 Days)</div>
+      <canvas id="adsTrendChart"></canvas>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Campaign</th>
+          <th>Status</th>
+          <th class="num">Impressions</th>
+          <th class="num">Clicks</th>
+          <th class="num">CTR %</th>
+          <th class="num">Avg CPC</th>
+          <th class="num">Spend</th>
+          <th class="num">Conversions</th>
+          <th class="num">Conv. Value</th>
+        </tr>
+      </thead>
+      <tbody id="campaignsBody">
+        <tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Loading campaigns…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- GA4 Section -->
+  <div class="section-header">
+    <span class="section-badge badge-ga4">GA4</span>
+    <span class="section-title">Website Analytics</span>
+  </div>
+
+  <div class="kpi-grid" id="ga4Kpis">
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+    <div class="kpi-card ga4"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card full">
+      <div class="chart-title">Daily Sessions & Users (Last 30 Days)</div>
+      <canvas id="ga4TrendChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Traffic by Channel</div>
+      <canvas id="sourcesChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Top 10 Pages (Last 7 Days)</div>
+      <canvas id="pagesChart"></canvas>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const API = '';
+let adsTrendChartInst, ga4TrendChartInst, sourcesChartInst, pagesChartInst;
+
+function ranges() {
+  const [ga4, ads] = document.getElementById('dateRange').value.split('|');
+  return { ga4, ads };
+}
+
+function fmt(n, prefix = '') {
+  if (n === undefined || n === null) return '—';
+  const num = parseFloat(n);
+  if (num >= 1_000_000) return prefix + (num / 1_000_000).toFixed(1) + 'M';
+  if (num >= 1_000) return prefix + (num / 1_000).toFixed(1) + 'K';
+  return prefix + num.toLocaleString();
+}
+
+function fmtDate(d) {
+  if (!d) return d;
+  return d.replace(/(\d{4})(\d{2})(\d{2})/, '$3/$2');
+}
+
+// ── KPI helpers ──────────────────────────────────────────────────────────────
+
+function kpiCard(label, value, sub, icon, type) {
+  return `<div class="kpi-card ${type}">
+    <span class="kpi-icon">${icon}</span>
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value">${value}</div>
+    ${sub ? `<div class="kpi-sub">${sub}</div>` : ''}
+  </div>`;
+}
+
+function errorCard(msg, type) {
+  return `<div class="kpi-card ${type}" style="grid-column:1/-1">
+    <div class="error-state">
+      <div class="icon">⚠️</div>
+      <div>${msg}</div>
+    </div>
+  </div>`;
+}
+
+// ── Chart helpers ─────────────────────────────────────────────────────────────
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+  scales: {
+    x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e2438' } },
+    y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: '#1e2438' } },
+  },
+};
+
+function destroyAndCreate(id, config) {
+  const existing = Chart.getChart(id);
+  if (existing) existing.destroy();
+  return new Chart(document.getElementById(id), config);
+}
+
+// ── Google Ads ───────────────────────────────────────────────────────────────
+
+async function loadAdsSummary(adsRange) {
+  const kpisEl = document.getElementById('adsKpis');
+  try {
+    const r = await fetch(`${API}/api/ads/summary?range=${adsRange}`);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+
+    kpisEl.innerHTML =
+      kpiCard('Impressions', fmt(d.impressions), null, '👁', 'ads') +
+      kpiCard('Clicks', fmt(d.clicks), null, '🖱️', 'ads') +
+      kpiCard('Total Spend', '$' + parseFloat(d.cost).toLocaleString(), null, '💰', 'ads') +
+      kpiCard('CTR', d.ctr + '%', null, '📊', 'ads') +
+      kpiCard('Avg CPC', '$' + d.avgCpc, null, '💲', 'ads') +
+      kpiCard('ROAS', d.roas + 'x', `${fmt(d.conversions)} conv.`, '🎯', 'ads');
+  } catch (e) {
+    kpisEl.innerHTML = errorCard('Google Ads: ' + e.message, 'ads');
+  }
+}
+
+async function loadAdsTrend() {
+  try {
+    const r = await fetch(`${API}/api/ads/trend`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    adsTrendChartInst = destroyAndCreate('adsTrendChart', {
+      type: 'line',
+      data: {
+        labels: data.map(d => fmtDate(d.date)),
+        datasets: [
+          {
+            label: 'Clicks',
+            data: data.map(d => d.clicks),
+            borderColor: '#4285f4',
+            backgroundColor: 'rgba(66,133,244,.1)',
+            fill: true,
+            tension: .4,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Spend ($)',
+            data: data.map(d => parseFloat(d.cost)),
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245,158,11,.1)',
+            fill: true,
+            tension: .4,
+            yAxisID: 'y1',
+          },
+        ],
+      },
+      options: {
+        ...chartDefaults,
+        scales: {
+          x: chartDefaults.scales.x,
+          y: { ...chartDefaults.scales.y, position: 'left' },
+          y1: { ...chartDefaults.scales.y, position: 'right', grid: { drawOnChartArea: false } },
+        },
+      },
+    });
+  } catch (e) {
+    document.getElementById('adsTrendChart').closest('.chart-card').innerHTML =
+      `<div class="error-state"><div class="icon">⚠️</div><div>${e.message}</div></div>`;
+  }
+}
+
+async function loadCampaigns(adsRange) {
+  const tbody = document.getElementById('campaignsBody');
+  try {
+    const r = await fetch(`${API}/api/ads/campaigns?range=${adsRange}`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No active campaigns found</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(c => `
+      <tr>
+        <td>${c.name}</td>
+        <td><span class="status-pill status-enabled">Active</span></td>
+        <td class="num">${fmt(c.impressions)}</td>
+        <td class="num">${fmt(c.clicks)}</td>
+        <td class="num">${c.ctr}%</td>
+        <td class="num">$${c.avgCpc}</td>
+        <td class="num">$${parseFloat(c.cost).toLocaleString()}</td>
+        <td class="num">${fmt(c.conversions)}</td>
+        <td class="num">$${parseFloat(c.conversionValue || 0).toLocaleString()}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="9" class="error-state">${e.message}</td></tr>`;
+  }
+}
+
+// ── GA4 ──────────────────────────────────────────────────────────────────────
+
+async function loadGA4Overview(ga4Range) {
+  const kpisEl = document.getElementById('ga4Kpis');
+  try {
+    const r = await fetch(`${API}/api/ga4/overview?range=${ga4Range}`);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+
+    const dur = d.avgSessionDuration;
+    const mins = Math.floor(dur / 60);
+    const secs = dur % 60;
+
+    kpisEl.innerHTML =
+      kpiCard('Sessions', fmt(d.sessions), null, '🔗', 'ga4') +
+      kpiCard('Users', fmt(d.users), null, '👤', 'ga4') +
+      kpiCard('Page Views', fmt(d.pageviews), null, '📄', 'ga4') +
+      kpiCard('Bounce Rate', d.bounceRate + '%', null, '↩️', 'ga4') +
+      kpiCard('Avg Session', `${mins}m ${secs}s`, null, '⏱️', 'ga4') +
+      kpiCard('Conversions', fmt(d.conversions), null, '✅', 'ga4');
+  } catch (e) {
+    kpisEl.innerHTML = errorCard('GA4: ' + e.message, 'ga4');
+  }
+}
+
+async function loadGA4Trend(ga4Range) {
+  try {
+    const r = await fetch(`${API}/api/ga4/trend?range=${ga4Range}`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    ga4TrendChartInst = destroyAndCreate('ga4TrendChart', {
+      type: 'line',
+      data: {
+        labels: data.map(d => fmtDate(d.date)),
+        datasets: [
+          {
+            label: 'Sessions',
+            data: data.map(d => d.sessions),
+            borderColor: '#e37400',
+            backgroundColor: 'rgba(227,116,0,.1)',
+            fill: true,
+            tension: .4,
+          },
+          {
+            label: 'Users',
+            data: data.map(d => d.users),
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52,211,153,.1)',
+            fill: true,
+            tension: .4,
+          },
+        ],
+      },
+      options: chartDefaults,
+    });
+  } catch (e) {
+    document.getElementById('ga4TrendChart').closest('.chart-card').innerHTML =
+      `<div class="error-state"><div class="icon">⚠️</div><div>${e.message}</div></div>`;
+  }
+}
+
+async function loadSources() {
+  try {
+    const r = await fetch(`${API}/api/ga4/sources`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    const colors = ['#4285f4','#e37400','#34d399','#f59e0b','#f87171','#a78bfa','#38bdf8','#fb7185'];
+
+    sourcesChartInst = destroyAndCreate('sourcesChart', {
+      type: 'doughnut',
+      data: {
+        labels: data.map(d => d.source),
+        datasets: [{
+          data: data.map(d => d.sessions),
+          backgroundColor: colors,
+          borderWidth: 2,
+          borderColor: '#1a1d27',
+        }],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12 } },
+        },
+      },
+    });
+  } catch (e) {
+    document.getElementById('sourcesChart').closest('.chart-card').innerHTML =
+      `<div class="error-state"><div class="icon">⚠️</div><div>${e.message}</div></div>`;
+  }
+}
+
+async function loadTopPages() {
+  try {
+    const r = await fetch(`${API}/api/ga4/top-pages`);
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    const labels = data.map(d => d.page.length > 30 ? d.page.slice(0, 30) + '…' : d.page);
+
+    pagesChartInst = destroyAndCreate('pagesChart', {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Page Views',
+          data: data.map(d => d.views),
+          backgroundColor: 'rgba(227,116,0,.7)',
+          borderColor: '#e37400',
+          borderWidth: 1,
+          borderRadius: 4,
+        }],
+      },
+      options: {
+        ...chartDefaults,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+      },
+    });
+  } catch (e) {
+    document.getElementById('pagesChart').closest('.chart-card').innerHTML =
+      `<div class="error-state"><div class="icon">⚠️</div><div>${e.message}</div></div>`;
+  }
+}
+
+// ── Load all ──────────────────────────────────────────────────────────────────
+
+async function loadAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  btn.textContent = '↻ Loading…';
+
+  const { ga4, ads } = ranges();
+
+  await Promise.allSettled([
+    loadAdsSummary(ads),
+    loadAdsTrend(),
+    loadCampaigns(ads),
+    loadGA4Overview(ga4),
+    loadGA4Trend(ga4),
+    loadSources(),
+    loadTopPages(),
+  ]);
+
+  document.getElementById('lastUpdated').textContent =
+    'Updated ' + new Date().toLocaleTimeString();
+  btn.classList.remove('loading');
+  btn.textContent = '↻ Refresh';
+}
+
+// Auto-refresh every 5 minutes
+loadAll();
+setInterval(loadAll, 5 * 60 * 1000);
+</script>
+</body>
+</html>
