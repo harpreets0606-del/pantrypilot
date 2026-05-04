@@ -30,7 +30,7 @@ def get_templates() -> dict[str, str]:
     """Return {template_name: template_id} for all templates in the account."""
     templates: dict[str, str] = {}
     url = f"{BASE_URL}/templates"
-    params = {"page[size]": 100}
+    params = {"page[size]": 10}
     while url:
         resp = requests.get(url, headers=HEADERS, params=params)
         resp.raise_for_status()
