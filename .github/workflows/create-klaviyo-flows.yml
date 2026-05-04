@@ -1,0 +1,64 @@
+name: Create Klaviyo Flows
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (list templates only, do not create flows)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  create-flows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: claude/klaviyo-email-flows-oXnB8
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Create Klaviyo flows
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "=== DRY RUN: listing templates only ==="
+            python - <<'EOF'
+          import os, requests
+          API_KEY = os.environ["KLAVIYO_API_KEY"]
+          HEADERS = {
+              "Authorization": f"Klaviyo-API-Key {API_KEY}",
+              "revision": "2024-10-15",
+              "Accept": "application/json",
+          }
+          url = "https://a.klaviyo.com/api/templates"
+          params = {"page[size]": 100}
+          count = 0
+          while url:
+              r = requests.get(url, headers=HEADERS, params=params)
+              r.raise_for_status()
+              data = r.json()
+              for t in data.get("data", []):
+                  print(f"  {t['id']}  {t['attributes']['name']}")
+                  count += 1
+              url = data.get("links", {}).get("next")
+              params = {}
+          print(f"\nTotal: {count} templates")
+          EOF
+          else
+            python klaviyo_flows.py
+          fi
