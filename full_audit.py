@@ -37,12 +37,19 @@ EXPECTED_FLOW_CONFIG = {
         "expected_delays": 1,
         "delay_sequence": [("days", 1)],
     },
+    "[Z] Order Confirmation": {
+        "trigger_type": "metric",
+        "expected_emails": 2,
+        "expected_splits": 0,
+        "expected_delays": 1,
+        "delay_sequence": [("days", 2)],
+    },
     "[Z] Post-Purchase Series": {
         "trigger_type": "metric",
-        "expected_emails": 4,
+        "expected_emails": 2,
         "expected_splits": 1,
-        "expected_delays": 4,
-        "delay_sequence": [("hours", 1), ("days", 3), ("days", 4), ("days", 7)],
+        "expected_delays": 2,
+        "delay_sequence": [("days", 3), ("days", 7)],
     },
     "[Z] Replenishment - Reorder Reminders": {
         "trigger_type": "metric",
@@ -394,10 +401,12 @@ def audit_flow(flow_id, flow_name):
     time.sleep(0.2)
 
 
-# Known flow IDs — updated after each rebuild via fix_all_flows.py
+# Known flow IDs — update after each rebuild via fix_all_flows.py
+# (IDs are printed in the fix_all_flows.py --apply summary)
 KNOWN_FLOW_IDS = {
     "[Z] Back in Stock":                      "RbJz8x",
-    "[Z] Post-Purchase Series":               "U4W3bu",
+    "[Z] Order Confirmation":                 "UPDATE_AFTER_REBUILD",
+    "[Z] Post-Purchase Series":               "UPDATE_AFTER_REBUILD",
     "[Z] Flu Season - Winter Wellness":       "RueAmA",
     "[Z] Win-back - Lapsed Customers":        "W9RVV2",
     "[Z] Replenishment - Reorder Reminders":  "VsdCWZ",

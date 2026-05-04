@@ -42,7 +42,8 @@ HEADERS = {
 ALL_DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
 PLACED_ORDER_METRIC_ID  = "Sxnb5T"   # Placed Order
-REPLENISHMENT_METRIC_ID = "UWP7cZ"   # Placed Order (replenishment trigger)
+FULFILLED_ORDER_METRIC_ID = "RUm8tg" # Fulfilled Order
+REPLENISHMENT_METRIC_ID = "UWP7cZ"   # Ordered Product (fires per line item)
 BACK_IN_STOCK_METRIC_ID = "USbQRB"   # Back In Stock
 WINBACK_SEGMENT_ID      = "Srd5Qr"
 FLU_SEASON_SEGMENT_ID   = "VGQby3"
@@ -286,24 +287,34 @@ def build_back_in_stock() -> dict:
                         nodes)
 
 
-def build_post_purchase() -> dict:
+def build_order_confirmation() -> dict:
+    """Placed Order trigger: immediate confirmation + pre-shipment tips."""
     reset_ids()
     nodes = [
-        delay_action(1, "hours"),
         email_action(
             "{{ person.first_name|default:'friend' }}, order confirmed!",
             TPL["[Z] Post-Purchase Email 1"],
             "[Z] Post-Purchase Email 1",
             PREVIEW["[Z] Post-Purchase Email 1"],
         ),
-        delay_action(3),
+        delay_action(2),
         email_action(
             "Getting the most from your order",
             TPL["[Z] Post-Purchase Email 2"],
             "[Z] Post-Purchase Email 2",
             PREVIEW["[Z] Post-Purchase Email 2"],
         ),
-        delay_action(4),
+    ]
+    return flow_payload("[Z] Order Confirmation",
+                        {"type": "metric", "id": PLACED_ORDER_METRIC_ID},
+                        nodes)
+
+
+def build_post_purchase() -> dict:
+    """Fulfilled Order trigger: cross-sell + review request after delivery."""
+    reset_ids()
+    nodes = [
+        delay_action(3),   # allow time for delivery
         email_action(
             "{{ person.first_name|default:'friend' }}, more to love",
             TPL["[Z] Post-Purchase Email 3"],
@@ -312,8 +323,10 @@ def build_post_purchase() -> dict:
         ),
         delay_action(7),
         split_action(
-            profile_filter=placed_order_filter(2),
-            yes_branch=[],   # YES: repeat buyer -> exit
+            # YES: placed a new order since fulfilment -> exit (engaged, skip review)
+            # NO:  no repeat order -> send review request
+            profile_filter=placed_order_filter(1),
+            yes_branch=[],
             no_branch=[
                 email_action(
                     "How did we do, {{ person.first_name|default:'friend' }}?",
@@ -325,7 +338,7 @@ def build_post_purchase() -> dict:
         ),
     ]
     return flow_payload("[Z] Post-Purchase Series",
-                        {"type": "metric", "id": PLACED_ORDER_METRIC_ID},
+                        {"type": "metric", "id": FULFILLED_ORDER_METRIC_ID},
                         nodes)
 
 
@@ -490,10 +503,11 @@ def edit_link(flow_id: str) -> str:
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 FLOW_BUILDERS = [
-    ("[Z] Back in Stock",                  build_back_in_stock),
-    ("[Z] Post-Purchase Series",           build_post_purchase),
-    ("[Z] Flu Season - Winter Wellness",   build_flu_season),
-    ("[Z] Win-back - Lapsed Customers",    build_winback),
+    ("[Z] Back in Stock",                     build_back_in_stock),
+    ("[Z] Order Confirmation",                build_order_confirmation),
+    ("[Z] Post-Purchase Series",              build_post_purchase),
+    ("[Z] Flu Season - Winter Wellness",      build_flu_season),
+    ("[Z] Win-back - Lapsed Customers",       build_winback),
     ("[Z] Replenishment - Reorder Reminders", build_replenishment),
 ]
 
