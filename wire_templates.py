@@ -1,16 +1,21 @@
 """
-Wire [Z] email templates to their matching flow action steps.
+Wire [Z] email templates to their matching Klaviyo flow messages.
 
-For each [Z] flow, fetches all email send actions, finds their
-flow-message IDs, then PATCHes the template_id onto each message.
+Flow message structure (2024-10-15.pre):
+  attributes.name            -- human-readable message name
+  attributes.content.*       -- subject, from_email, etc.
+  relationships.template.data.id  -- currently assigned template (or null)
+
+Template assignment is done via the JSON:API relationship endpoint:
+  PATCH /api/flow-messages/{id}/relationships/template
 
 Usage:
     $env:KLAVIYO_API_KEY="pk_xxx"
-    py wire_templates.py            # dry run - shows what would change
-    py wire_templates.py --apply    # applies all template assignments
+    py wire_templates.py            # dry run
+    py wire_templates.py --apply    # apply changes
 """
 
-import os, sys, re, time
+import os, sys, time
 import requests
 
 API_KEY  = os.environ.get("KLAVIYO_API_KEY", "")
@@ -26,57 +31,59 @@ HEADERS = {
 
 APPLY = "--apply" in sys.argv
 
-# -- Template mapping: flow action name -> template ID -------------------------
+# -- Template mapping: flow message name -> template ID -----------------------
 #
-# Action names come from the `name` field in email_action() in klaviyo_flows.py
-# Replenishment uses "Vitamins and Supplements" as the generic fallback for
-# products without their own dedicated template.
+# Message names come from the `name` param passed to email_action() in
+# klaviyo_flows.py for flows we created, and from Klaviyo's auto-naming
+# for pre-existing flows (Browse Abandonment, Welcome Series).
 
-ACTION_TEMPLATE_MAP = {
-    # Post-Purchase Series (X3N28f)
+MESSAGE_TEMPLATE_MAP = {
+    # Post-Purchase Series (X3N28f) - names set in klaviyo_flows.py
     "[Z] Post-Purchase Email 1": "RHfcDs",
     "[Z] Post-Purchase Email 2": "Sy929J",
     "[Z] Post-Purchase Email 3": "UNjrA4",
     "[Z] Post-Purchase Email 4": "SQD3nM",
 
-    # Flu Season (U9Di23)
+    # Flu Season (U9Di23) - names set in klaviyo_flows.py
     "[Z] Flu Season Email 1":    "SMDszN",
     "[Z] Flu Season Email 2":    "WALe6F",
 
-    # Win-Back (YwLCkq)
+    # Win-Back (YwLCkq) - names set in klaviyo_flows.py
     "[Z] Win-back Email 1":      "RDNsnL",
     "[Z] Win-back Email 2":      "YuYX38",
     "[Z] Win-back Email 3":      "VEpKb4",
     "[Z] Win-back Email 4":      "VqvY8S",
 
-    # Back in Stock (WvqdR2)
+    # Back in Stock (WvqdR2) - names set in klaviyo_flows.py
     "[Z] Back in Stock Email 1": "UCeqPt",
     "[Z] Back in Stock Email 2": "XXcqNf",
 
-    # Browse Abandonment (RtiVC5) - Email 2 only (Email 1 has no [Z] template)
-    "[Z] Browse Abandonment Email 2": "QZmDDY",
-
-    # Welcome Series (SehWRt) - Emails 4 & 5 only (1-3 have no [Z] templates)
-    "[Z] Welcome Series Email 4":     "SnDfrv",
-    "[Z] Welcome Series Email 5":     "UZWWsg",
-
-    # Replenishment (V3RBGv) - product-specific
+    # Replenishment (V3RBGv) - names set in klaviyo_flows.py
     "[Z] Replenishment Reminder (Regaine)":    "SkCfgY",
-    "[Z] Replenishment Reminder (Magnesium)":  "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (Elevit)":     "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (Sanderson)":  "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (GO Healthy)": "UXVWhK",   # generic vitamins
+    "[Z] Replenishment Reminder (Magnesium)":  "UXVWhK",
+    "[Z] Replenishment Reminder (Elevit)":     "UXVWhK",
+    "[Z] Replenishment Reminder (Sanderson)":  "UXVWhK",
+    "[Z] Replenishment Reminder (GO Healthy)": "UXVWhK",
     "[Z] Replenishment Reminder (Hayfexo)":    "RyVVZV",
-    "[Z] Replenishment Reminder (Clinicians)": "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (Goli)":       "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (LIVON)":      "UXVWhK",   # generic vitamins
-    "[Z] Replenishment Reminder (Ensure)":     "UXVWhK",   # generic vitamins
+    "[Z] Replenishment Reminder (Clinicians)": "UXVWhK",
+    "[Z] Replenishment Reminder (Goli)":       "UXVWhK",
+    "[Z] Replenishment Reminder (LIVON)":      "UXVWhK",
+    "[Z] Replenishment Reminder (Ensure)":     "UXVWhK",
     "[Z] Replenishment Reminder (Oracoat)":    "STBhAz",
     "[Z] Replenishment Reminder (Optifast)":   "RFAcvQ",
-    "[Z] Replenishment Reminder (Optislim)":   "RFAcvQ",   # weight mgmt fallback
+    "[Z] Replenishment Reminder (Optislim)":   "RFAcvQ",
+
+    # Browse Abandonment (RtiVC5) - Klaviyo auto-names
+    # Email 1 already has its own template; Email 2 is our [Z] one
+    "[Z] Browse Abandonment: Email #2":        "QZmDDY",
+
+    # Welcome Series (SehWRt) - Klaviyo auto-names
+    # Emails 1-3 are pre-existing; we only have [Z] templates for 4 and 5
+    "Welcome Series, Email #4":                "SnDfrv",
+    "Welcome Series, Email #5":                "UZWWsg",
 }
 
-# Exact flow names to process (excludes Triple Pixel variants)
+# Exact flow names to process
 Z_FLOW_NAMES = {
     "[Z] Post-Purchase Series",
     "[Z] Flu Season - Winter Wellness",
@@ -107,10 +114,7 @@ def get_z_flows():
 
 
 def get_send_email_actions(flow_id):
-    """Returns only SEND_EMAIL actions for a flow.
-    action_type is an attribute (uppercase: SEND_EMAIL / TIME_DELAY / BOOLEAN_BRANCH).
-    The message name lives inside the flow-message definition, not here.
-    """
+    """Returns IDs of all SEND_EMAIL actions in a flow."""
     actions, url = [], f"{BASE_URL}/flows/{flow_id}/flow-actions"
     while url:
         r = requests.get(url, headers=HEADERS, timeout=15)
@@ -118,17 +122,14 @@ def get_send_email_actions(flow_id):
         data = r.json()
         for a in data.get("data", []):
             if a.get("attributes", {}).get("action_type") == "SEND_EMAIL":
-                actions.append({"id": a["id"]})
+                actions.append(a["id"])
         url = data.get("links", {}).get("next")
         time.sleep(0.1)
     return actions
 
 
-_msg_debug_done = False
-
 def get_flow_message(action_id):
-    """Returns the first flow-message for an action with its id, name, and definition."""
-    global _msg_debug_done
+    """Returns the flow-message for a SEND_EMAIL action."""
     r = requests.get(f"{BASE_URL}/flow-actions/{action_id}/flow-messages",
                      headers=HEADERS, timeout=15)
     r.raise_for_status()
@@ -136,37 +137,22 @@ def get_flow_message(action_id):
     if not data:
         return None
     m = data[0]
-    if not _msg_debug_done:
-        import json as _j
-        print("  MSG DEBUG:", _j.dumps(m, indent=2)[:1200])
-        _msg_debug_done = True
     attrs = m.get("attributes", {})
-    defn = attrs.get("definition", {})
-    # Try multiple locations where name might live
-    name = (defn.get("name")
-            or defn.get("label")
-            or attrs.get("name")
-            or attrs.get("label")
-            or "")
+    template_rel = m.get("relationships", {}).get("template", {}).get("data")
     return {
         "id": m["id"],
-        "name": name,
-        "definition": defn,
+        "name": attrs.get("name", ""),
+        "current_template_id": template_rel["id"] if template_rel else None,
     }
 
 
-def patch_message_template(msg_id, definition, new_template_id):
-    """PATCH a flow-message to update its template_id."""
-    updated_def = {**definition, "template_id": new_template_id}
-    payload = {
-        "data": {
-            "type": "flow-message",
-            "id": msg_id,
-            "attributes": {"definition": updated_def},
-        }
-    }
-    r = requests.patch(f"{BASE_URL}/flow-messages/{msg_id}",
-                       headers=HEADERS, json=payload, timeout=30)
+def assign_template(msg_id, template_id):
+    """Assigns a template to a flow-message via the JSON:API relationship endpoint."""
+    payload = {"data": {"type": "template", "id": template_id}}
+    r = requests.patch(
+        f"{BASE_URL}/flow-messages/{msg_id}/relationships/template",
+        headers=HEADERS, json=payload, timeout=30,
+    )
     if not r.ok:
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:300]}")
 
@@ -183,69 +169,71 @@ def main():
     flows = get_z_flows()
     print(f"Found {len(flows)} [Z] flows.\n")
 
-    updates = []  # [(flow_name, action_name, msg_id, definition, new_tpl_id)]
-    skipped = []  # action names not in our map
+    updates   = []  # (flow_name, msg_name, msg_id, new_tpl_id)
+    no_map    = []  # message names with no mapping
+    already   = []  # already correct
 
     for flow in flows:
         print(f"-- {flow['name']}  [{flow['id']}]  ({flow['status']})")
         try:
-            email_actions = get_send_email_actions(flow["id"])
+            action_ids = get_send_email_actions(flow["id"])
         except Exception as e:
             print(f"   FAILED to fetch actions: {e}\n")
             continue
 
-        if not email_actions:
-            print(f"   (no SEND_EMAIL actions found)\n")
+        if not action_ids:
+            print(f"   (no SEND_EMAIL actions)\n")
             continue
 
-        for action in email_actions:
-            msg = get_flow_message(action["id"])
+        for action_id in action_ids:
+            msg = get_flow_message(action_id)
             if not msg:
-                print(f"   ! action {action['id']}  (no flow-message found)")
+                print(f"   ! action {action_id} has no flow-message")
                 continue
 
-            aname = msg["name"]
-            tpl_id = ACTION_TEMPLATE_MAP.get(aname)
+            mname    = msg["name"]
+            cur_tpl  = msg["current_template_id"]
+            new_tpl  = MESSAGE_TEMPLATE_MAP.get(mname)
 
-            if not tpl_id:
-                skipped.append(f"{flow['name']} / {aname!r}")
-                print(f"   ? {aname!r}  (no mapping - skip)")
+            if not new_tpl:
+                no_map.append(f"{flow['name']} / {mname!r}")
+                print(f"   ? {mname!r}")
                 continue
 
-            current_tpl = msg["definition"].get("template_id", "(none)")
-
-            if current_tpl == tpl_id:
-                print(f"   OK {aname}  (already {tpl_id})")
+            if cur_tpl == new_tpl:
+                already.append(mname)
+                print(f"   OK {mname!r}  (already {new_tpl})")
             else:
-                status = "WILL SET" if not APPLY else "SETTING"
-                print(f"   -> {aname}  [{status}]  {current_tpl} -> {tpl_id}")
-                updates.append((flow["name"], aname, msg["id"], msg["definition"], tpl_id))
+                tag = "WILL SET" if not APPLY else "SETTING"
+                print(f"   -> {mname!r}  [{tag}]  {cur_tpl} -> {new_tpl}")
+                updates.append((flow["name"], mname, msg["id"], new_tpl))
+
             time.sleep(0.1)
 
         print()
-        time.sleep(0.1)
 
-    print(f"{len(updates)} message(s) to update.")
+    print(f"{len(updates)} to update, {len(already)} already correct, {len(no_map)} unmapped.\n")
 
-    if skipped:
-        print(f"\nActions with no template mapping ({len(skipped)}):")
-        for s in skipped:
-            print(f"  - {s}")
+    if no_map:
+        print(f"Unmapped messages ({len(no_map)}) -- add to MESSAGE_TEMPLATE_MAP if needed:")
+        for s in no_map:
+            print(f"  {s}")
+        print()
 
     if not APPLY:
-        print("\nRun with --apply to apply all changes.")
+        print("Run with --apply to apply changes.")
         return
 
-    print("\nApplying...")
-    ok, fail = 0, 0
-    for flow_name, action_name, msg_id, definition, tpl_id in updates:
-        print(f"  {msg_id}  {action_name}...", end=" ")
+    print("Applying...")
+    ok = fail = 0
+    for flow_name, mname, msg_id, tpl_id in updates:
+        print(f"  {mname!r}  ({msg_id})...", end=" ")
         try:
-            patch_message_template(msg_id, definition, tpl_id)
+            assign_template(msg_id, tpl_id)
             print("OK")
             ok += 1
         except Exception as e:
-            print(f"FAIL {e}")
+            print(f"FAIL  {e}")
             fail += 1
         time.sleep(0.3)
 
