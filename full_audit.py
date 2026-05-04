@@ -404,12 +404,12 @@ def audit_flow(flow_id, flow_name):
 # Known flow IDs — update after each rebuild via fix_all_flows.py
 # (IDs are printed in the fix_all_flows.py --apply summary)
 KNOWN_FLOW_IDS = {
-    "[Z] Back in Stock":                      "RbJz8x",
-    "[Z] Order Confirmation":                 "UPDATE_AFTER_REBUILD",
-    "[Z] Post-Purchase Series":               "UPDATE_AFTER_REBUILD",
-    "[Z] Flu Season - Winter Wellness":       "RueAmA",
-    "[Z] Win-back - Lapsed Customers":        "W9RVV2",
-    "[Z] Replenishment - Reorder Reminders":  "VsdCWZ",
+    "[Z] Back in Stock":                      "Ysj7sg",
+    "[Z] Order Confirmation":                 "Smp9WN",
+    "[Z] Post-Purchase Series":               "RDJQYM",
+    "[Z] Flu Season - Winter Wellness":       "V9XmEm",
+    "[Z] Win-back - Lapsed Customers":        "WRKYPs",
+    "[Z] Replenishment - Reorder Reminders":  "XRUj2w",
 }
 
 
