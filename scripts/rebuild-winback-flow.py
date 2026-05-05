@@ -1,13 +1,16 @@
 """
-Rebuilds the Win-back flow with correct metric trigger.
+Rebuilds the Win-back flow with correct metric trigger and repurchase splits.
 
-Deletes WRKYPs (broken "Added to List" trigger, no lapsed list exists).
-Creates new flow triggered on Placed Order metric:
-  Wait 90 days -> Email 1 (We Miss You) -> Wait 14 days -> Email 2 (Still Here)
+Deletes existing flow and creates:
+  Trigger: Placed Order (Sxnb5T)
+  90d delay
+  Split: placed order in last 90 days? YES -> exit | NO -> Email 1
+  14d delay
+  Split: placed order in last 14 days? YES -> exit | NO -> Email 2
 
-Note: repurchase conditional splits must be added manually in the Klaviyo UI
-after creation. The API rejects bare profile-metric conditions without
-product-level metric_filters, so the splits cannot be created via script.
+The repurchase check uses a relative timeframe (last N days) rather than
+flow-start, which avoids the Klaviyo API requirement for metric_filters
+on flow-start conditions.
 
 Templates:
   XxBbRK  Win-back Email 1 - We Miss You
@@ -36,7 +39,7 @@ HEADERS = {
 
 ALL_DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
-OLD_FLOW_ID     = "WRKYPs"
+OLD_FLOW_ID     = "W8MjW6"
 PLACED_ORDER_ID = "Sxnb5T"
 
 TPL_MISS_YOU   = "XxBbRK"
@@ -84,6 +87,36 @@ def delay_action(value, unit="days"):
         data["delay_until_weekdays"] = ALL_DAYS
     return {"type": "time-delay", "data": data}
 
+def split_action(profile_filter, yes_branch, no_branch):
+    return {
+        "type": "conditional-split",
+        "data": {"profile_filter": profile_filter},
+        "_yes": yes_branch,
+        "_no": no_branch,
+    }
+
+def reordered_filter(days):
+    """Has placed an order in the last N days (relative timeframe, no metric_filters needed)."""
+    return {
+        "condition_groups": [{
+            "conditions": [{
+                "type": "profile-metric",
+                "metric_id": PLACED_ORDER_ID,
+                "measurement": "count",
+                "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "greater-than",
+                    "value": 0,
+                },
+                "timeframe_filter": {
+                    "type": "relative",
+                    "delta": days,
+                    "unit": "days",
+                },
+            }]
+        }]
+    }
+
 def build_definition(trigger, node_list):
     actions = []
 
@@ -94,8 +127,13 @@ def build_definition(trigger, node_list):
         for i, (node, tid) in enumerate(zip(nodes, tids)):
             ntype = node["type"]
             action = {"temporary_id": tid, "type": ntype, "data": node["data"]}
-            next_tid = tids[i + 1] if i < len(nodes) - 1 else None
-            action["links"] = {"next": next_tid}
+            if ntype == "conditional-split":
+                yes_first = process(node.get("_yes", []))
+                no_first  = process(node.get("_no", []))
+                action["links"] = {"next_if_true": yes_first, "next_if_false": no_first}
+            else:
+                next_tid = tids[i + 1] if i < len(nodes) - 1 else None
+                action["links"] = {"next": next_tid}
             actions.append(action)
         return tids[0]
 
@@ -111,16 +149,28 @@ def build_winback():
     reset_ids()
     nodes = [
         delay_action(90),
-        email_action(
-            "We've missed you, {{ first_name|default:'there' }}",
-            TPL_MISS_YOU,
-            "[Z] Win-back - Email 1 - We Miss You",
-        ),
-        delay_action(14),
-        email_action(
-            "We're still here for you, {{ first_name|default:'there' }}",
-            TPL_STILL_HERE,
-            "[Z] Win-back - Email 2 - Still Here",
+        split_action(
+            profile_filter=reordered_filter(90),
+            yes_branch=[],  # re-purchased within 90 days, exit
+            no_branch=[
+                email_action(
+                    "We've missed you, {{ first_name|default:'there' }}",
+                    TPL_MISS_YOU,
+                    "[Z] Win-back - Email 1 - We Miss You",
+                ),
+                delay_action(14),
+                split_action(
+                    profile_filter=reordered_filter(14),
+                    yes_branch=[],  # came back after email 1, exit
+                    no_branch=[
+                        email_action(
+                            "We're still here for you, {{ first_name|default:'there' }}",
+                            TPL_STILL_HERE,
+                            "[Z] Win-back - Email 2 - Still Here",
+                        ),
+                    ],
+                ),
+            ],
         ),
     ]
     return {
@@ -153,10 +203,9 @@ def set_flow_live(flow_id):
     return r.ok
 
 def main():
-    print("Win-back Flow Rebuild")
+    print("Win-back Flow Rebuild (with repurchase splits)")
     print("-" * 50)
     print(f"Trigger: Placed Order metric ({PLACED_ORDER_ID})")
-    print(f"Structure: 90d delay -> Email 1 -> 14d delay -> Email 2")
     print()
 
     print("Building flow definition...")
@@ -165,7 +214,7 @@ def main():
     print(f"  Definition built: {action_count} actions")
     print()
 
-    print(f"Deleting old flow {OLD_FLOW_ID}...")
+    print(f"Deleting existing flow {OLD_FLOW_ID}...")
     delete_flow(OLD_FLOW_ID)
     print("  Deleted")
     time.sleep(1)
@@ -182,20 +231,19 @@ def main():
     if set_flow_live(fid):
         print("  Flow is live")
     else:
-        print("  Could not set live — set manually in Klaviyo UI")
+        print("  Could not set live - set manually in Klaviyo UI")
 
     print()
-    print("Flow created:")
+    print("Flow structure:")
     print("  Trigger: Placed Order")
     print("  90-day delay")
-    print("  Email 1: We Miss You")
-    print("  14-day delay")
-    print("  Email 2: Still Here For You")
-    print()
-    print("NEXT STEP in Klaviyo UI:")
-    print("  Add conditional splits after each delay to skip customers who re-purchased:")
-    print("  Condition: Placed Order count > 0 since flow started")
-    print("  YES branch -> exit | NO branch -> send email")
+    print("  Split: re-ordered in last 90 days?")
+    print("    YES -> exit")
+    print("    NO  -> Email 1: We Miss You")
+    print("           14-day delay")
+    print("           Split: re-ordered in last 14 days?")
+    print("             YES -> exit")
+    print("             NO  -> Email 2: Still Here For You")
     print()
     print(f"Edit: https://www.klaviyo.com/flow/{fid}/edit")
 
