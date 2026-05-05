@@ -5,7 +5,7 @@ $KLAV_KEY       = "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564"
 $REVISION       = "2024-10-15"
 $NEW_TEMPLATE   = "YuWLyf"
 $SUBJECT        = "Still thinking about it{% if first_name %}, {{ first_name }}{% endif %}?"
-$PREVIEW        = "The item you were checking out is still available — and we'll beat any competitor's price."
+$PREVIEW        = "The item you were checking out is still available - and we'll beat any competitor's price."
 $BASE           = "https://a.klaviyo.com/api"
 
 $FLOWS = @(
