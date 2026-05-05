@@ -39,8 +39,8 @@ Write-Host "Bargain Chemist - Browse Abandonment Flow Updater" -ForegroundColor 
 Write-Host "Verifying Klaviyo connection..."
 
 try {
-    $account = Invoke-Klav "GET" "/accounts/"
-    Write-Host "Connected to Klaviyo account: $($account.data[0].id)" -ForegroundColor Green
+    $check = Invoke-Klav "GET" "/flows/$($FLOWS[0].id)/"
+    Write-Host "Connected to Klaviyo - flow found: $($check.data.id)" -ForegroundColor Green
 } catch {
     Write-Host "Could not connect - check your API key or IP allowlist in Klaviyo Settings." -ForegroundColor Red
     exit 1
