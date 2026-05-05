@@ -3,21 +3,15 @@ Rebuilds the Win-back flow with correct metric trigger.
 
 Deletes WRKYPs (broken "Added to List" trigger, no lapsed list exists).
 Creates new flow triggered on Placed Order metric:
-  Wait 90 days
-  Split: placed order since flow start?
-    YES -> exit (came back on their own)
-    NO  -> Email 1 (We Miss You)
-         -> Wait 14 days
-         -> Split: placed order since?
-              YES -> exit
-              NO  -> Email 2 (Still Here For You)
+  Wait 90 days -> Email 1 (We Miss You) -> Wait 14 days -> Email 2 (Still Here)
+
+Note: repurchase conditional splits must be added manually in the Klaviyo UI
+after creation. The API rejects bare profile-metric conditions without
+product-level metric_filters, so the splits cannot be created via script.
 
 Templates:
   XxBbRK  Win-back Email 1 - We Miss You
   THsTQX  Win-back Email 2 - Still Here For You
-
-Metric IDs:
-  Sxnb5T  Placed Order
 
 Usage:
     py scripts/rebuild-winback-flow.py
@@ -45,7 +39,7 @@ ALL_DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunda
 OLD_FLOW_ID     = "WRKYPs"
 PLACED_ORDER_ID = "Sxnb5T"
 
-TPL_MISS_YOU = "XxBbRK"
+TPL_MISS_YOU   = "XxBbRK"
 TPL_STILL_HERE = "THsTQX"
 
 _counter = 0
@@ -90,35 +84,6 @@ def delay_action(value, unit="days"):
         data["delay_until_weekdays"] = ALL_DAYS
     return {"type": "time-delay", "data": data}
 
-def split_action(profile_filter, yes_branch, no_branch):
-    return {
-        "type": "conditional-split",
-        "data": {"profile_filter": profile_filter},
-        "_yes": yes_branch,
-        "_no": no_branch,
-    }
-
-def repurchased_filter():
-    """Has placed another Placed Order since entering this flow."""
-    return {
-        "condition_groups": [{
-            "conditions": [{
-                "type": "profile-metric",
-                "metric_id": PLACED_ORDER_ID,
-                "measurement": "count",
-                "measurement_filter": {
-                    "type": "numeric",
-                    "operator": "greater-than",
-                    "value": 0,
-                },
-                "timeframe_filter": {
-                    "type": "date",
-                    "operator": "flow-start",
-                },
-            }]
-        }]
-    }
-
 def build_definition(trigger, node_list):
     actions = []
 
@@ -129,13 +94,8 @@ def build_definition(trigger, node_list):
         for i, (node, tid) in enumerate(zip(nodes, tids)):
             ntype = node["type"]
             action = {"temporary_id": tid, "type": ntype, "data": node["data"]}
-            if ntype == "conditional-split":
-                yes_first = process(node.get("_yes", []))
-                no_first  = process(node.get("_no", []))
-                action["links"] = {"next_if_true": yes_first, "next_if_false": no_first}
-            else:
-                next_tid = tids[i + 1] if i < len(nodes) - 1 else None
-                action["links"] = {"next": next_tid}
+            next_tid = tids[i + 1] if i < len(nodes) - 1 else None
+            action["links"] = {"next": next_tid}
             actions.append(action)
         return tids[0]
 
@@ -149,37 +109,20 @@ def build_definition(trigger, node_list):
 
 def build_winback():
     reset_ids()
-
-    second_chance = [
-        split_action(
-            profile_filter=repurchased_filter(),
-            yes_branch=[],   # came back, exit
-            no_branch=[
-                email_action(
-                    "We're still here for you, {{ first_name|default:'there' }}",
-                    TPL_STILL_HERE,
-                    "[Z] Win-back - Email 2 - Still Here",
-                ),
-            ],
-        )
-    ]
-
     nodes = [
         delay_action(90),
-        split_action(
-            profile_filter=repurchased_filter(),
-            yes_branch=[],   # repurchased on their own, exit
-            no_branch=[
-                email_action(
-                    "We've missed you, {{ first_name|default:'there' }}",
-                    TPL_MISS_YOU,
-                    "[Z] Win-back - Email 1 - We Miss You",
-                ),
-                delay_action(14),
-            ] + second_chance,
+        email_action(
+            "We've missed you, {{ first_name|default:'there' }}",
+            TPL_MISS_YOU,
+            "[Z] Win-back - Email 1 - We Miss You",
+        ),
+        delay_action(14),
+        email_action(
+            "We're still here for you, {{ first_name|default:'there' }}",
+            TPL_STILL_HERE,
+            "[Z] Win-back - Email 2 - Still Here",
         ),
     ]
-
     return {
         "data": {
             "type": "flow",
@@ -213,7 +156,7 @@ def main():
     print("Win-back Flow Rebuild")
     print("-" * 50)
     print(f"Trigger: Placed Order metric ({PLACED_ORDER_ID})")
-    print(f"Logic: 90d delay -> check repurchased -> if not, Email 1 -> 14d -> check again -> Email 2")
+    print(f"Structure: 90d delay -> Email 1 -> 14d delay -> Email 2")
     print()
 
     print("Building flow definition...")
@@ -242,20 +185,19 @@ def main():
         print("  Could not set live — set manually in Klaviyo UI")
 
     print()
-    print("Flow structure:")
+    print("Flow created:")
     print("  Trigger: Placed Order")
     print("  90-day delay")
-    print("  Split: repurchased since flow start?")
-    print("    YES -> exit (no action needed)")
-    print("    NO  -> Email 1: We Miss You")
-    print("           14-day delay")
-    print("           Split: repurchased?")
-    print("             YES -> exit")
-    print("             NO  -> Email 2: Still Here For You")
+    print("  Email 1: We Miss You")
+    print("  14-day delay")
+    print("  Email 2: Still Here For You")
+    print()
+    print("NEXT STEP in Klaviyo UI:")
+    print("  Add conditional splits after each delay to skip customers who re-purchased:")
+    print("  Condition: Placed Order count > 0 since flow started")
+    print("  YES branch -> exit | NO branch -> send email")
     print()
     print(f"Edit: https://www.klaviyo.com/flow/{fid}/edit")
-    print()
-    print(f"IMPORTANT: Update any references to old flow {OLD_FLOW_ID} -> {fid}")
 
 if __name__ == "__main__":
     main()
