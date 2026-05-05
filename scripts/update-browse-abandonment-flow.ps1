@@ -16,8 +16,8 @@ $FLOWS = @(
 $Headers = @{
     "Authorization" = "Klaviyo-API-Key $KLAV_KEY"
     "revision"      = $REVISION
-    "Content-Type"  = "application/json"
-    "Accept"        = "application/json"
+    "Content-Type"  = "application/vnd.api+json"
+    "Accept"        = "application/vnd.api+json"
 }
 
 function Invoke-Klav($Method, $Path, $Body = $null) {
