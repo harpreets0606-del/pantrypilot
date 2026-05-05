@@ -8,7 +8,7 @@ $BASE          = "https://a.klaviyo.com/api"
 $FLOW_ID       = "Smp9WN"   # [Z] Order Confirmation
 $NEW_TEMPLATE  = "QRdbLf"   # [Z] Order Confirmation - v2 (with CTA)
 $NEW_SUBJECT   = "Your Bargain Chemist order #{{ event.OrderId }} is confirmed!"
-$NEW_PREVIEW   = "We're packing it now — here's everything you need to know."
+$NEW_PREVIEW   = "We are packing it now - here is everything you need to know."
 
 $Headers = @{
     "Authorization" = "Klaviyo-API-Key $KLAV_KEY"
