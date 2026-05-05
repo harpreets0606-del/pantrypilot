@@ -23,9 +23,16 @@ FLOW_ID = "V4cZMd"
 
 
 def kget(path, params=None):
-    r = requests.get(f"{BASE_URL}{path}", headers=HEADERS, params=params, timeout=15)
-    r.raise_for_status()
-    return r.json()
+    for attempt in range(3):
+        try:
+            r = requests.get(f"{BASE_URL}{path}", headers=HEADERS, params=params, timeout=30)
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.Timeout:
+            if attempt == 2:
+                raise
+            print(f"  Timeout on attempt {attempt+1}, retrying...")
+            import time; time.sleep(3)
 
 
 def main():
