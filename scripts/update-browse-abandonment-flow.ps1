@@ -1,12 +1,12 @@
-# Bargain Chemist — Browse Abandonment Flow Updater (PowerShell)
+# Bargain Chemist - Browse Abandonment Flow Updater (PowerShell)
 # Run from your pantrypilot folder: .\scripts\update-browse-abandonment-flow.ps1
 
-$KLAV_KEY       = "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564"
-$REVISION       = "2024-10-15"
-$NEW_TEMPLATE   = "YuWLyf"
-$SUBJECT        = "Still thinking about it{% if first_name %}, {{ first_name }}{% endif %}?"
-$PREVIEW        = "The item you were checking out is still available - and we'll beat any competitor's price."
-$BASE           = "https://a.klaviyo.com/api"
+$KLAV_KEY     = "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564"
+$REVISION     = "2024-10-15"
+$NEW_TEMPLATE = "YuWLyf"
+$SUBJECT      = "Still thinking about it{% if first_name %}, {{ first_name }}{% endif %}?"
+$PREVIEW      = "The item you were checking out is still available - and we will beat any competitor's price."
+$BASE         = "https://a.klaviyo.com/api"
 
 $FLOWS = @(
     @{ id = "RtiVC5"; name = "[Z] Browse Abandonment" },
@@ -34,21 +34,22 @@ function Invoke-Klav($Method, $Path, $Body = $null) {
     }
 }
 
-# Verify API key
-Write-Host "`nBargain Chemist — Browse Abandonment Flow Updater" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Bargain Chemist - Browse Abandonment Flow Updater" -ForegroundColor Cyan
 Write-Host "Verifying Klaviyo connection..."
+
 try {
     $account = Invoke-Klav "GET" "/accounts/"
     Write-Host "Connected to Klaviyo account: $($account.data[0].id)" -ForegroundColor Green
 } catch {
-    Write-Host "Could not connect — check your API key or IP allowlist in Klaviyo Settings." -ForegroundColor Red
+    Write-Host "Could not connect - check your API key or IP allowlist in Klaviyo Settings." -ForegroundColor Red
     exit 1
 }
 
 foreach ($flow in $FLOWS) {
-    Write-Host "`n━━━ $($flow.name) ($($flow.id)) ━━━" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "--- $($flow.name) ($($flow.id)) ---" -ForegroundColor Yellow
 
-    # Get flow actions
     $actions = (Invoke-Klav "GET" "/flows/$($flow.id)/flow-actions/").data
     Write-Host "  Found $($actions.Count) action(s)"
 
@@ -60,7 +61,6 @@ foreach ($flow in $FLOWS) {
 
         Write-Host "  Email action: $($action.id)"
 
-        # Get messages for this action
         $messages = (Invoke-Klav "GET" "/flow-actions/$($action.id)/flow-messages/").data
         Write-Host "  Found $($messages.Count) message(s)"
 
@@ -79,7 +79,6 @@ foreach ($flow in $FLOWS) {
             }
         }
 
-        # Create new live message with new template
         Write-Host "  Creating new message with template $NEW_TEMPLATE..." -ForegroundColor DarkYellow
         $newMsg = @{
             data = @{
@@ -101,8 +100,9 @@ foreach ($flow in $FLOWS) {
             }
         }
         $created = Invoke-Klav "POST" "/flow-messages/" $newMsg
-        Write-Host "  New message created: $($created.data.id) — Live" -ForegroundColor Green
+        Write-Host "  New message created: $($created.data.id) - Live" -ForegroundColor Green
     }
 }
 
-Write-Host "`nDone! Check both flows in Klaviyo to confirm the new template is live." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Done! Check both flows in Klaviyo to confirm the new template is live." -ForegroundColor Cyan
