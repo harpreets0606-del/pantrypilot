@@ -50,6 +50,17 @@ foreach ($flow in $FLOWS) {
     Write-Host ""
     Write-Host "--- $($flow.name) ($($flow.id)) ---" -ForegroundColor Yellow
 
+    # Pause the flow so messages become editable
+    Write-Host "  Pausing flow..." -ForegroundColor DarkYellow
+    Invoke-Klav "PATCH" "/flows/$($flow.id)/" @{
+        data = @{
+            type       = "flow"
+            id         = $flow.id
+            attributes = @{ status = "manual" }
+        }
+    } | Out-Null
+    Write-Host "  Flow paused" -ForegroundColor Green
+
     $actions = (Invoke-Klav "GET" "/flows/$($flow.id)/flow-actions/").data
     Write-Host "  Found $($actions.Count) action(s)"
 
@@ -115,6 +126,17 @@ foreach ($flow in $FLOWS) {
             Write-Host "  Message $($msg.id) is Live with new template" -ForegroundColor Green
         }
     }
+
+    # Resume the flow
+    Write-Host "  Resuming flow..." -ForegroundColor DarkYellow
+    Invoke-Klav "PATCH" "/flows/$($flow.id)/" @{
+        data = @{
+            type       = "flow"
+            id         = $flow.id
+            attributes = @{ status = "live" }
+        }
+    } | Out-Null
+    Write-Host "  Flow is Live" -ForegroundColor Green
 }
 
 Write-Host ""
