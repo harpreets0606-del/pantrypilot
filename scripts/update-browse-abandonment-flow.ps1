@@ -65,42 +65,55 @@ foreach ($flow in $FLOWS) {
         Write-Host "  Found $($messages.Count) message(s)"
 
         foreach ($msg in $messages) {
+            Write-Host "  Message $($msg.id) - status: $($msg.attributes.status)"
+
+            # Step 1: set to draft so we can update it
             if ($msg.attributes.status -eq "live") {
-                Write-Host "  Setting message $($msg.id) to Draft..." -ForegroundColor DarkYellow
-                $body = @{
+                Write-Host "  Setting to Draft..." -ForegroundColor DarkYellow
+                Invoke-Klav "PATCH" "/flow-messages/$($msg.id)/" @{
                     data = @{
                         type       = "flow-message"
                         id         = $msg.id
                         attributes = @{ status = "draft" }
                     }
-                }
-                Invoke-Klav "PATCH" "/flow-messages/$($msg.id)/" $body | Out-Null
-                Write-Host "  Message $($msg.id) set to Draft" -ForegroundColor Green
+                } | Out-Null
+                Write-Host "  Set to Draft" -ForegroundColor Green
             }
-        }
 
-        Write-Host "  Creating new message with template $NEW_TEMPLATE..." -ForegroundColor DarkYellow
-        $newMsg = @{
-            data = @{
-                type       = "flow-message"
-                attributes = @{
-                    status     = "live"
-                    definition = @{
-                        channel = "email"
-                        content = @{
-                            subject      = $SUBJECT
-                            preview_text = $PREVIEW
+            # Step 2: update template + content
+            Write-Host "  Updating template to $NEW_TEMPLATE..." -ForegroundColor DarkYellow
+            $updateBody = @{
+                data = @{
+                    type       = "flow-message"
+                    id         = $msg.id
+                    attributes = @{
+                        definition = @{
+                            channel = "email"
+                            content = @{
+                                subject      = $SUBJECT
+                                preview_text = $PREVIEW
+                            }
                         }
                     }
-                }
-                relationships = @{
-                    "flow-action" = @{ data = @{ type = "flow-action"; id = $action.id } }
-                    template      = @{ data = @{ type = "template";    id = $NEW_TEMPLATE } }
+                    relationships = @{
+                        template = @{ data = @{ type = "template"; id = $NEW_TEMPLATE } }
+                    }
                 }
             }
+            Invoke-Klav "PATCH" "/flow-messages/$($msg.id)/" $updateBody | Out-Null
+            Write-Host "  Template updated" -ForegroundColor Green
+
+            # Step 3: set back to live
+            Write-Host "  Setting back to Live..." -ForegroundColor DarkYellow
+            Invoke-Klav "PATCH" "/flow-messages/$($msg.id)/" @{
+                data = @{
+                    type       = "flow-message"
+                    id         = $msg.id
+                    attributes = @{ status = "live" }
+                }
+            } | Out-Null
+            Write-Host "  Message $($msg.id) is Live with new template" -ForegroundColor Green
         }
-        $created = Invoke-Klav "POST" "/flow-messages/" $newMsg
-        Write-Host "  New message created: $($created.data.id) - Live" -ForegroundColor Green
     }
 }
 
