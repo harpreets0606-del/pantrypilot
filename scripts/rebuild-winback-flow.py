@@ -115,7 +115,6 @@ def repurchased_filter():
                     "type": "date",
                     "operator": "flow-start",
                 },
-                "metric_filters": [],
             }]
         }]
     }
