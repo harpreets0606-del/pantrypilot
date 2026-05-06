@@ -1417,11 +1417,14 @@ def audit_action_statuses():
             if not full:
                 continue
             defn = (full.get("data", {}).get("attributes", {}) or {}).get("definition") or {}
-            if not isinstance(defn, dict) or defn.get("type") != "send-email":
+            if not isinstance(defn, dict):
                 continue
             d = defn.get("data") or {}
-            action_status = (d.get("status") or "?").lower()
             msg = d.get("message") or {}
+            # Only show actions that have a message (covers send-email + any MJML/legacy variants)
+            if not isinstance(msg, dict) or not msg.get("template_id"):
+                continue
+            action_status = (d.get("status") or "?").lower()
             tid = msg.get("template_id") or ""
             subj = (msg.get("subject_line") or "")[:60]
             summary[action_status] = summary.get(action_status, 0) + 1
