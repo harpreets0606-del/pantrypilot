@@ -1136,7 +1136,7 @@ def fix_compliance_footers():
                     continue
 
                 msg_id = msg["id"]
-                msg_name = msg.get("attributes", {}).get("name", "unnamed")
+                msg_name = msg.get("attributes", {}).get("name") or f"msg_{msg_id}"
                 label = f"{flow_name} → {msg_name}"
 
                 # Get this message's template ID + HTML
@@ -1224,7 +1224,7 @@ def fix_compliance_footers():
                         "id": action["id"],
                         "attributes": {
                             "definition": {
-                                "id": action["id"],
+                                "type": "send-email",
                                 "data": {
                                     "message": {"template_id": new_tid}
                                 }
@@ -1539,7 +1539,7 @@ def rebind_compliance_templates():
 
             messages = get_messages_for_action(action_id)
             for msg in messages:
-                msg_name = msg.get("attributes", {}).get("name", "")
+                msg_name = msg.get("attributes", {}).get("name") or f"msg_{msg['id']}"
                 channel = (msg.get("attributes", {}).get("channel") or "").lower()
                 if channel and channel not in ("email", ""):
                     continue
@@ -1565,7 +1565,7 @@ def rebind_compliance_templates():
                         "id": action_id,
                         "attributes": {
                             "definition": {
-                                "id": action_id,
+                                "type": "send-email",
                                 "data": {
                                     "message": {
                                         "template_id": new_tid,
