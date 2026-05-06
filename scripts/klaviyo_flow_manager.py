@@ -766,10 +766,12 @@ def get_message_content(message_id, debug=False):
     attrs = data.get("data", {}).get("attributes", {}) or {}
     if not _MESSAGE_DEBUG_DUMPED:
         _MESSAGE_DEBUG_DUMPED = True
+        defn = attrs.get("definition") or {}
         print(f"  🔍 DEBUG flow-message {message_id} attribute keys: {list(attrs.keys())}")
-        content = attrs.get("content")
-        print(f"  🔍 DEBUG content type: {type(content).__name__}, value: {json.dumps(content)[:600] if content else 'None/empty'}")
-    return attrs.get("content", {}) or {}
+        print(f"  🔍 DEBUG definition keys: {list(defn.keys()) if isinstance(defn, dict) else type(defn).__name__}")
+    # In revision 2025-10-15+, email content lives under attributes.definition
+    # (with from_email, from_label, subject_line, preview_text, template_id, etc.)
+    return attrs.get("definition") or attrs.get("content") or {}
 
 
 def build_flow_email_payload(content, new_template_id):
