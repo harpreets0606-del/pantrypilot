@@ -732,9 +732,8 @@ def safe_get(path, params=None, debug=False):
 
 
 def get_flow_actions(flow_id, debug=False):
-    data = safe_get(f"flows/{flow_id}/flow-actions",
-                    params={"fields[flow-action]": "action_type,settings,status"},
-                    debug=debug)
+    # Drop fieldset filter — revision 2025-10-15 renamed/removed some fields
+    data = safe_get(f"flows/{flow_id}/flow-actions", debug=debug)
     if not data:
         return []
     return data.get("data", [])
@@ -1125,7 +1124,7 @@ def fix_compliance_footers():
             continue
 
         flow_name = attrs.get("name", "?")
-        actions = get_flow_actions(flow["id"])
+        actions = get_flow_actions(flow["id"], debug=True)
         print(f"  📂 {flow_name} (status={status!r}) — {len(actions)} actions")
 
         for action in actions:
