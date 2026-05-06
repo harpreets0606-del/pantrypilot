@@ -714,30 +714,34 @@ AUDIT_RULES = [
 ]
 
 
-def safe_get(path):
-    """GET that returns None on 404 instead of raising."""
-    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS)
+def safe_get(path, params=None, debug=False):
+    """GET that returns None on error and logs failure when debug=True."""
+    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS, params=params)
     if r.status_code == 200:
         return r.json()
+    if debug:
+        print(f"  ⚠️  GET {path} → {r.status_code}: {r.text[:300]}")
     return None
 
 
 def get_flow_actions(flow_id):
-    data = safe_get(f"flows/{flow_id}/flow-actions/?fields[flow-action]=action_type,settings,status")
+    data = safe_get(f"flows/{flow_id}/flow-actions",
+                    params={"fields[flow-action]": "action_type,settings,status"})
     if not data:
         return []
     return data.get("data", [])
 
 
 def get_messages_for_action(action_id):
-    data = safe_get(f"flow-actions/{action_id}/flow-messages/?fields[flow-message]=name,channel,content")
+    data = safe_get(f"flow-actions/{action_id}/flow-messages",
+                    params={"fields[flow-message]": "name,channel,content"})
     if not data:
         return []
     return data.get("data", [])
 
 
 def get_template_id_for_message(message_id):
-    data = safe_get(f"flow-messages/{message_id}/relationships/template/")
+    data = safe_get(f"flow-messages/{message_id}/relationships/template")
     if not data or not data.get("data"):
         return None
     return data["data"].get("id")
@@ -775,7 +779,10 @@ def audit_all_flows():
     print("=" * 80)
 
     # Get all flows (live + draft + manual)
-    flows_data = safe_get("flows?fields[flow]=name,status,trigger_type&page[size]=100")
+    flows_data = safe_get("flows",
+                          params={"fields[flow]": "name,status,trigger_type,archived",
+                                  "page[size]": 100},
+                          debug=True)
     if not flows_data:
         print("  ❌ Failed to fetch flows")
         return
