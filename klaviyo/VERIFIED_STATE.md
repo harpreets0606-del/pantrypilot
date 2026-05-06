@@ -370,6 +370,25 @@ Content state:
 
 **Reason it's not performing:** flow is `draft`, hasn't been activated. Content is solid. Likely waiting on confidence in Klevu/Boost search-event reliability before turning on.
 
+### Boost signal volume (5 weeks ending 6 May 2026)
+
+**Status:** VERIFIED
+**Source:** `klaviyo_query_metric_aggregates` for R2KxMT, XQ2zfW, Y2qHKK, UfaNeY on 2026-05-06
+**Fact:**
+
+| Metric | Wk1 (5 Apr) | Wk2 (12 Apr) | Wk3 (19 Apr) | Wk4 (26 Apr) | Wk5 (3 May) |
+|---|---|---|---|---|---|
+| [Boost] Submitted Search | 4,769 / 1,280 | 2,238 / 648 | **375 / 88** | 2,040 / 515 | 2,103 / 662 |
+| Viewed Product (Boost) | 11,417 / 2,602 | 5,253 / 1,266 | **1,089 / 211** | 5,213 / 1,053 | 5,599 / 1,439 |
+| [Boost] Clicked Search Result | 4,722 / 1,352 | 2,104 / 647 | **388 / 87** | 1,899 / 515 | 1,892 / 640 |
+| Active on Site (Boost) | 4,580 / 3,045 | 1,977 / 1,354 | **577 / 241** | 2,181 / 1,214 | 2,657 / 2,048 |
+
+(format: events / unique profiles per week)
+
+**Findings:**
+1. **Boost integration is firing at meaningful volume in normal weeks.** Sufficient trigger fuel for Browse + Search abandonment flows.
+2. **🚨 Week of 19 April 2026 had an 80–95% dip across ALL Boost metrics.** Simultaneous collapse — indicates an integration outage (Boost service, BC site, or pixel installation). Recovered fully in subsequent weeks. **Worth investigating before activating dependent flows** to avoid future silent outages.
+
 ### Both flows — common gaps
 
 - ⚠️ Single email only (no E2 follow-up, no escalation logic)
