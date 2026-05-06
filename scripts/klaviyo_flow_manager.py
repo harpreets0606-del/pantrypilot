@@ -1407,12 +1407,18 @@ def audit_action_statuses():
         cursor = requests.utils.unquote(m.group(1))
 
     summary = {"live": 0, "draft": 0, "manual": 0, "other": 0}
+    skipped_flows = []
     for f in flows:
         if f.get("attributes", {}).get("archived"):
             continue
         flow_name = (f.get("attributes", {}).get("name") or "?")[:38]
         flow_status = (f.get("attributes", {}).get("status") or "?").lower()
-        for action in get_flow_actions(f["id"]):
+        actions = get_flow_actions(f["id"])
+        if not actions:
+            skipped_flows.append((f["id"], flow_name, "no actions returned"))
+            continue
+        printed_for_flow = 0
+        for action in actions:
             full = safe_get(f"flow-actions/{action['id']}")
             if not full:
                 continue
@@ -1436,9 +1442,24 @@ def audit_action_statuses():
             elif flow_status == "live" and action_status == "manual":
                 marker = "⏹  "
             print(f"  {marker}{flow_name:<38} {action['id']:<10} {action_status:<8} {tid:<10} {subj}")
+            printed_for_flow += 1
             time.sleep(0.1)
+        if printed_for_flow == 0:
+            # Diagnostic: flow has actions but none had a template_id message
+            action_types = []
+            for action in actions:
+                full = safe_get(f"flow-actions/{action['id']}")
+                if full:
+                    d = (full.get("data", {}).get("attributes", {}) or {}).get("definition") or {}
+                    action_types.append(d.get("type") if isinstance(d, dict) else "?")
+            skipped_flows.append((f["id"], flow_name, f"{len(actions)} actions, types={action_types}, no template_id messages"))
 
     print("\n  " + "=" * 110)
+    if skipped_flows:
+        print("  SKIPPED FLOWS (no email actions matched the filter):")
+        for fid, fname, reason in skipped_flows:
+            print(f"    {fid:<10} {fname:<40} {reason}")
+        print()
     print(f"  Status breakdown across all email-send actions: {summary}")
     print(f"  🚨 = LIVE in a LIVE flow (actually shipping)")
     print(f"  ⏸️  = DRAFT in a LIVE flow (not sending)")
