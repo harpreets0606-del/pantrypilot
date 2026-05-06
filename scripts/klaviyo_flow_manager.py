@@ -49,14 +49,17 @@ NATIVE_FLOWS = {
 # ─────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────
+REQUEST_TIMEOUT = 30  # seconds — fail fast instead of hanging
+
+
 def api_get(path, params=None):
-    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS, params=params)
+    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS, params=params, timeout=REQUEST_TIMEOUT)
     r.raise_for_status()
     return r.json()
 
 
 def api_patch(path, payload, quiet=False):
-    r = requests.patch(f"{BASE_URL}/{path}", headers=HEADERS, json=payload)
+    r = requests.patch(f"{BASE_URL}/{path}", headers=HEADERS, json=payload, timeout=REQUEST_TIMEOUT)
     if not quiet:
         print(f"  📡 PATCH {path} → HTTP {r.status_code}")
         if r.content:
@@ -69,7 +72,7 @@ def api_patch(path, payload, quiet=False):
 
 
 def api_post(path, payload):
-    r = requests.post(f"{BASE_URL}/{path}", headers=HEADERS, json=payload)
+    r = requests.post(f"{BASE_URL}/{path}", headers=HEADERS, json=payload, timeout=REQUEST_TIMEOUT)
     if r.status_code not in (200, 201):
         print(f"  ⚠️  POST {path} → {r.status_code}: {r.text[:300]}")
         return None
@@ -720,7 +723,7 @@ AUDIT_RULES = [
 
 def safe_get(path, params=None, debug=False):
     """GET that returns None on error and logs failure when debug=True."""
-    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS, params=params)
+    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS, params=params, timeout=REQUEST_TIMEOUT)
     if r.status_code == 200:
         return r.json()
     if debug:
@@ -1104,12 +1107,10 @@ def fix_compliance_footers():
 
     print(f"  Found {len(flows)} total flows. Walking email messages...")
 
-    # Prefer local cache; fall back to API listing
-    print("  Loading [COMPLIANCE] template cache (local + API)...")
+    # Use local cache only (API listing falls back during --rebind-templates if needed)
+    print("  Loading local [COMPLIANCE] cache...")
     existing_compliance = _load_compliance_cache()
-    if not existing_compliance:
-        existing_compliance = _list_existing_compliance_templates()
-    print(f"  Loaded {len(existing_compliance)} existing [COMPLIANCE] templates\n")
+    print(f"  Loaded {len(existing_compliance)} existing [COMPLIANCE] templates from cache\n")
 
     fixed = skipped = failed = direct_patched = rebound = 0
     manual_needed = []
@@ -1124,7 +1125,7 @@ def fix_compliance_footers():
             continue
 
         flow_name = attrs.get("name", "?")
-        actions = get_flow_actions(flow["id"], debug=True)
+        actions = get_flow_actions(flow["id"])
         print(f"  📂 {flow_name} (status={status!r}) — {len(actions)} actions")
 
         for action in actions:
@@ -1170,7 +1171,7 @@ def fix_compliance_footers():
                         "id": template_id,
                         "attributes": {"html": new_html},
                     }
-                })
+                }, timeout=REQUEST_TIMEOUT)
                 if r.status_code in (200, 204):
                     print(f"  ✅ Patched directly (library template): {label}")
                     direct_patched += 1
