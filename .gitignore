@@ -1,1 +1,3 @@
 scripts/.compliance_templates.json
+__pycache__/
+*.pyc
