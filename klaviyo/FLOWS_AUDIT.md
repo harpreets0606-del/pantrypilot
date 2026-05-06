@@ -567,6 +567,123 @@ Subject + preview don't show those issues yet, but the body excerpt hints at a p
 
 This flow is the second cleanest after Added to Cart Abandonment. Voice is solid; just needs preview text and minor optimisation.
 
+---
+
+## Flow 15: [Z] Win-back - Lapsed Customers (T7pmf6, LIVE) ✅ THIRD A-GRADE
+
+**Trigger:** Metric (likely "Hasn't Placed Order in X days"). **Status:** LIVE. **Volume:** 0 recipients last 30d (no qualifying lapsed customers in the window — flow is technically live but inactive).
+**Intent:** Re-engage customers who have lapsed.
+**Structure:** 6 actions, 2 emails.
+
+### Per-message audit
+
+| # | Action | Msg | Subject (chars) | Preview | Template | Voice |
+|---|---|---|---|---|---|---|
+| 1 | 105721759 | W5e5Dr | "We've missed you, `{{ first_name|default:'there' }}`" (~50) | empty | XRDX9U | ✅ warm, factual, BC tone |
+| 2 | 105721762 | Vsd32N | "We're still here for you, `{{ first_name|default:'there' }}`" (~58) | empty | RJhLMj | ✅ **"Whenever you're ready" body — matches ATC gold standard** |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| WB1 | 🚨 high | **Both emails have empty preview text** — same deliverability gap as Replenishment + Welcome | Add preview text |
+| WB2 | none | Subjects on-brand, BC tone, correct `first_name` token, no fear language | Keep |
+| WB3 | none | E1 body: "*A lot has changed at Bargain Chemist — new products, same great prices.*" — factual, value-led | Keep |
+| WB4 | none | E2 body: "*Whenever you're ready, {{ first_name }} — NZ's best pharmacy prices are always here waiting for you.*" — **echoes ATC gold-standard anti-pressure voice** | Keep |
+| WB5 | unknown | Need to verify UEMA footer + brand colors | Read full HTML |
+
+### Suggested preview text
+
+| | Subject | Suggested preview |
+|---|---|---|
+| E1 | "We've missed you, {{ first_name }}" | "New range, same low prices — take a look." |
+| E2 | "We're still here for you, {{ first_name }}" | "Whenever you're ready — no pressure." |
+
+This flow is the third A-grade after Added to Cart Abandonment and Welcome Series. Use its voice patterns (`"We're still here for you"`, `"Whenever you're ready"`) when rewriting Replenishment and Back in Stock.
+
+---
+
+## CONSOLIDATED AUDIT FINDINGS — All 7 LIVE flows
+
+### Voice grade summary
+
+| Flow | Grade | Critical issues | Recommendation |
+|---|---|---|---|
+| Added to Cart Abandonment | **A** | None | Use as voice exemplar |
+| Welcome Series - No Coupon | **A−** | Empty previews | Add preview text only |
+| Win-back - Lapsed | **A−** | Empty previews | Add preview text only |
+| Flu Season - Winter Wellness | **C+** | Possible therapeutic claim, `person.first_name` token | ASA review of E2 body; standardise token |
+| Post-Purchase Series | **C** | Broken `{ first_name }`, CTA → homepage, wrong timing | Fix variables, wire review CTA, re-time E2 to ~28d |
+| Abandoned Checkout | **B+** but with critical | "$5 off" violates CLAUDE.md | Pause E2; rewrite without coupon |
+| Back in Stock | **D** | Scarcity/fear in 3 of 4 lines | Full subject + preview rewrite |
+| **Replenishment - Reorder Reminders** | **D** | Regaine ASA violation; 16 identical subjects; all empty previews | Pause Regaine branch today; restructure with retail-first additions; differentiate subjects per category |
+
+### Critical findings to fix (production-impacting), prioritised
+
+| # | Flow | Email | Issue | Risk |
+|---|---|---|---|---|
+| 1 | Replenishment | WdBQF5 (Regaine reorder) | Pharmacist-Only Medicine being price-promoted | 🚨 ASA Therapeutic Code 2025 + CLAUDE.md restricted-product rule |
+| 2 | Abandoned Checkout | SE9wC6 | "$5 off to complete your checkout" | 🚨 CLAUDE.md "no coupon codes" rule |
+| 3 | Post-Purchase | SP9FSD + Ycrkq6 | `{ first_name }` shipping as literal text | 🚨 production rendering bug |
+| 4 | Post-Purchase | SP9FSD | "Write a Review" CTA → homepage (no review system) | 🚨 broken CTA |
+| 5 | Back in Stock | UeshNF + VpR8Gx | Scarcity/fear: "selling fast", "limited stock", "don't miss your chance", "before it sells out again" | 🚨 ASA Code Rule 1(b) |
+| 6 | Replenishment | XVqtQa | "Don't Get Caught Without Your Allergy Relief" | 🚨 fear language |
+| 7 | Flu Season | S7vnUC | Body claim "cut your recovery down significantly" | ⚠️ ASA therapeutic claim — needs substantiation or removal |
+| 8 | Replenishment | all 16 | Identical subject + empty preview across all | 🚨 deliverability + UX |
+| 9 | Welcome | UC2XAR + TYZUYe + XzRFZc | Empty preview text | high |
+| 10 | Win-back | W5e5Dr + Vsd32N | Empty preview text | high |
+
+### Voice patterns to clone across the account (from A-grade flows)
+
+From Added to Cart Abandonment + Welcome Series + Win-back:
+- **"No pressure"** / **"no rush"** / **"Just popping in"** / **"Whenever you're ready"** / **"Ready when you are"** / **"still here for you"**
+- Subject + preview pair = factual statement + warm reassurance
+- "Discover" / "Explore" / "Stay [outcome]" subject openers
+- Substantiated claims only ("We'll beat any pharmacy price by 10%" — backed by guarantee)
+
+### Voice anti-patterns to remove from C/D-grade flows
+
+From Replenishment + Back in Stock:
+- "Running low" / "before it sells out" / "selling fast"
+- "Limited stock remaining" / "Don't miss your chance"
+- "Don't Get Caught Without…" / "Last chance"
+- 🚨 emoji in non-Price-Smash context
+- Identical subjects across multiple emails in same sequence
+- Empty preview text (Replenishment, Welcome, Win-back)
+
+### Cross-cutting structural issues
+
+1. **Personalisation token inconsistency**: 4 flows use `{{ first_name }}`, 2 use `{{ person.first_name }}`. Standardise on `{{ first_name|default:'there' }}`.
+2. **Two template families coexist**: bespoke BC anatomy (Replenishment, Post-Purchase, Back in Stock, Flu Season, Welcome, Win-back) vs MJML/Klaviyo-editor (Abandoned Checkout, Added to Cart). Voice patterns are independent of family — just an aesthetic note.
+3. **My [COMPLIANCE] footer injection** added a second footer block to ~34 templates. Original BC templates already had compliant red `#FF0031` legal block. Plan: revert by editing the [COMPLIANCE] templates to strip the injected block.
+4. **Empty preview text on 24 messages** across Replenishment (16) + Welcome (3) + Win-back (2) + Post-Purchase (need to verify) + others = the single most common non-critical fix.
+
+## Recommended action ordering (after audit)
+
+**Tier 1 — production bugs / legal violations (do today):**
+1. Pause Regaine branch in Replenishment flow (msg WdBQF5)
+2. Pause / rewrite Abandoned Checkout E2 ($5 off) — remove coupon offer
+3. Fix `{ first_name }` → `{{ first_name|default:'there' }}` in Post-Purchase E1 + E2
+4. Pause Back in Stock E2 OR rewrite without scarcity language
+
+**Tier 2 — brand-voice fixes (this week):**
+5. Rewrite Replenishment subjects per category (16 → 16 different subjects)
+6. Add preview text to all 24 missing-preview messages
+7. Rewrite Replenishment "Allergy" hero (XVqtQa) to remove "Don't Get Caught"
+8. Rewrite Back in Stock E1 preview to remove "before it sells out again"
+9. Standardise `{{ first_name }}` token across all flows
+10. Fix Post-Purchase E1 "Write a Review" CTA destination (or skip review ask if no system)
+11. Re-time Post-Purchase E2 trigger from 14d → 28d
+
+**Tier 3 — flow restructure (next sprint):**
+12. Add 6–9 retail-first product branches to Replenishment (per Shopify top sellers)
+13. Add audience filter to Replenishment excluding `Pharmacy_Only_check` SKUs
+14. Verify ASA compliance on Flu Season E2 (vaccine + recovery claim)
+15. Resolve Abandoned Checkout E3/E4 duplicate or differentiate
+
+**Tier 4 — duplicate-footer cleanup (separate stream):**
+16. Strip my injected `<!-- ── UEMA & ASA Mandatory Footer (auto-injected) ──` block from all 34 LIVE-bound [COMPLIANCE] templates (originals already have compliant footer)
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
@@ -578,3 +695,4 @@ This flow is the second cleanest after Added to Cart Abandonment. Voice is solid
 - 2026-05-06 — Audited Flow 6 (Back in Stock): 2 emails. **HIGH-severity scarcity/fear violations across both** — "selling fast" / "limited stock remaining" / "don't miss your chance" / "before it sells out again". Subject of E1 (`{{ event.ProductName }} is back!`) is fine; everything else needs rewriting. Direct contradiction of the ATC gold-standard voice in the same account. Templates use bespoke BC anatomy.
 - 2026-05-06 — Audited Flow 9 (Flu Season - Winter Wellness): 2 emails, 18 recipients/30d. Subjects both on-brand. E2 promotes flu vaccines + body excerpt suggests therapeutic claim "cut your recovery down significantly" — **needs ASA Therapeutic Code 2025 review** (4th category of risk identified in audit, after restricted products / coupons / fear language). Personalisation token inconsistency: uses `person.first_name` instead of `first_name`.
 - 2026-05-06 — Audited Flow 13 (Welcome Series - No Coupon): 3 emails, 7 recipients/30d. **Mostly clean** — voice is BC-tone, subjects within range, uses correct `first_name` token, E2 price-beat claim is substantiated (10% beat guarantee). Only critical issue: **all 3 emails have empty preview text** — same deliverability issue as Replenishment. Second cleanest flow after Added to Cart Abandonment.
+- 2026-05-06 — Audited Flow 15 (Win-back - Lapsed): 2 emails, 0 recipients/30d. **Third A-grade flow.** Voice on-brand, anti-pressure ("Whenever you're ready") matches ATC gold standard. Only issue: empty preview text on both. After Win-back: complete LIVE-flow audit done; consolidated findings + tiered fix plan added.
