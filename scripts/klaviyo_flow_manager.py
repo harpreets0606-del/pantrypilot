@@ -1681,6 +1681,58 @@ def fix_all_templates():
     report_manual_fixes_required()
 
 
+def show_template(template_id):
+    """Dump a single template's full HTML to stdout so we can inspect rendering issues."""
+    print(f"\n📄 TEMPLATE: {template_id}")
+    print("=" * 100)
+    data = safe_get(f"templates/{template_id}")
+    if not data:
+        print("  ❌ Template not found.")
+        return
+    a = data.get("data", {}).get("attributes", {}) or {}
+    print(f"  Name:    {a.get('name')}")
+    print(f"  Editor:  {a.get('editor_type')}")
+    print(f"  Created: {a.get('created')}")
+    print(f"  Updated: {a.get('updated')}")
+    print("\n  ─── HTML ───")
+    print(a.get("html") or "(empty)")
+    print("=" * 100)
+
+
+def show_flow_content(flow_id):
+    """Print every email message in a flow: subject, preview text, from, and HTML excerpt.
+    Use to verify what each message is actually about before making decisions."""
+    print(f"\n📖 FLOW CONTENT: {flow_id}")
+    print("=" * 100)
+
+    flow_data = safe_get(f"flows/{flow_id}")
+    if flow_data:
+        a = flow_data.get("data", {}).get("attributes", {})
+        print(f"  Name:    {a.get('name')}")
+        print(f"  Status:  {a.get('status')}  Trigger: {a.get('trigger_type')}")
+
+    actions = get_flow_actions(flow_id)
+    for action in actions:
+        for msg in get_messages_for_action(action["id"]):
+            content = get_message_content(msg["id"])
+            if not content.get("from_email"):
+                continue
+            print("\n  " + "-" * 96)
+            print(f"  Action {action['id']} → Message {msg['id']}")
+            print(f"  Subject:      {content.get('subject_line')}")
+            print(f"  Preview text: {content.get('preview_text') or '(empty)'}")
+            print(f"  From:         {content.get('from_label')} <{content.get('from_email')}>")
+            tid = content.get("template_id")
+            print(f"  Template:     {tid}")
+            if tid:
+                html = get_template_html(tid) or ""
+                # Strip tags + collapse whitespace for a readable excerpt
+                text = re.sub(r"<[^>]+>", " ", html)
+                text = re.sub(r"\s+", " ", text).strip()
+                print(f"  Excerpt:      {text[:600]}{'...' if len(text) > 600 else ''}")
+    print("=" * 100)
+
+
 def cleanup_duplicate_compliance_templates(dry_run=False):
     """Find duplicate [COMPLIANCE] templates created across multiple --fix-footers runs.
     For each duplicated name, keep ONE (preferring the one currently bound to a flow
@@ -1999,6 +2051,10 @@ def main():
                         help="Delete duplicate [COMPLIANCE] templates created by repeated --fix-footers runs")
     parser.add_argument("--cleanup-duplicate-templates-dry-run", action="store_true",
                         help="Preview what --cleanup-duplicate-templates would delete (no actual deletion)")
+    parser.add_argument("--show-flow", metavar="FLOW_ID",
+                        help="Print every email's subject/preview/from/excerpt for a single flow")
+    parser.add_argument("--show-template", metavar="TEMPLATE_ID",
+                        help="Print a single template's full HTML")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -2045,6 +2101,12 @@ def main():
 
     if args.cleanup_duplicate_templates:
         cleanup_duplicate_compliance_templates(dry_run=False)
+
+    if args.show_flow:
+        show_flow_content(args.show_flow)
+
+    if args.show_template:
+        show_template(args.show_template)
 
     if args.all:
         print_setup_guide(templates, flows)
