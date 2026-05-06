@@ -1,8 +1,28 @@
 # UTM Attribution Fix — Klaviyo + Shopify
 
 **Date**: 2026-05-06
-**Status**: NOT YET ACTIONED — requires user permission to change Klaviyo settings
+**Status**: VERIFIED — issue confirmed but root cause refined
 **Priority**: 🔴 Critical — must fix before any campaign optimisation is measurable
+
+---
+
+## Verification (added 2026-05-06)
+
+User pushed back on whether I'd actually checked. Re-verified:
+
+### What IS configured
+- Every campaign has `trackingOptions.addTrackingParams: true` ✓
+- `isTrackingClicks: true`, `isTrackingOpens: true` ✓
+- → Klaviyo's link tracking IS enabled
+
+### What is NOT configured
+- `trackingOptions.customTrackingParams: []` is **empty** on every campaign
+- This means Klaviyo is using its internal `_kx` / `_ke` parameters for tracking, NOT standard UTMs that Shopify reports on
+- Shopify's `order_referrer_source` and `order_referrer_name` over last 30 days show **NO** "klaviyo", **NO** "email", **NO** Klaviyo-flagged orders. Top sources: google search, direct, self-referral.
+- Shopify ShopifyQL does NOT expose `utm_source` as a queryable dimension — so we can only see what Shopify maps to its referrer source.
+
+### Conclusion
+Klaviyo is technically tagging links, but with parameters Shopify doesn't recognise as "email" or any specific source. The fix is to **populate `customTrackingParams` with standard UTM values** that Shopify and GA4 recognise.
 
 ---
 
@@ -30,19 +50,21 @@ Then Shopify's order_referrer_source = "email" (or `klaviyo`) and it shows the r
 
 ## The fix (Klaviyo settings)
 
-### Klaviyo → Settings → Tracking → UTM Tracking
+### Klaviyo → Account → Settings → UTM Tracking
 
-Klaviyo has a built-in setting that auto-appends UTM parameters to every link in every email/SMS sent. To enable:
+Klaviyo has a built-in setting that auto-appends UTM parameters to every link in every email/SMS sent. **It is enabled but the parameters need to be configured properly.**
 
-1. Go to **Klaviyo → Settings → Other → UTM Tracking**
-2. Turn **ON** "Add tracking parameters to all links"
-3. Set parameter values:
-   - **utm_source**: `klaviyo` (recommended; or `email` if you want simpler attribution)
-   - **utm_medium**: `{{ message.send_channel }}` — auto-fills `email` or `sms`
-   - **utm_campaign**: `{{ campaign.name|slugify }}` for campaigns, `{{ flow.name|slugify }}_{{ flow_message.name|slugify }}` for flows
-   - **utm_content** (optional): `{{ flow_message.id }}` to track which step in a flow drove revenue
-4. Save.
-5. Verify by sending a test email and inspecting the link href.
+1. Go to **Klaviyo → Account → Settings → UTM Tracking** (sometimes under **Settings → Other → UTM Tracking** in older UI)
+2. Confirm **"Add UTM parameters to all links"** is ON (it appears to be from API check)
+3. Set the standard UTM **values** (this is the missing piece):
+   - **utm_source** = `klaviyo` (so Shopify reports show "klaviyo" as a source)
+   - **utm_medium** = `email` for email campaigns, `sms` for SMS — Klaviyo allows different values per channel via tags
+   - **utm_campaign** = `{{ campaign.name|default:flow.name }}` (templated)
+   - **utm_content** (optional, for flows) = `{{ flow_message.name|default:'' }}`
+4. **Importantly**: select "Apply to ALL email + SMS sends" — flows AND campaigns
+5. Save.
+6. Verify: send a preview to yourself, click a link, observe URL — should now have `utm_source=klaviyo&utm_medium=email&utm_campaign=...`
+7. Verify in Shopify: 24h after first send, run `FROM sales SHOW orders, total_sales GROUP BY order_referrer_source, order_referrer_name SINCE -1d` — expect "klaviyo" to appear as referrer name.
 
 ### Alternative: UTMs at the campaign / flow level
 
