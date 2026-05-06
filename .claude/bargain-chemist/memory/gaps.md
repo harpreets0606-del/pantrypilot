@@ -7,14 +7,43 @@
 
 ---
 
+## 0. NEW TOP-OF-LIST FINDING — fix before anything else
+
+### A0. Email attribution is broken (UTM tagging missing on Klaviyo links)
+- **Evidence**: Shopify "email" referrer shows 2 orders / $70.95 in 90 days. Klaviyo's own attribution shows ~$48k from flows. Discrepancy = >99%.
+- **Why it matters**: Without UTM tagging on Klaviyo links, every campaign/flow optimisation will be invisible in Shopify analytics. We can't measure what we change.
+- **Confidence**: 🟢 (verified across both data sources)
+- **Effort**: Trivial — Klaviyo Settings → Tracking → enable UTM auto-tagging with `utm_source=klaviyo`, `utm_medium=email|sms`, `utm_campaign={{ campaign_name|flow_name }}`
+- **Priority**: Fix this BEFORE any campaign rewrite, so we have a baseline.
+
+### A1. Email is at 3.1% of total revenue vs 20–30% benchmark — biggest single lever
+- **Evidence**: Klaviyo flows ~$48k/90d vs Shopify $1.55M/90d
+- **Annualised gap**: ~$255k–$415k revenue/year if BC just hits the H&B average
+- **Confidence**: 🟢
+- **Implication**: every other gap below either contributes to closing this, or doesn't matter
+
+### A2. Compliance: Wegovy / Mounjaro are top sellers but POM (prescription-only) — ZERO email promotion allowed
+- **Evidence**: Wegovy is #3 by revenue ($6,400) and #14 ($3,270). Mounjaro page exists. User confirmed compliance has paused some flows.
+- **Implication**: Need a hardcoded compliance gate playbook: "no flow or campaign content can reference Wegovy, Mounjaro, semaglutide, tirzepatide, or any prescription medicine by name"
+- **Confidence**: 🟢
+
+### A3. Site conversion rate 1.6% — below H&B benchmark 2.5–7%
+- **Evidence**: 1.61M sessions → 25,747 orders (90d)
+- **Annualised gap**: every 0.1% of conversion = ~$95k revenue/yr at current traffic
+- **Confidence**: 🟢
+- **Note**: This is a CRO project, not pure email work. Flag for separate workstream.
+
+---
+
 ## 1. CRITICAL — fix this week
 
 | # | Gap | Evidence | Confidence | Effort |
 |---|-----|----------|------------|--------|
-| **C1** | **Welcome Series (Website) is in DRAFT despite getting 537 recipients in 90d** — every flow benchmark says this is the highest-leverage flow. Top performers: 8–12% conversion. BC current: 2.05%. Estimated revenue left on the table: $2k–$5k/quarter. | API verified: `[Z] Welcome Series - Website` status=draft, 537 recipients, 2.05% conv | 🟢 | Low — activate flow, refine 3-email sequence |
-| **C2** | **Sender email inconsistency** — `hello@` and `orders@` mixed across campaigns. Mixing marketing + transactional from same root domain hurts both. | API verified across 12 sample campaigns | 🟢 | Low — pick one address for marketing, one for transactional, update Klaviyo + DNS |
+| **C1** | **Welcome Series (Website) is in DRAFT despite getting 537 recipients in 90d** — every flow benchmark says this is the highest-leverage flow. Top performers: 8–12% conversion. BC current: 2.05%. Estimated revenue left on the table: $2k–$5k/quarter. **User confirmed: cleared to investigate + activate.** | API verified: `[Z] Welcome Series - Website` status=draft, 537 recipients, 2.05% conv | 🟢 | Low — activate flow, refine 3-email sequence using confirmed positioning (Kiwi owned, 10% price beat, $79 free ship) |
+| **C2** | **Sender email inconsistency** — `hello@` and `orders@` mixed across campaigns. Mixing marketing + transactional from same root domain hurts both. | API verified across 12 sample campaigns | 🟢 | Low — pick `hello@` for marketing, `orders@` for transactional, update Klaviyo |
 | **C3** | **Order Confirmation flow has 0% conversion** — industry shows +2200% conversion lift from adding ONE marketing element (cross-sell, refer-a-friend, review request). Currently in DRAFT. | API verified: 136 recipients, 0 conversions | 🟢 | Low — add 1 product-recommendation block, set live |
-| **C4** | **Click rates universally below benchmark** (0.2–1.4% vs 2.09% industry avg) — content + template issue, not list. Open rates are OK; opens-to-clicks dropping. | API verified across 28+ campaigns | 🟢 | Medium — needs template HTML access + content rewrite (depends on Q3) |
+| **C4** | **Click rates universally below benchmark** (0.2–1.4% vs 2.09% industry avg) — content + template issue, not list. Open rates are OK; opens-to-clicks dropping. | API verified across 28+ campaigns | 🟢 | Medium — needs template HTML access + content rewrite |
+| **C5** | **NZ pharmacy compliance risk in Codral Solus subject line** — *"Kiwis have an ally in fighting cold & flu symptoms with Codral & Sudafed"*. Codral + Sudafed are pharmacy-only (pseudoephedrine). Subject names them + therapeutic effect. **Per Medsafe rules and user's confirmation, some flows have already been paused for similar reasons.** Need full content audit. | API verified subject; user confirmed compliance is an active issue causing flow pauses | 🟢 | Medium — content audit across all sent + paused flows; establish compliance gate playbook |
 
 ---
 

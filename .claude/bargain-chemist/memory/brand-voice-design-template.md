@@ -199,17 +199,38 @@
 
 ---
 
-## OUTSTANDING UNKNOWNS (need user confirmation)
+## CONFIRMED POSITIONING (user, 2026-05-06)
 
-I cannot finalise this template without:
+These are the **explicit value props** Bargain Chemist owns. They should appear in every campaign + flow either as headline, sub-headline, footer strip, or banner:
 
-1. **Visual design language** — colours, typography, logo treatment, image style. (API blocked from reading template HTML.)
-2. **Existing templates** — are they already using a consistent block structure?
-3. **Brand voice intent** — is the casual + value-led tone deliberate, or accidental drift across writers?
-4. **Sender domain decision** — `hello@` vs `marketing@` vs `mail.bargainchemist.co.nz`?
-5. **Compliance baseline** — do current emails include pharmacy registration + pharmacist name + medicine disclaimers? (Couldn't verify — need template HTML.)
-6. **NZ market positioning** — "bargain" pharmacy implies budget-conscious. Is this the brand strategy or just a name? Affects whether we lean further into value or rebalance toward quality/care.
+| Value prop | Use where |
+|------------|-----------|
+| **100% Kiwi owned** | Footer strip, About/welcome, brand storytelling |
+| **We beat any price by 10%** | Promotional headers, value-led campaigns, Welcome Series Email 1 |
+| **Free shipping on orders $79+** | Cart abandonment Email 1, hero strip, post-purchase upsell threshold ($X to free ship) |
+
+> User: "look at the website for exact advantage" — couldn't fetch (403 bot protection). User to provide tagline + any extra USPs in next round.
+
+### How this updates the brand voice template
+
+- **Brand positioning**: User clarification supports **balanced — value AND quality of care** lane (not all-in price). "100% Kiwi owned" anchors trust + quality; "beat by 10%" anchors value. Brand voice should hold both.
+- **Welcome Series hook**: lead with "100% Kiwi owned" + "10% price beat" + free shipping threshold. These three together = strong subscribe incentive (don't necessarily need a coupon).
+- **Subject line update**: subject lines that mention only "bargains/clearance/deals" should occasionally lead instead with Kiwi ownership or price-beat (differentiated positioning vs Chemist Warehouse / Countdown / Healthpost).
+- **Compliance note from user**: subject lines must NOT mention pharmacy-only or prescription-only products. Some flows already paused for this. Auditing flow content needed.
+
+### Known compliance issue (flagged)
+
+- **"Codral Solus - August 2025"** subject line: *"Kiwis have an ally in fighting cold & flu symptoms with Codral & Sudafed"* — Codral and Sudafed are pharmacy-only medicines (pseudoephedrine-containing, sold behind the counter). Subject line promotes them by name + therapeutic effect. Per Medsafe Marketing Guidelines, this could be non-compliant. **Flag for compliance review** — confirm with pharmacy lead.
 
 ---
 
-**Until those are answered, treat this file as Draft v0.1.** Once confirmed I'll log the decision in `decisions-log.md`.
+## OUTSTANDING UNKNOWNS (still need user)
+
+1. **Visual design language** — colours, typography, logo treatment, image style. Klaviyo MCP blocked from reading template HTML; website blocked WebFetch (403). User to provide brand guide PDF or screenshots.
+2. **Compliance baseline of existing templates** — does footer have pharmacy registration #, pharmacist name, medicine disclaimers? Couldn't verify.
+3. **Sender domain decision** — fix the `hello@` vs `orders@` mix. Recommend: `hello@` for marketing, `orders@` for transactional.
+4. **List of flows the user knows are paused for compliance** — to cross-reference with my findings.
+
+---
+
+**Status: Draft v0.2.** Updated 2026-05-06 with confirmed positioning. Will lock to v1.0 once visual design + compliance baseline confirmed.

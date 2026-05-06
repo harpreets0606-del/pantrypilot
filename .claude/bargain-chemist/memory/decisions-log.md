@@ -31,6 +31,22 @@ _None yet — log starts when Phase 1 is complete._
 - **Recommendation**: 3-layer architecture — repo files, Zapier Tables, hooks. Specialist subagents for parallel work. Phased rollout starting with file-based memory.
 - **Action taken**: Created `.claude/bargain-chemist/` structure with CLAUDE.md, memory/, playbooks/, agents/. Awaiting Zapier + GA4 + Ads connection for Phase 2.
 - **Prediction**: With this structure in place + Phase 2 integrations connected, weekly analysis time drops from "re-pull everything every session" to "diff against last week's snapshot." Untested.
-- **Confidence**: Medium — structure is sound but value depends on user actually feeding the system (logging decisions, refreshing baselines).
+- **Confidence**: Medium — structure is sound but value depends on user actually feeding the system.
+- **Outcome**: TBD
+- **Learning**: TBD
+
+## 2026-05-06 — Klaviyo audit completed; user confirmed key facts
+
+- **Context**: Full audit pulled from Klaviyo MCP. 3 research agents synthesised best practices + benchmarks + brand voice corpus. Memory written: klaviyo-benchmarks.md, klaviyo-best-practices.md, brand-voice-design-template.md (DRAFT), account-audit-2026-05-06.md, gaps.md.
+- **User confirmed (logged as facts)**:
+  - Top 90-day priority: total revenue growth
+  - SMS not in scope this round
+  - `[Z]` is internal naming, not external agency — can use freely
+  - Welcome Series Website draft status: investigate + activate
+- **Top 4 critical gaps identified** (high confidence): C1 Welcome Series in draft, C2 Sender address mixed, C3 Order Confirmation 0% conversion (no marketing element), C4 Click rates universally below benchmark
+- **Outstanding unknowns blocking 95% confidence**: template HTML inaccessible (MCP 401), DKIM/SPF/DMARC unverified, list/segment counts not pulled, Reputation Repair Audience origin
+- **Action taken**: None yet — holding until further user answers on questions 5–20 in `gaps.md`
+- **Prediction (untested)**: activating Welcome Series + fixing C2-C3 alone will lift email-attributed revenue ~10-20% within 60 days. Falsifiable: compare Welcome Series 60-day revenue post-activation vs the 537-recipient × $1.68 RPR = $902 baseline over 90 days.
+- **Confidence**: Medium-High on findings, Low on prediction (no comparable baseline yet).
 - **Outcome**: TBD
 - **Learning**: TBD
