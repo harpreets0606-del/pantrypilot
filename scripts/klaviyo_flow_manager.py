@@ -1681,6 +1681,136 @@ def fix_all_templates():
     report_manual_fixes_required()
 
 
+def cleanup_duplicate_compliance_templates(dry_run=False):
+    """Find duplicate [COMPLIANCE] templates created across multiple --fix-footers runs.
+    For each duplicated name, keep ONE (preferring the one currently bound to a flow
+    message, or else the newest), and delete the rest."""
+    print("\n🧹 CLEANING UP DUPLICATE [COMPLIANCE] TEMPLATES")
+    print("=" * 80)
+
+    # 1. Walk all flows to find which template IDs are currently bound to a message
+    print("  Walking flows to identify in-use template IDs...")
+    in_use_template_ids = set()
+    cursor = None
+    flows = []
+    while True:
+        params = {
+            "fields[flow]": "name,status,archived",
+            "page[size]": 10,
+        }
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    msg_name_to_in_use = {}  # msg_name -> bound template_id (so we can prefer keeping it)
+    for f in flows:
+        if f.get("attributes", {}).get("archived"):
+            continue
+        for action in get_flow_actions(f["id"]):
+            for msg in get_messages_for_action(action["id"]):
+                content = get_message_content(msg["id"])
+                tid = content.get("template_id")
+                if not tid:
+                    continue
+                in_use_template_ids.add(tid)
+                msg_name_to_in_use[f"msg_{msg['id']}"] = tid
+    print(f"  Found {len(in_use_template_ids)} template IDs bound to flow messages")
+
+    # 2. List all templates and filter for [COMPLIANCE] prefix
+    print("\n  Listing all templates (paginated)...")
+    all_compliance = []
+    cursor = None
+    while True:
+        params = {"page[cursor]": cursor} if cursor else None
+        try:
+            data = api_get("templates", params)
+        except Exception as e:
+            print(f"  ⚠️  Failed to list templates: {e}")
+            break
+        for t in data.get("data", []):
+            name = (t.get("attributes", {}).get("name") or "")
+            if name.startswith("[COMPLIANCE]"):
+                all_compliance.append({
+                    "id": t["id"],
+                    "name": name,
+                    "created": t.get("attributes", {}).get("created") or "",
+                })
+        next_link = data.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    if not all_compliance:
+        print("  ⚠️  No [COMPLIANCE] templates returned by API.")
+        print("     If duplicates exist in the Klaviyo UI, GET /api/templates may be hiding them.")
+        print("     Try: Klaviyo UI → Email → Templates → search '[COMPLIANCE]' → delete duplicates manually.")
+        return
+
+    # 3. Group by name and decide keep vs delete
+    by_name = {}
+    for t in all_compliance:
+        by_name.setdefault(t["name"], []).append(t)
+
+    to_delete = []
+    to_keep = []
+    print(f"\n  Found {len(all_compliance)} [COMPLIANCE] templates across {len(by_name)} unique names")
+    print(f"  {'KEEP':<8} {'DELETE':<8} NAME")
+    print("  " + "-" * 80)
+    for name in sorted(by_name.keys()):
+        ts = by_name[name]
+        if len(ts) == 1:
+            to_keep.append(ts[0])
+            continue
+        in_use = [t for t in ts if t["id"] in in_use_template_ids]
+        if in_use:
+            keep = in_use[0]
+        else:
+            ts.sort(key=lambda x: x["created"], reverse=True)
+            keep = ts[0]
+        to_keep.append(keep)
+        dups = [t for t in ts if t["id"] != keep["id"]]
+        to_delete.extend(dups)
+        print(f"  {keep['id']:<8} ×{len(dups):<6}  {name}")
+
+    if not to_delete:
+        print("\n  ✅ No duplicates to delete.")
+        return
+
+    print(f"\n  Total: keep {len(to_keep)}, delete {len(to_delete)}")
+    if dry_run:
+        print("  (dry run — no deletes performed)")
+        return
+
+    # 4. Delete duplicates
+    print(f"\n  Deleting {len(to_delete)} duplicate templates...")
+    deleted = failed = 0
+    for t in to_delete:
+        r = requests.delete(f"{BASE_URL}/templates/{t['id']}",
+                            headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        if r.status_code in (200, 204, 404):
+            deleted += 1
+            if deleted % 10 == 0:
+                print(f"    ...{deleted}/{len(to_delete)} deleted")
+        else:
+            print(f"  ❌ {t['id']} ({t['name']}): HTTP {r.status_code}: {r.text[:120]}")
+            failed += 1
+        time.sleep(0.3)
+
+    print(f"\n  ✅ Deleted: {deleted}")
+    if failed:
+        print(f"  ❌ Failed:  {failed}")
+    print("=" * 80)
+
+
 def verify_flows():
     """Verify operational state: flow statuses (Triple Pixel paused?), volume per flow,
     and recent activity. Use this before deciding rebuild vs UI swap vs draft-flip."""
@@ -1866,6 +1996,10 @@ def main():
                         help="Print list of issues that require manual action (coupons, fear language, etc.)")
     parser.add_argument("--verify-flows", action="store_true",
                         help="Verify operational state: flow statuses, Triple Pixel pause, recipients last 30 days")
+    parser.add_argument("--cleanup-duplicate-templates", action="store_true",
+                        help="Delete duplicate [COMPLIANCE] templates created by repeated --fix-footers runs")
+    parser.add_argument("--cleanup-duplicate-templates-dry-run", action="store_true",
+                        help="Preview what --cleanup-duplicate-templates would delete (no actual deletion)")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -1906,6 +2040,12 @@ def main():
 
     if args.verify_flows:
         verify_flows()
+
+    if args.cleanup_duplicate_templates_dry_run:
+        cleanup_duplicate_compliance_templates(dry_run=True)
+
+    if args.cleanup_duplicate_templates:
+        cleanup_duplicate_compliance_templates(dry_run=False)
 
     if args.all:
         print_setup_guide(templates, flows)
