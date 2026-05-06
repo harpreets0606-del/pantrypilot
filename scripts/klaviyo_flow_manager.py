@@ -1698,25 +1698,29 @@ def cleanup_duplicate_compliance_templates(dry_run=False):
     if not in_use_template_ids:
         print("  ⚠️  Cache is empty — will fall back to keeping the NEWEST template per name.")
 
-    # 2. List all templates and filter for [COMPLIANCE] prefix
-    print("\n  Listing all templates (paginated)...")
+    # 2. List [COMPLIANCE] templates via server-side filter (much faster than full scan)
+    print("\n  Listing [COMPLIANCE] templates (server-side filter)...")
     all_compliance = []
     cursor = None
+    page_no = 0
     while True:
-        params = {"page[cursor]": cursor} if cursor else None
+        params = {"filter": 'starts-with(name,"[COMPLIANCE]")'}
+        if cursor:
+            params["page[cursor]"] = cursor
         try:
             data = api_get("templates", params)
         except Exception as e:
-            print(f"  ⚠️  Failed to list templates: {e}")
+            print(f"  ⚠️  Filter failed ({e}) — falling back to full scan")
+            data = None
             break
+        page_no += 1
         for t in data.get("data", []):
-            name = (t.get("attributes", {}).get("name") or "")
-            if name.startswith("[COMPLIANCE]"):
-                all_compliance.append({
-                    "id": t["id"],
-                    "name": name,
-                    "created": t.get("attributes", {}).get("created") or "",
-                })
+            all_compliance.append({
+                "id": t["id"],
+                "name": t.get("attributes", {}).get("name") or "",
+                "created": t.get("attributes", {}).get("created") or "",
+            })
+        print(f"    page {page_no}: {len(data.get('data', []))} templates (total so far: {len(all_compliance)})")
         next_link = data.get("links", {}).get("next") or ""
         m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
         if not m:
