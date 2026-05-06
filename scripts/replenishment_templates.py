@@ -107,18 +107,33 @@ RESPONSIVE_CSS = """@media only screen and (max-width: 620px) {
 # Renderers
 # ─────────────────────────────────────────────────────────────────
 def render_product_grid(products):
-    """Render a 3-column product list. Each product dict has:
-       name, price, url (collection or product page).
-    For 4-5 products, the grid wraps. Mobile collapses to single column."""
+    """Render a 2-column product list with images. Each product dict has:
+       - name (str): product title for display
+       - price (str): "NZ$X.XX" (no leading currency, just the number string)
+       - url (str): product or collection page link
+       - image_url (str, optional): Shopify CDN URL — if missing, no image rendered
+    For 4 products, the grid is a 2x2. For 3, it's 2+1 with empty cell.
+    Mobile (<=620px) stacks to single column via the responsive CSS.
+
+    Image rendering uses email-safe responsive pattern:
+      width="200" attribute (Outlook hint) + max-width:200px style (modern clients)
+      + display:block (prevents whitespace) + height:auto (preserves aspect)
+    """
     if not products:
         return ""
     cells = []
     for p in products:
+        img_html = ""
+        if p.get("image_url"):
+            img_html = f"""<a href="{p['url']}" target="_blank" style="text-decoration:none; display:block;">
+<img alt="{p['name']}" src="{p['image_url']}" width="200" style="width:100%; max-width:200px; height:auto; display:block; margin:0 auto 10px; border:0;" border="0"/>
+</a>"""
         cells.append(
-            f"""<td style="padding:0 6px 14px 0; vertical-align:top; font-family:Helvetica,Arial,sans-serif; font-size:14px; color:{BODY_TEXT}; line-height:1.5;" width="50%">
-<p style="margin:0 0 4px;"><strong>{p['name']}</strong></p>
-<p style="margin:0 0 8px; color:{BRAND_RED}; font-weight:bold;">NZ${p['price']}</p>
-<a href="{p['url']}" style="color:{BRAND_RED}; text-decoration:underline; font-size:13px;" target="_blank">View →</a>
+            f"""<td style="padding:0 8px 20px 0; vertical-align:top; font-family:Helvetica,Arial,sans-serif; font-size:14px; color:{BODY_TEXT}; line-height:1.5; text-align:center;" width="50%">
+{img_html}
+<p style="margin:0 0 4px; min-height:36px;"><strong>{p['name']}</strong></p>
+<p style="margin:0 0 8px; color:{BRAND_RED}; font-weight:bold; font-size:15px;">NZ${p['price']}</p>
+<a href="{p['url']}" style="display:inline-block; background-color:{BRAND_RED}; color:#ffffff; font-family:Helvetica,Arial,sans-serif; font-size:12px; font-weight:bold; text-decoration:none; padding:8px 18px; border-radius:4px;" target="_blank">View</a>
 </td>"""
         )
     # Pair up cells into rows of 2
@@ -130,7 +145,7 @@ def render_product_grid(products):
         rows.append("<tr>" + "".join(pair) + "</tr>")
     return f"""<table border="0" cellpadding="0" cellspacing="0" style="background-color:#f9f9f9; border-top:1px solid #eeeeee; border-bottom:1px solid #eeeeee;" width="100%">
 <tr><td style="padding:24px 40px;">
-<p style="margin:0 0 16px; font-family:Helvetica,Arial,sans-serif; font-size:14px; font-weight:bold; color:{BRAND_RED}; text-transform:uppercase; letter-spacing:1px;">Top picks</p>
+<p style="margin:0 0 20px; font-family:Helvetica,Arial,sans-serif; font-size:14px; font-weight:bold; color:{BRAND_RED}; text-transform:uppercase; letter-spacing:1px; text-align:center;">Top picks</p>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">{''.join(rows)}</table>
 </td></tr>
 </table>"""
