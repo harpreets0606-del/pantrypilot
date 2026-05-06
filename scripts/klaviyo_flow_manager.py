@@ -531,11 +531,24 @@ def create_all_templates():
 # 4. Get Metric IDs (needed for flow triggers)
 # ─────────────────────────────────────────────
 def get_metric_id(name_fragment):
-    data = api_get("metrics", {"fields[metric]": "name", "page[size]": 200})
-    for m in data.get("data", []):
-        if name_fragment.lower() in m["attributes"]["name"].lower():
-            return m["id"], m["attributes"]["name"]
-    return None, None
+    # Klaviyo 2025-10-15 caps metrics page size at ~10; paginate.
+    cursor = None
+    while True:
+        params = {"fields[metric]": "name", "page[size]": 10}
+        if cursor:
+            params["page[cursor]"] = cursor
+        try:
+            data = api_get("metrics", params)
+        except Exception:
+            return None, None
+        for m in data.get("data", []):
+            if name_fragment.lower() in m["attributes"]["name"].lower():
+                return m["id"], m["attributes"]["name"]
+        next_link = data.get("links", {}).get("next") or ""
+        match = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not match:
+            return None, None
+        cursor = requests.utils.unquote(match.group(1))
 
 
 def print_metric_ids():
@@ -1721,8 +1734,9 @@ def verify_flows():
             print(f"  ⚠️  {tid} ({name}) — NOT FOUND in flow list")
             continue
         s = (f["attributes"].get("status") or "?").lower()
-        ok = "✅ PAUSED" if s == "manual" else f"🚨 STILL {s.upper()}"
-        print(f"  {ok}  {tid} — {name}")
+        # In Klaviyo, 'draft' and 'manual' both mean not-sending; only 'live' is concerning
+        ok = "✅ NOT SENDING" if s in ("manual", "draft") else f"🚨 STILL LIVE"
+        print(f"  {ok}  status={s:<8}  {tid} — {name}")
 
     # 3. Per-flow email count (proxy for "how big is this flow")
     print(f"\n📧 EMAIL ACTIONS PER FLOW (skipping archived):")
@@ -1747,7 +1761,7 @@ def verify_flows():
 
     # 4. Recent send volume via flow-values-reports (last 30 days)
     print(f"\n📊 LAST 30 DAYS RECIPIENTS PER FLOW (proxy for active mid-flow subscribers):")
-    placed_order_id = get_metric_id("Placed Order")
+    placed_order_id, _ = get_metric_id("Placed Order")
     if not placed_order_id:
         print("  ⚠️  Could not find 'Placed Order' metric — skipping volume report")
     else:
