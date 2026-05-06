@@ -1029,19 +1029,27 @@ def _fetch_all_templates():
 
 
 def _list_existing_compliance_templates():
-    """Return {original_msg_name: template_id} for all '[COMPLIANCE] ...' templates
-    already in the Klaviyo library, so re-runs reuse them instead of creating duplicates."""
+    """Return {original_msg_name: template_id} for all '[COMPLIANCE] ...' templates.
+
+    Lists all templates (no server-side filter — that endpoint has been flaky
+    on this account) and filters client-side. Pages through 50 at a time.
+    """
     existing = {}
     cursor = None
+    page_count = 0
+    total_seen = 0
     while True:
-        params = {"fields[template]": "name", "page[size]": 50,
-                  "filter": "starts-with(name,'[COMPLIANCE] ')"}
+        params = {"fields[template]": "name", "page[size]": 50}
         if cursor:
             params["page[cursor]"] = cursor
-        page = safe_get("templates", params=params)
+        page = safe_get("templates", params=params, debug=True)
         if not page:
+            print(f"  ⚠️  GET /api/templates returned no data on page {page_count + 1}")
             break
-        for tpl in page.get("data", []):
+        page_count += 1
+        page_data = page.get("data", [])
+        total_seen += len(page_data)
+        for tpl in page_data:
             name = tpl.get("attributes", {}).get("name", "")
             if name.startswith("[COMPLIANCE] "):
                 existing[name[len("[COMPLIANCE] "):]] = tpl["id"]
@@ -1052,6 +1060,8 @@ def _list_existing_compliance_templates():
         if not m:
             break
         cursor = requests.utils.unquote(m.group(1))
+    print(f"  📊 Walked {page_count} page(s), saw {total_seen} total templates, "
+          f"{len(existing)} match '[COMPLIANCE] *'")
     return existing
 
 
@@ -1092,13 +1102,14 @@ def fix_compliance_footers():
 
     print(f"  Found {len(flows)} total flows. Walking email messages...")
 
-    # Cache existing [COMPLIANCE] templates so re-runs don't duplicate
-    print("  Checking for existing [COMPLIANCE] templates to reuse...")
-    existing_compliance = _list_existing_compliance_templates()
-    print(f"  Found {len(existing_compliance)} existing [COMPLIANCE] templates\n")
+    # Prefer local cache; fall back to API listing
+    print("  Loading [COMPLIANCE] template cache (local + API)...")
+    existing_compliance = _load_compliance_cache()
+    if not existing_compliance:
+        existing_compliance = _list_existing_compliance_templates()
+    print(f"  Loaded {len(existing_compliance)} existing [COMPLIANCE] templates\n")
 
-    fixed = skipped = failed = 0
-    direct_patched = 0
+    fixed = skipped = failed = direct_patched = rebound = 0
     manual_needed = []
 
     for flow in flows:
@@ -1196,22 +1207,49 @@ def fix_compliance_footers():
                     new_tid = new_tpl["data"]["id"]
                     print(f"  📋 Created [COMPLIANCE] template ({new_tid}): {label}")
 
-                manual_needed.append({
-                    "flow": flow_name,
-                    "message": msg_name,
-                    "msg_id": msg_id,
-                    "new_template_id": new_tid,
-                })
+                # Persist to local cache immediately (survives crashes)
+                existing_compliance[msg_name] = new_tid
+                _save_compliance_cache(existing_compliance)
+
+                # Try to rebind the flow action right now via 2025-10-15 API
+                rebind_payload = {
+                    "data": {
+                        "type": "flow-action",
+                        "id": action["id"],
+                        "attributes": {
+                            "definition": {
+                                "id": action["id"],
+                                "data": {
+                                    "message": {"template_id": new_tid}
+                                }
+                            }
+                        }
+                    }
+                }
+                rebind_result = api_patch(f"flow-actions/{action['id']}",
+                                          rebind_payload, quiet=True)
+                if rebind_result is not None:
+                    print(f"  🔁 Rebound flow action to new template: {label}")
+                    rebound += 1
+                else:
+                    manual_needed.append({
+                        "flow": flow_name,
+                        "message": msg_name,
+                        "msg_id": msg_id,
+                        "action_id": action["id"],
+                        "new_template_id": new_tid,
+                    })
                 fixed += 1
 
                 time.sleep(0.4)
 
     print("\n" + "=" * 80)
     print(f"FOOTER FIX SUMMARY")
-    print(f"  Patched directly (library templates):  {direct_patched}")
-    print(f"  [COMPLIANCE] templates ready to swap:   {len(manual_needed)}")
-    print(f"  Already compliant (skipped):           {skipped}")
-    print(f"  Failed:                                {failed}")
+    print(f"  Patched directly (library templates):     {direct_patched}")
+    print(f"  Rebound automatically (PATCH flow-action): {rebound}")
+    print(f"  [COMPLIANCE] templates ready to swap UI:  {len(manual_needed)}")
+    print(f"  Already compliant (skipped):              {skipped}")
+    print(f"  Failed:                                   {failed}")
     print("=" * 80)
 
     if manual_needed:
@@ -1402,6 +1440,31 @@ def report_manual_fixes_required():
 """)
 
 
+COMPLIANCE_CACHE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), ".compliance_templates.json"
+)
+
+
+def _load_compliance_cache():
+    """Read msg_name -> template_id mapping from local JSON cache."""
+    if not os.path.exists(COMPLIANCE_CACHE_PATH):
+        return {}
+    try:
+        with open(COMPLIANCE_CACHE_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _save_compliance_cache(mapping):
+    """Persist msg_name -> template_id mapping so --rebind-templates always finds them."""
+    try:
+        with open(COMPLIANCE_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(mapping, f, indent=2, ensure_ascii=False)
+    except OSError as e:
+        print(f"  ⚠️  Could not write {COMPLIANCE_CACHE_PATH}: {e}")
+
+
 def rebind_compliance_templates():
     """
     Walk every flow's email actions and re-point each one to its matching
@@ -1414,14 +1477,21 @@ def rebind_compliance_templates():
     Prerequisites:
       • You must have already run --fix-footers so the [COMPLIANCE] templates
         exist in the Klaviyo library (one per flow message).
+
+    Source of truth: local JSON cache at scripts/.compliance_templates.json,
+    populated automatically by --fix-footers. Falls back to GET /api/templates
+    if the cache is empty.
     """
     print("\n🔁 Rebinding flow email actions to their [COMPLIANCE] templates...")
     print(f"  Using API revision: {REVISION}\n")
 
-    # Build msg_name -> template_id map from the [COMPLIANCE] template library
-    print("  Loading existing [COMPLIANCE] templates...")
-    compliance = _list_existing_compliance_templates()
-    print(f"  Found {len(compliance)} [COMPLIANCE] templates")
+    # Try local cache first — robust against /api/templates list quirks
+    compliance = _load_compliance_cache()
+    if compliance:
+        print(f"  Loaded {len(compliance)} [COMPLIANCE] templates from local cache")
+    else:
+        print("  Local cache empty — falling back to GET /api/templates...")
+        compliance = _list_existing_compliance_templates()
     if not compliance:
         print("  ⚠️  No [COMPLIANCE] templates found — run --fix-footers first.")
         return
