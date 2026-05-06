@@ -35,6 +35,15 @@ _None yet — log starts when Phase 1 is complete._
 - **Outcome**: TBD
 - **Learning**: TBD
 
+## 2026-05-06 — Sequencing + memory discipline confirmed
+
+- **Sequencing decision (user)**: flows + campaigns first, UTM attribution fix deferred
+- **Content access decision (user)**: expand Klaviyo MCP scope (templates:read + flow-actions:read) — user actioning on their end
+- **Work order**: (1) Shopify-side analysis, (2) Welcome Series content draft once content access available, (3) Compliance gate slash command, (4) Deeper Klaviyo audit
+- **Memory discipline (user)**: auto-log every confirmed fact + decision. From now on Claude appends to memory/decisions-log automatically without asking.
+- **Confidence**: High. User clearly directed.
+- **Action taken**: Logging this entry; starting Shopify-side analysis next.
+
 ## 2026-05-06 — Klaviyo audit completed; user confirmed key facts
 
 - **Context**: Full audit pulled from Klaviyo MCP. 3 research agents synthesised best practices + benchmarks + brand voice corpus. Memory written: klaviyo-benchmarks.md, klaviyo-best-practices.md, brand-voice-design-template.md (DRAFT), account-audit-2026-05-06.md, gaps.md.
