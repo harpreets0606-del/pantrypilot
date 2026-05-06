@@ -21,7 +21,7 @@ import time
 # Read API key from environment variable (GitHub Actions secret), fall back to local default
 API_KEY = os.environ.get("KLAVIYO_API_KEY", "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564")
 BASE_URL = "https://a.klaviyo.com/api"
-REVISION = "2024-10-15"
+REVISION = "2025-10-15"  # 2025-10-15+ exposes Update Flow Action with message.template_id writes
 
 HEADERS = {
     "Authorization": f"Klaviyo-API-Key {API_KEY}",
@@ -1402,10 +1402,129 @@ def report_manual_fixes_required():
 """)
 
 
+def rebind_compliance_templates():
+    """
+    Walk every flow's email actions and re-point each one to its matching
+    '[COMPLIANCE] <message name>' template via PATCH /api/flow-actions/{id}.
+
+    This uses Klaviyo's Update Flow Action endpoint, which (as of revision
+    2025-10-15) accepts message content writes including template_id. It
+    fully eliminates the need for manual UI template swaps.
+
+    Prerequisites:
+      • You must have already run --fix-footers so the [COMPLIANCE] templates
+        exist in the Klaviyo library (one per flow message).
+    """
+    print("\n🔁 Rebinding flow email actions to their [COMPLIANCE] templates...")
+    print(f"  Using API revision: {REVISION}\n")
+
+    # Build msg_name -> template_id map from the [COMPLIANCE] template library
+    print("  Loading existing [COMPLIANCE] templates...")
+    compliance = _list_existing_compliance_templates()
+    print(f"  Found {len(compliance)} [COMPLIANCE] templates")
+    if not compliance:
+        print("  ⚠️  No [COMPLIANCE] templates found — run --fix-footers first.")
+        return
+
+    # Walk all flows
+    flows = []
+    cursor = None
+    while True:
+        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next")
+        if not next_link:
+            break
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    rebound = skipped = failed = no_template = 0
+
+    for flow in flows:
+        attrs = flow.get("attributes", {})
+        if attrs.get("archived") or attrs.get("status") not in ("live", "draft", "manual"):
+            continue
+        flow_name = attrs.get("name", "?")
+
+        actions = get_flow_actions(flow["id"])
+        for action in actions:
+            action_id = action["id"]
+            action_type = action.get("attributes", {}).get("action_type", "")
+            # Only email-send actions have a template to rebind
+            if "EMAIL" not in str(action_type).upper() and "SEND" not in str(action_type).upper():
+                continue
+
+            messages = get_messages_for_action(action_id)
+            for msg in messages:
+                msg_name = msg.get("attributes", {}).get("name", "")
+                channel = (msg.get("attributes", {}).get("channel") or "").lower()
+                if channel and channel not in ("email", ""):
+                    continue
+
+                label = f"{flow_name} → {msg_name}"
+                new_tid = compliance.get(msg_name)
+                if not new_tid:
+                    print(f"  ⏭️  No [COMPLIANCE] template for: {label}")
+                    no_template += 1
+                    continue
+
+                # Skip if already pointing at this template
+                current_tid = get_template_id_for_message(msg["id"])
+                if current_tid == new_tid:
+                    print(f"  ✅ Already bound: {label}")
+                    skipped += 1
+                    continue
+
+                # PATCH /api/flow-actions/{id} with the new template_id
+                payload = {
+                    "data": {
+                        "type": "flow-action",
+                        "id": action_id,
+                        "attributes": {
+                            "definition": {
+                                "id": action_id,
+                                "data": {
+                                    "message": {
+                                        "template_id": new_tid,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                result = api_patch(f"flow-actions/{action_id}", payload, quiet=True)
+                if result is not None:
+                    print(f"  🔁 Rebound: {label}  →  {new_tid}")
+                    rebound += 1
+                else:
+                    print(f"  ❌ PATCH failed for: {label} (action {action_id})")
+                    failed += 1
+
+                time.sleep(0.4)  # rate limit: 3 req/s burst
+
+    print("\n" + "=" * 80)
+    print("REBIND SUMMARY")
+    print(f"  Rebound to [COMPLIANCE]:  {rebound}")
+    print(f"  Already bound:            {skipped}")
+    print(f"  No matching template:     {no_template}")
+    print(f"  Failed:                   {failed}")
+    print("=" * 80)
+    if rebound > 0:
+        print("\n  Run --audit-flows to verify UEMA findings have dropped to zero.")
+
+
 def fix_all_templates():
     """Run all auto-fixable template patches, then print manual fix guide."""
     fix_compliance_footers()
     fix_stale_thresholds()
+    rebind_compliance_templates()
     report_manual_fixes_required()
 
 
@@ -1428,6 +1547,8 @@ def main():
                         help="Auto-fix: inject UEMA/ASA compliance footer into templates missing it")
     parser.add_argument("--fix-thresholds", action="store_true",
                         help="Auto-fix: replace stale $49/$50 free-shipping copy with $79 in known templates")
+    parser.add_argument("--rebind-templates", action="store_true",
+                        help="Rebind each flow's email action to its [COMPLIANCE] template via PATCH /api/flow-actions (revision 2025-10-15+)")
     parser.add_argument("--report-manual-fixes", action="store_true",
                         help="Print list of issues that require manual action (coupons, fear language, etc.)")
     parser.add_argument("--all", action="store_true",
@@ -1461,6 +1582,9 @@ def main():
 
     if args.fix_thresholds:
         fix_stale_thresholds()
+
+    if args.rebind_templates:
+        rebind_compliance_templates()
 
     if args.report_manual_fixes:
         report_manual_fixes_required()
