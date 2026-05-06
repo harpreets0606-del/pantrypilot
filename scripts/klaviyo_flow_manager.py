@@ -1761,9 +1761,37 @@ def verify_flows():
 
     # 4. Recent send volume via flow-values-reports (last 30 days)
     print(f"\n📊 LAST 30 DAYS RECIPIENTS PER FLOW (proxy for active mid-flow subscribers):")
-    placed_order_id, _ = get_metric_id("Placed Order")
+    # Try common ecommerce conversion metric names; if all fail, list what we found
+    placed_order_id = None
+    for candidate in ("Placed Order", "Ordered Product", "Order Placed",
+                      "Checkout Started", "Started Checkout"):
+        mid, mname = get_metric_id(candidate)
+        if mid:
+            placed_order_id = mid
+            print(f"  Using conversion metric: {mname} ({mid})")
+            break
     if not placed_order_id:
-        print("  ⚠️  Could not find 'Placed Order' metric — skipping volume report")
+        print("  ⚠️  Could not find a conversion metric — listing available metrics:")
+        cursor = None
+        listed = 0
+        while listed < 30:
+            params = {"fields[metric]": "name", "page[size]": 10}
+            if cursor:
+                params["page[cursor]"] = cursor
+            try:
+                data = api_get("metrics", params)
+            except Exception as e:
+                print(f"    error fetching metrics: {e}")
+                break
+            for m in data.get("data", []):
+                print(f"    {m['id']}  {m['attributes'].get('name')}")
+                listed += 1
+            next_link = data.get("links", {}).get("next") or ""
+            match = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+            if not match:
+                break
+            cursor = requests.utils.unquote(match.group(1))
+        print("  Set the metric ID manually if needed and re-run.")
     else:
         live_flows = [f for f in flows if (f["attributes"].get("status") or "").lower() == "live"
                       and not f["attributes"].get("archived")]
