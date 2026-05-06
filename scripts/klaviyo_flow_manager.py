@@ -482,6 +482,7 @@ def create_template(name, html):
             "type": "template",
             "attributes": {
                 "name": name,
+                "editor_type": "CODE",
                 "html": html,
             }
         }
@@ -1135,6 +1136,7 @@ def fix_compliance_footers():
                         "type": "template",
                         "attributes": {
                             "name": new_tpl_name,
+                            "editor_type": "CODE",
                             "html": new_html,
                         }
                     }
