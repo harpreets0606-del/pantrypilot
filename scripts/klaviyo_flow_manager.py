@@ -778,16 +778,27 @@ def audit_all_flows():
     print("\n🔍 AUDITING ALL FLOWS")
     print("=" * 80)
 
-    # Get all flows (live + draft + manual)
-    flows_data = safe_get("flows",
-                          params={"fields[flow]": "name,status,trigger_type,archived",
-                                  "page[size]": 100},
-                          debug=True)
-    if not flows_data:
-        print("  ❌ Failed to fetch flows")
-        return
-
-    flows = flows_data.get("data", [])
+    # Get all flows (paginated - Klaviyo caps page size at 50)
+    flows = []
+    cursor = None
+    while True:
+        params = {"fields[flow]": "name,status,trigger_type,archived",
+                  "page[size]": 50}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params, debug=True)
+        if not page:
+            print("  ❌ Failed to fetch flows")
+            return
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next")
+        if not next_link:
+            break
+        # Extract cursor from next link
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
     print(f"\nFound {len(flows)} total flows. Auditing email templates...\n")
 
     summary = {"flows_checked": 0, "templates_checked": 0, "issues_found": 0, "critical": 0}
