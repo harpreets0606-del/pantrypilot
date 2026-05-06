@@ -724,24 +724,26 @@ def safe_get(path, params=None, debug=False):
     return None
 
 
-def get_flow_actions(flow_id):
+def get_flow_actions(flow_id, debug=False):
     data = safe_get(f"flows/{flow_id}/flow-actions",
-                    params={"fields[flow-action]": "action_type,settings,status"})
+                    params={"fields[flow-action]": "action_type,settings,status"},
+                    debug=debug)
     if not data:
         return []
     return data.get("data", [])
 
 
-def get_messages_for_action(action_id):
+def get_messages_for_action(action_id, debug=False):
     data = safe_get(f"flow-actions/{action_id}/flow-messages",
-                    params={"fields[flow-message]": "name,channel,content"})
+                    params={"fields[flow-message]": "name,channel,content"},
+                    debug=debug)
     if not data:
         return []
     return data.get("data", [])
 
 
-def get_template_id_for_message(message_id):
-    data = safe_get(f"flow-messages/{message_id}/relationships/template")
+def get_template_id_for_message(message_id, debug=False):
+    data = safe_get(f"flow-messages/{message_id}/relationships/template", debug=debug)
     if not data or not data.get("data"):
         return None
     return data["data"].get("id")
@@ -815,16 +817,22 @@ def audit_all_flows():
             continue
         # Only audit flows that could send (live or were live recently)
         if status not in ("live", "draft", "manual"):
+            print(f"  ⏭️  Skipping {flow_name} (status: {status})")
             continue
 
-        actions = get_flow_actions(flow_id)
+        print(f"  📂 Auditing: {flow_name} ({flow_id}, {status})")
+        actions = get_flow_actions(flow_id, debug=True)
+        print(f"     → Found {len(actions)} flow actions")
         if not actions:
             continue
 
         flow_findings = []
         for action in actions:
             action_id = action["id"]
-            messages = get_messages_for_action(action_id)
+            action_type = action.get("attributes", {}).get("action_type", "?")
+            messages = get_messages_for_action(action_id, debug=False)
+            if messages:
+                print(f"     → Action {action_id} ({action_type}): {len(messages)} message(s)")
             for msg in messages:
                 msg_id = msg["id"]
                 msg_attrs = msg.get("attributes", {})
