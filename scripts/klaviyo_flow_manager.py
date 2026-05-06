@@ -838,34 +838,38 @@ def audit_all_flows():
                 msg_attrs = msg.get("attributes", {})
                 msg_name = msg_attrs.get("name", "Unnamed")
                 channel = msg_attrs.get("channel", "")
-                if channel != "email":
+
+                # Channel may be capitalised or absent — accept email/EMAIL/empty
+                if channel and channel.lower() not in ("email", ""):
+                    print(f"        ⏭️  Skipping non-email message (channel: {channel})")
                     continue
 
-                # Subject + preview from message content (fast check before pulling template)
-                content = msg_attrs.get("content", {})
-                subject = content.get("subject", "") if content else ""
-                preview = content.get("preview_text", "") if content else ""
+                # Subject + preview from message content
+                content = msg_attrs.get("content") or {}
+                subject = content.get("subject", "") or ""
+                preview = content.get("preview_text", "") or ""
 
                 # Get the template HTML
-                template_id = get_template_id_for_message(msg_id)
+                template_id = get_template_id_for_message(msg_id, debug=True)
                 html = get_template_html(template_id) if template_id else ""
 
                 # Audit subject + preview + html together
                 combined = f"{subject}\n{preview}\n{html}"
                 findings = audit_template(combined, msg_name)
 
-                if findings or subject:
-                    flow_findings.append({
-                        "msg_id": msg_id,
-                        "msg_name": msg_name,
-                        "subject": subject,
-                        "preview": preview,
-                        "template_id": template_id,
-                        "findings": findings,
-                    })
-                    summary["templates_checked"] += 1
-                    summary["issues_found"] += len(findings)
-                    summary["critical"] += sum(1 for f in findings if f[0] == "🔴")
+                # Always record every email message — even if no findings
+                flow_findings.append({
+                    "msg_id": msg_id,
+                    "msg_name": msg_name,
+                    "subject": subject,
+                    "preview": preview,
+                    "template_id": template_id,
+                    "html_len": len(html),
+                    "findings": findings,
+                })
+                summary["templates_checked"] += 1
+                summary["issues_found"] += len(findings)
+                summary["critical"] += sum(1 for f in findings if f[0] == "🔴")
 
                 time.sleep(0.15)  # rate limit safety
 
@@ -879,25 +883,24 @@ def audit_all_flows():
             })
 
     # Print report
+    print("\n" + "=" * 80)
+    print("DETAILED REPORT")
+    print("=" * 80)
     for report in flow_reports:
-        print("┌" + "─" * 78 + "┐")
+        print("\n┌" + "─" * 78 + "┐")
         print(f"│ {report['name']}")
         print(f"│ ID: {report['id']}  ·  Status: {report['status']}")
         print("└" + "─" * 78 + "┘")
         for msg in report["messages"]:
             print(f"\n  📧 {msg['msg_name']} ({msg['msg_id']})")
-            if msg["subject"]:
-                print(f"     Subject: {msg['subject']}")
-            if msg["preview"]:
-                print(f"     Preview: {msg['preview']}")
-            if msg["template_id"]:
-                print(f"     Template: {msg['template_id']}")
+            print(f"     Subject: {msg['subject'] or '(empty)'}")
+            print(f"     Preview: {msg['preview'] or '(empty)'}")
+            print(f"     Template: {msg['template_id'] or '(none)'}  ·  HTML: {msg['html_len']} bytes")
             if not msg["findings"]:
                 print("     ✅ No issues found")
             else:
                 for severity, rule, desc in msg["findings"]:
                     print(f"     {severity} {rule}: {desc}")
-        print()
 
     print("=" * 80)
     print(f"AUDIT SUMMARY")
