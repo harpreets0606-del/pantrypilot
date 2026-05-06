@@ -528,6 +528,45 @@ Subject + preview don't show those issues yet, but the body excerpt hints at a p
 | E1 preview | "Your guide to staying healthy and protected this flu season." (60 chars) | "Your winter wellness guide is here." (~36 chars, factual, BC tone) |
 | E2 preview | "Flu vaccines are one of the best ways to protect yourself and family." (70 chars) | "Flu jab info — book at your local pharmacy." (~44 chars, neutral, no efficacy claim) |
 
+---
+
+## Flow 13: [Z] Welcome Series - No Coupon (TsC8GZ, LIVE) ✅ MOSTLY CLEAN
+
+**Trigger:** Added to List. **Status:** LIVE. **Volume:** 7 recipients last 30d.
+**Intent:** Onboard new subscribers without coupon-led incentive (the flow name itself acknowledges CLAUDE.md "no coupons" rule).
+**Structure:** 5 actions, 3 emails. Likely: list-add → E1 immediate → wait → E2 → wait → E3.
+
+**Templates use bespoke BC anatomy** (link color `#FF0031`, responsive media queries).
+
+### Per-message audit
+
+| # | Action | Msg | Subject (chars) | Preview | Template | Voice |
+|---|---|---|---|---|---|---|
+| 1 | 105721561 | UC2XAR | "Welcome to Bargain Chemist, `{{ first_name|default:'there' }}`!" (~58) | **empty** | WqsR7k | ✅ Warm, BC tone, correct `first_name` token |
+| 2 | 105721565 | TYZUYe | "We'll beat any pharmacy price — guaranteed" (45) | **empty** | VMrNuH | ✅ Price-led, substantiated by body content (Price Beat Guarantee — beat by 10%) |
+| 3 | 105721568 | XzRFZc | "Explore everything at Bargain Chemist" (37) | **empty** | YbwvMr | ✅ "Explore" matches BC pattern |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| W1 | 🚨 high | **All 3 emails have empty preview text** — same issue as Replenishment. Deliverability + click-rate hit. | Add preview text per BC patterns (4–10 words) |
+| W2 | low | All 3 subjects are within BC range, follow BC patterns, use consistent `first_name` token | Keep |
+| W3 | low | E2 "We'll beat any pharmacy price — guaranteed" — claim is strong but **substantiated in body** (10% beat guarantee on identical in-stock NZ pharmacy products). Matches the legal block in real BC templates | Keep |
+| W4 | low | E1 body opener "Great to have you, {{ first_name }}" — warm, on-brand | Keep |
+| W5 | low | E3 subject `Explore everything at Bargain Chemist` — passable but generic. Could be more specific (e.g. "Discover what's new at Bargain Chemist" — closer to BC "Discover the…" campaign pattern) | Optional rewrite |
+| W6 | unknown | Need to verify UEMA footer + brand colors + $79 threshold in all 3 templates | Read full HTML |
+
+### Suggested preview text (the only critical fix)
+
+| | Subject | Suggested preview (4–10 words, BC tone) |
+|---|---|---|
+| E1 | "Welcome to Bargain Chemist, {{ first_name }}!" | "Free shipping over $79 + 6,000+ products waiting." |
+| E2 | "We'll beat any pharmacy price — guaranteed" | "Find it cheaper? We'll beat by 10%." |
+| E3 | "Explore everything at Bargain Chemist" | "Vitamins, skincare, household — all in one place." |
+
+This flow is the second cleanest after Added to Cart Abandonment. Voice is solid; just needs preview text and minor optimisation.
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
@@ -538,3 +577,4 @@ Subject + preview don't show those issues yet, but the body excerpt hints at a p
 - 2026-05-06 — Audited Flow 4 (Added to Cart Abandonment): 2 emails, 1,408 recipients/30d. **GOLD STANDARD — cleanest BC voice in the audit.** "No pressure" / "Just popping in" — anti-fear copy across both emails. Templates MJML, need HTML verification of footer/colors.
 - 2026-05-06 — Audited Flow 6 (Back in Stock): 2 emails. **HIGH-severity scarcity/fear violations across both** — "selling fast" / "limited stock remaining" / "don't miss your chance" / "before it sells out again". Subject of E1 (`{{ event.ProductName }} is back!`) is fine; everything else needs rewriting. Direct contradiction of the ATC gold-standard voice in the same account. Templates use bespoke BC anatomy.
 - 2026-05-06 — Audited Flow 9 (Flu Season - Winter Wellness): 2 emails, 18 recipients/30d. Subjects both on-brand. E2 promotes flu vaccines + body excerpt suggests therapeutic claim "cut your recovery down significantly" — **needs ASA Therapeutic Code 2025 review** (4th category of risk identified in audit, after restricted products / coupons / fear language). Personalisation token inconsistency: uses `person.first_name` instead of `first_name`.
+- 2026-05-06 — Audited Flow 13 (Welcome Series - No Coupon): 3 emails, 7 recipients/30d. **Mostly clean** — voice is BC-tone, subjects within range, uses correct `first_name` token, E2 price-beat claim is substantiated (10% beat guarantee). Only critical issue: **all 3 emails have empty preview text** — same deliverability issue as Replenishment. Second cleanest flow after Added to Cart Abandonment.
