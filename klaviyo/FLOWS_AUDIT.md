@@ -340,9 +340,65 @@ This makes the entire flow ASA-safe by default — Regaine and any future restri
 
 ---
 
+---
+
+## Flow 2: [Z] Abandoned Checkout (Y84ruV, LIVE) 🚨
+
+**Trigger:** Started Checkout metric. **Status:** LIVE. **Volume:** 1,714 recipients last 30d (high — biggest active flow we have data on).
+**Intent:** Recover abandoned checkouts.
+
+**Structure:** 8 actions, 4 emails. Likely structure: trigger → wait → E1 → wait → E2 → conditional split → E3 (branch A) / E4 (branch B). E3 and E4 have identical subject/preview, suggesting a value-based split where both branches end with the same nudge.
+
+**Templates appear to be MJML-built** (Klaviyo drag-and-drop editor) — different template family from the bespoke BC red `#CC1B2A` templates we saw earlier. Need to verify they share BC's footer/header anatomy.
+
+### Per-message audit
+
+| # | Action | Msg | Subject (chars) | Preview | Template | Voice / issues |
+|---|---|---|---|---|---|---|
+| 1 | 98627483 | S7KJkR | "One step away from everyday savings" (37) | "Your items are waiting — no rush." | TUbBRk | ✅ "no rush" is anti-fear — **exemplary BC tone** |
+| 2 | 98627487 | SE9wC6 | "$5 off to complete your checkout" (32) | "Because you were so close." | TjFTnU | 🚨 **CRITICAL — incentive/coupon offer violates CLAUDE.md "no coupon codes" rule** |
+| 3 | 98627489 | VBYf2r | "Ready when you are" (18) | "Finish checkout in just a few clicks." | TFpqRc | ✅ helpful, BC-tone |
+| 4 | 98627490 | TcxiTj | "Ready when you are" (18) | "Finish checkout in just a few clicks." | TuHa4f | ⚠️ **identical subject + preview to E3** |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| AC1 | 🚨 CRITICAL | **E2 offers "$5 off" — direct violation of CLAUDE.md** ("No coupon codes can be applied in flows — incentives must be free shipping reminders, social proof, value messaging, or factual scarcity only") | Pause E2 today. Rewrite without the discount offer; lean on free-shipping-over-$79 instead |
+| AC2 | high | **E3 + E4 share identical subject + preview** | Either differentiate per branch (e.g. E4 = "still here for you, {{ first_name }}?") OR consolidate into one email if the conditional split adds no value |
+| AC3 | unknown | Need to verify E3 vs E4 template bodies actually differ (might just be a duplicated branch) | Read both templates' HTML |
+| AC4 | unknown | Footer — these are MJML/Klaviyo-editor templates, not the bespoke BC anatomy. Need to confirm UEMA footer + brand colors present | Inspect full HTML |
+| AC5 | medium | E1 subject "everyday savings" — **value-led, not coupon-led, so OK if body delivers value (not a discount)** | Verify body doesn't actually contain a discount code |
+| AC6 | low | E2 subject only 32 chars — fine; E4 subject 18 chars — short but works | None |
+
+**Voice strengths to keep:**
+- "no rush" preview text on E1 is **the best anti-fear copy I've seen across this audit** — opposite of "Last chance!" panic
+- "Ready when you are" / "in just a few clicks" — calm, helpful, on-brand
+- "Because you were so close" preview text on E2 — empathetic, BC-tone (just remove the $5 incentive from the subject)
+
+**Voice issues:**
+- "$5 off" subject is a coupon-style incentive, banned by CLAUDE.md. The rest of the email's voice is fine; just the offer needs replacing.
+
+### Suggested rewrites (pre-approval, do NOT execute yet)
+
+**E2 — replace the discount with a free-shipping nudge or social proof:**
+| Current | Suggested |
+|---|---|
+| Subject: `$5 off to complete your checkout` | `Free delivery over $79 — your cart's already there?` (~50 chars) OR `Your wellness picks are still waiting` |
+| Preview: `Because you were so close.` | `No code needed — just complete your order` (free-shipping nudge) |
+
+**E4 (if branch logic warrants keeping it separate from E3):**
+| Current | Suggested |
+|---|---|
+| Subject: `Ready when you are` (duplicate) | `Still here for you, {{ first_name|default:'there' }}` (~38 chars) |
+| Preview: `Finish checkout in just a few clicks.` (duplicate) | `Same products, same prices — pick up where you left off` |
+
+---
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
 - 2026-05-06 — Audited Flow 11 (Post-Purchase Series): 13 findings across 2 emails, 4 critical
-- 2026-05-06 — Audited 4 NEW templates we created (template_abandoned_checkout_email3, template_browse_abandonment_email2, template_browse_abandonment_email3, template_atc_email3): 8 critical issues common to all + 11 per-template issues. **Confirmed not in Klaviyo library — Python source deleted from script.**
-- 2026-05-06 — Audited Flow 12 (Replenishment - Reorder Reminders): 16 emails (not 13 as previously reported), all share identical subject + empty preview, **2 CRITICAL ASA violations (Regaine + Oracoat = pharmacist-only medicines being price-promoted)**, 1 high-severity fear language (Allergy email). Production-impacting. Recommend pausing the Regaine and Oracoat branches today.
+- 2026-05-06 — Audited 4 NEW templates we created: 8 critical issues common to all. **Confirmed not in Klaviyo library — Python source deleted from script.**
+- 2026-05-06 — Audited Flow 12 (Replenishment): 16 emails. CORRECTED: only Regaine (msg WdBQF5) is restricted (Pharmacy_Only_check tag); Oracoat Xylimelts is Personal Care, not restricted. Plus retail-first additions plan from Shopify top-sellers.
+- 2026-05-06 — Audited Flow 2 (Abandoned Checkout): 4 emails, 1,714 recipients/30d. **CRITICAL: E2 offers "$5 off" — direct CLAUDE.md "no coupon" violation.** E3 and E4 share identical subject + preview (likely conditional split branches). E1 voice is exemplary BC tone ("no rush"). Templates are MJML-generated, need full HTML check for UEMA footer + brand color compliance.
