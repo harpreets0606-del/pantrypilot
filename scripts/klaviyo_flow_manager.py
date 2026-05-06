@@ -740,9 +740,7 @@ def get_flow_actions(flow_id, debug=False):
 
 
 def get_messages_for_action(action_id, debug=False):
-    data = safe_get(f"flow-actions/{action_id}/flow-messages",
-                    params={"fields[flow-message]": "name,channel,content"},
-                    debug=debug)
+    data = safe_get(f"flow-actions/{action_id}/flow-messages", debug=debug)
     if not data:
         return []
     return data.get("data", [])
@@ -1124,14 +1122,17 @@ def fix_compliance_footers():
             continue
 
         flow_name = attrs.get("name", "?")
-        actions = get_flow_actions(flow["id"], debug=True)
+        actions = get_flow_actions(flow["id"])
         print(f"  📂 {flow_name} (status={status!r}) — {len(actions)} actions")
 
         for action in actions:
-            messages = get_messages_for_action(action["id"])
+            messages = get_messages_for_action(action["id"], debug=True)
+            if messages:
+                print(f"     ↳ action {action['id']}: {len(messages)} message(s)")
             for msg in messages:
                 channel = (msg.get("attributes", {}).get("channel") or "").lower()
                 if channel and channel not in ("email", ""):
+                    print(f"        ⏭️  skipping non-email channel: {channel!r}")
                     continue
 
                 msg_id = msg["id"]
