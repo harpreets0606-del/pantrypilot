@@ -1381,6 +1381,120 @@ Decision guide:
     print("=" * 100)
 
 
+def pause_flow_action(action_id, confirm=False):
+    """Pause a single flow-action by setting its definition.data.status to 'manual'.
+    Preserves the rest of the action's definition (message, template_id, etc.) untouched."""
+    print(f"\n⏸️  PAUSE FLOW ACTION {action_id}")
+    print("=" * 80)
+
+    data = safe_get(f"flow-actions/{action_id}")
+    if not data:
+        print(f"  ❌ Could not fetch action {action_id}")
+        return
+    attrs = data.get("data", {}).get("attributes", {}) or {}
+    defn = attrs.get("definition") or {}
+    if not isinstance(defn, dict):
+        print(f"  ❌ Unexpected definition shape: {type(defn).__name__}")
+        return
+
+    current_status = (defn.get("data") or {}).get("status") or "?"
+    msg = (defn.get("data") or {}).get("message") or {}
+    defn_type = defn.get("type") or "?"
+
+    print(f"  Action ID:       {action_id}")
+    print(f"  Definition type: {defn_type}")
+    print(f"  Current status:  {current_status}")
+    print(f"  Template:        {msg.get('template_id')}")
+    print(f"  Subject:         {msg.get('subject_line')}")
+    print(f"  From:            {msg.get('from_label')} <{msg.get('from_email')}>")
+
+    if current_status == "manual":
+        print("\n  ✅ Already paused (status=manual). Nothing to do.")
+        return
+
+    if defn_type != "send-email":
+        print(f"\n  ⚠️  Action is not 'send-email' (type={defn_type!r}). Aborting to be safe.")
+        return
+
+    if not confirm:
+        print(f"\n  Dry-run mode. Re-run with --confirm to actually pause.")
+        return
+
+    payload = {
+        "data": {
+            "type": "flow-action",
+            "id": action_id,
+            "attributes": {
+                "definition": {
+                    "id": action_id,
+                    "type": "send-email",
+                    "data": {
+                        "message": msg,
+                        "status": "manual",
+                    }
+                }
+            }
+        }
+    }
+
+    print(f"\n  Pausing...")
+    r = requests.patch(f"{BASE_URL}/flow-actions/{action_id}",
+                       headers=HEADERS, json=payload, timeout=REQUEST_TIMEOUT)
+    if r.status_code in (200, 204):
+        print(f"  ✅ Paused. PATCH returned {r.status_code}.")
+    else:
+        print(f"  ❌ PATCH failed: HTTP {r.status_code}")
+        print(f"     Response: {r.text[:500]}")
+        return
+
+    # Verify
+    print("\n  Verifying...")
+    verify = safe_get(f"flow-actions/{action_id}")
+    if verify:
+        new_status = ((verify.get("data", {}).get("attributes", {}).get("definition") or {})
+                      .get("data") or {}).get("status") or "?"
+        if new_status == "manual":
+            print(f"  ✅ Verified: status is now {new_status!r}.")
+        else:
+            print(f"  ⚠️  Verification: status is {new_status!r} (expected 'manual'). Check Klaviyo UI.")
+
+
+def resume_flow_action(action_id, confirm=False):
+    """Reverse pause_flow_action by setting status back to 'live'."""
+    print(f"\n▶️  RESUME FLOW ACTION {action_id}")
+    print("=" * 80)
+    data = safe_get(f"flow-actions/{action_id}")
+    if not data:
+        print(f"  ❌ Could not fetch action")
+        return
+    defn = (data.get("data", {}).get("attributes", {}) or {}).get("definition") or {}
+    msg = (defn.get("data") or {}).get("message") or {}
+    current = (defn.get("data") or {}).get("status") or "?"
+    print(f"  Current status: {current}")
+    if current == "live":
+        print("  ✅ Already live. Nothing to do.")
+        return
+    if not confirm:
+        print(f"  Dry-run. Re-run with --confirm.")
+        return
+    payload = {
+        "data": {
+            "type": "flow-action",
+            "id": action_id,
+            "attributes": {
+                "definition": {
+                    "id": action_id,
+                    "type": "send-email",
+                    "data": {"message": msg, "status": "live"},
+                }
+            }
+        }
+    }
+    r = requests.patch(f"{BASE_URL}/flow-actions/{action_id}",
+                       headers=HEADERS, json=payload, timeout=REQUEST_TIMEOUT)
+    print(f"  PATCH → HTTP {r.status_code}: {r.text[:200] if r.status_code not in (200, 204) else 'OK'}")
+
+
 def show_flow_content(flow_id):
     """Print every email message in a flow: subject, preview text, from, and HTML excerpt.
     Use to verify what each message is actually about before making decisions."""
@@ -1737,6 +1851,12 @@ def main():
                         help="Print a single template's full HTML")
     parser.add_argument("--audit-our-templates", action="store_true",
                         help="Check which flows the 4 templates we created (--create-templates) are bound to and whether those flows are live/draft")
+    parser.add_argument("--pause-action", metavar="ACTION_ID",
+                        help="Pause a single flow-action (sets definition.data.status to 'manual'). Dry-run unless --confirm.")
+    parser.add_argument("--resume-action", metavar="ACTION_ID",
+                        help="Resume a previously paused flow-action (status=live). Dry-run unless --confirm.")
+    parser.add_argument("--confirm", action="store_true",
+                        help="Required by --pause-action / --resume-action to actually execute (otherwise dry-run)")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -1789,6 +1909,12 @@ def main():
 
     if args.audit_our_templates:
         audit_our_templates()
+
+    if args.pause_action:
+        pause_flow_action(args.pause_action, confirm=args.confirm)
+
+    if args.resume_action:
+        resume_flow_action(args.resume_action, confirm=args.confirm)
 
     if args.all:
         print_setup_guide(templates, flows)
