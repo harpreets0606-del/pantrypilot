@@ -1484,26 +1484,51 @@ def pause_flow_action(action_id, confirm=False):
         print(f"\n  Dry-run mode. Re-run with --confirm to actually pause.")
         return
 
+    # Preserve the action's existing definition.links if present (Klaviyo errors
+    # with "cannot change the links of an action" when this is omitted)
+    existing_links = defn.get("links")
+    definition_payload = {
+        "id": action_id,
+        "type": "send-email",
+        "data": {
+            "message": msg,
+            "status": "manual",
+        }
+    }
+    if existing_links is not None:
+        definition_payload["links"] = existing_links
+
     payload = {
         "data": {
             "type": "flow-action",
             "id": action_id,
             "attributes": {
-                "definition": {
-                    "id": action_id,
-                    "type": "send-email",
-                    "data": {
-                        "message": msg,
-                        "status": "manual",
-                    }
-                }
+                "definition": definition_payload
             }
         }
     }
 
-    print(f"\n  Pausing...")
+    print(f"\n  Pausing (variant 1: with links preserved)...")
     r = requests.patch(f"{BASE_URL}/flow-actions/{action_id}",
                        headers=HEADERS, json=payload, timeout=REQUEST_TIMEOUT)
+    if r.status_code not in (200, 204):
+        # Variant 2: try minimal payload — status only, no message, no links
+        print(f"    variant 1 failed (HTTP {r.status_code}); trying variant 2 (status-only)...")
+        minimal_payload = {
+            "data": {
+                "type": "flow-action",
+                "id": action_id,
+                "attributes": {
+                    "definition": {
+                        "id": action_id,
+                        "type": "send-email",
+                        "data": {"status": "manual"}
+                    }
+                }
+            }
+        }
+        r = requests.patch(f"{BASE_URL}/flow-actions/{action_id}",
+                           headers=HEADERS, json=minimal_payload, timeout=REQUEST_TIMEOUT)
     if r.status_code in (200, 204):
         print(f"  ✅ Paused. PATCH returned {r.status_code}.")
     else:
