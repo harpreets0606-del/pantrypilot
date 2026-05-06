@@ -1698,34 +1698,55 @@ def cleanup_duplicate_compliance_templates(dry_run=False):
     if not in_use_template_ids:
         print("  ⚠️  Cache is empty — will fall back to keeping the NEWEST template per name.")
 
-    # 2. List [COMPLIANCE] templates via server-side filter (much faster than full scan)
-    print("\n  Listing [COMPLIANCE] templates (server-side filter)...")
+    # 2. List [COMPLIANCE] templates. Try server-side filters in order of preference;
+    # fall back to full scan if all filters reject. Klaviyo filter operators vary by revision.
     all_compliance = []
-    cursor = None
-    page_no = 0
-    while True:
-        params = {"filter": 'starts-with(name,"[COMPLIANCE]")'}
-        if cursor:
-            params["page[cursor]"] = cursor
-        try:
-            data = api_get("templates", params)
-        except Exception as e:
-            print(f"  ⚠️  Filter failed ({e}) — falling back to full scan")
-            data = None
+
+    def _list_with_filter(filter_expr):
+        out = []
+        cursor = None
+        page_no = 0
+        while True:
+            params = {}
+            if filter_expr:
+                params["filter"] = filter_expr
+            if cursor:
+                params["page[cursor]"] = cursor
+            try:
+                data = api_get("templates", params)
+            except Exception as e:
+                return None, f"{e}"
+            page_no += 1
+            for t in data.get("data", []):
+                name = t.get("attributes", {}).get("name") or ""
+                # If filter was server-side rejected, we still need to client-filter
+                if not filter_expr and not name.startswith("[COMPLIANCE]"):
+                    continue
+                out.append({
+                    "id": t["id"],
+                    "name": name,
+                    "created": t.get("attributes", {}).get("created") or "",
+                })
+            print(f"    page {page_no}: returned {len(data.get('data', []))} (matches so far: {len(out)})")
+            next_link = data.get("links", {}).get("next") or ""
+            m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+            if not m:
+                return out, None
+            cursor = requests.utils.unquote(m.group(1))
+
+    # Try filters in order: contains → equals (impossible for prefix) → no filter
+    tried = []
+    for filter_expr, label in [
+        ('contains(name,"[COMPLIANCE]")', 'contains'),
+        (None, 'unfiltered'),
+    ]:
+        print(f"\n  Listing templates ({label})...")
+        result, err = _list_with_filter(filter_expr)
+        tried.append((label, err))
+        if result is not None:
+            all_compliance = result
             break
-        page_no += 1
-        for t in data.get("data", []):
-            all_compliance.append({
-                "id": t["id"],
-                "name": t.get("attributes", {}).get("name") or "",
-                "created": t.get("attributes", {}).get("created") or "",
-            })
-        print(f"    page {page_no}: {len(data.get('data', []))} templates (total so far: {len(all_compliance)})")
-        next_link = data.get("links", {}).get("next") or ""
-        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
-        if not m:
-            break
-        cursor = requests.utils.unquote(m.group(1))
+        print(f"    ⚠️  {label} failed: {err}")
 
     if not all_compliance:
         print("  ⚠️  No [COMPLIANCE] templates returned by API.")
