@@ -969,17 +969,29 @@ FEAR_LANGUAGE_TEMPLATE_IDS = [
 
 
 def _fetch_all_templates():
-    """Return all templates (handles Klaviyo's 50-per-page cap)."""
-    templates = []
+    """
+    Return all email templates by traversing every active flow →
+    actions → email messages → template relationships.
+
+    We do NOT use GET /api/templates because flow-internal templates
+    (the templates auto-created when you add an email node to a flow)
+    are not always returned by that endpoint, depending on the API
+    key's scope. The flow-message → template relationship is the
+    reliable way to discover every template that actually sends.
+    """
+    print("  📡 Walking flows to discover templates...")
+
+    # 1. Get all flows (paginated)
+    flows = []
     cursor = None
     while True:
-        params = {"fields[template]": "name", "page[size]": 50}
+        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
         if cursor:
             params["page[cursor]"] = cursor
-        page = safe_get("templates", params=params)
+        page = safe_get("flows", params=params, debug=True)
         if not page:
             break
-        templates.extend(page.get("data", []))
+        flows.extend(page.get("data", []))
         next_link = page.get("links", {}).get("next")
         if not next_link:
             break
@@ -987,7 +999,32 @@ def _fetch_all_templates():
         if not m:
             break
         cursor = requests.utils.unquote(m.group(1))
-    return templates
+
+    # 2. Walk each non-archived flow → actions → messages → template IDs
+    seen = {}  # template_id -> friendly name (first message that uses it)
+    for flow in flows:
+        attrs = flow.get("attributes", {})
+        if attrs.get("archived"):
+            continue
+        if attrs.get("status") not in ("live", "draft", "manual"):
+            continue
+
+        actions = get_flow_actions(flow["id"])
+        for action in actions:
+            messages = get_messages_for_action(action["id"])
+            for msg in messages:
+                channel = (msg.get("attributes", {}).get("channel") or "").lower()
+                if channel and channel not in ("email", ""):
+                    continue
+                tid = get_template_id_for_message(msg["id"])
+                if tid and tid not in seen:
+                    msg_name = msg.get("attributes", {}).get("name", "(unnamed)")
+                    flow_name = attrs.get("name", "?")
+                    seen[tid] = f"{flow_name} → {msg_name}"
+                time.sleep(0.05)
+
+    # Convert to the same shape as a /api/templates response
+    return [{"id": tid, "attributes": {"name": label}} for tid, label in seen.items()]
 
 
 def fix_compliance_footers():
@@ -1091,10 +1128,15 @@ def fix_stale_thresholds():
     ]
 
     fixed = 0
+    skipped_missing = []
     for tid, tname in STALE_THRESHOLD_TEMPLATE_IDS:
         full = safe_get(f"templates/{tid}")
         if not full:
-            print(f"  ⚠️  Cannot fetch: {tname} ({tid})")
+            print(f"  ⚠️  Template {tid} ({tname}) does not exist as a "
+                  f"standalone template — the $49/$50 hit was likely in "
+                  f"the message SUBJECT line, not the template HTML. "
+                  f"Update the subject in the Klaviyo flow UI.")
+            skipped_missing.append((tid, tname))
             continue
 
         html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
@@ -1124,6 +1166,11 @@ def fix_stale_thresholds():
         time.sleep(0.3)
 
     print(f"\n  Threshold fix summary → {fixed} template(s) patched")
+    if skipped_missing:
+        print(f"  Manual UI fix needed for these (subject-line $49/$50):")
+        for tid, tname in skipped_missing:
+            print(f"    • {tname} (template ref: {tid}) — open the flow, "
+                  f"edit the email's subject line, change $49/$50 → $79")
 
 
 def report_manual_fixes_required():
