@@ -712,3 +712,41 @@ Need to add a `--audit-action-statuses` step that walks every flow → action an
 - 2026-05-06 — Tier 1 #2 executed: paused Post-Purchase E1 (action 105627862) via `--pause-action`. **First attempt failed with "cannot change the links of an action".** Fix: preserve the action's existing `definition.links` object in the PATCH payload (Klaviyo treats omission as removal). Variant 1 succeeded. **Major implication: this unlocks pause + likely rebind for the 8+ actions that were previously locked.** The "cannot change the links" error was a payload-shape issue all along, not a Klaviyo server-side immutability rule.
 - 2026-05-06 — Read all 16 Replenishment templates via MCP. Triple-check confirms: 1 paused (Regaine), 11 byte-identical generic supplement clones, 1 unique Allergy template (with "Don't get caught" fear language + references "Hayfexo" which is **NOT in BC's Shopify catalog** — copy issue), 1 unique Oracoat template, 2 byte-identical Optifast Meal Plan templates. Net: only 4 unique content types, 12 redundant slots available for retail-first repurposing.
 - 2026-05-06 — Verified Shopify products. La Roche Posay (vendor name no hyphen) = Skin Care, no pharmacy tags ✅. GO Healthy supplements = Health & Wellbeing ✅. Regaine confirmed Pharmacy_Only_check (correctly paused). Oracoat Xylimelts confirmed Personal Care (not restricted, my earlier flag was wrong). Hayfexo not found in catalog — Allergy email references a product BC may not sell. CeraVe vendor name needs verification.
+- 2026-05-06 — Pulled comprehensive 180-day Shopify analytics: 6 queries covering top 100 by orders, top 60 by gross sales, top by returning customer rate, plus per-category drill-downs for Baby (2,096 orders), Cosmetics (5,035), Household (1,509), Personal Care (16,949), Skin Care (10,018). Hayfexo CONFIRMED as `_pharmacy-only` SKU (286 orders, $9.7k revenue) — same restricted-product class as Regaine. Allergy branch (action 105717138) needs to be paused.
+
+### FINAL Replenishment 16-slot retail-first map (180-day verified)
+
+Total retail repeat-purchase orders represented: ~9,500 across 15 distinct cyclic-replenishment categories.
+
+| Slot | Action | Category | Top SKUs (verified non-pharmacy) | 180d orders |
+|---|---|---|---|---|
+| 1 | 105717123 | (paused — Regaine `_pharmacy-only`) | — | — |
+| 2 | 105717126 | **Skincare daily** | LRP Effaclar Duo+M / Toleriane / Effaclar Foaming, CeraVe PM/Cream/SA/Hydrating Cleansers, Wild Ferns Bee Venom (×3), Weleda Skin Food, Sukin Signature/Teen | ~1,500 |
+| 3 | 105717129 | **Sun protection** | LRP Anthelios SPF 50+ / SPF50, CeraVe Facial Lotion SPF50, Cetaphil Sun Kids, Skinnies Kids Sun Buster 100/200ml, Natio Sensitive / Daily Defence SPF | ~700 |
+| 4 | 105717132 | **Body care** | Palmer's Body Oil + Body Lotion + Foot Magic, Vaseline | ~432 |
+| 5 | 105717135 | **Hair care daily** | BEING Shampoo / Conditioner / Leave-in, Sukin Natural Balance Shampoo + Conditioner, Hask, Shea Moisture (×2), Eco Style, SlickHair, Neutrogena T/Gel | ~700 |
+| 6 | 105717138 | (Hayfexo `_pharmacy-only` — pause) → **Daily multi & immune** | Elevit (114 orders, $80 AOV), GO Healthy D+C+Zinc Multi, Clinicians Sunshine D3, Sanderson CoQ10 | ~495 |
+| 7 | 105717141 | **Magnesium** | GO Healthy Sleep 120 + 200, Nutra-life Glycinate, Sanderson FX, Clinicians Twin Pack | ~720 |
+| 8 | 105717144 | **Probiotic / gut** | Clinicians Flora Restore, GO Healthy Probiotic 75 Billion | ~290 |
+| 9 | 105717147 | **Omega 3 / Fish Oil** | Sanderson 3000 + Odourless 2000, GO Healthy Fish Oil 2000, Clinicians Vegan Algae | ~435 |
+| 10 | 105717150 | **Hydration / electrolytes** | Nothing Naughty Watermelon / Orange / Lemon-Lime, Athena Protein Water, Aqualyte | ~310 |
+| 11 | 105717153 | **Sports / protein** | Musashi Creatine, Nothing Naughty Pure Collagen + Protein Bars | ~318 |
+| 12 | 105717156 | **Cosmetics daily** | FLASH Amplifying Eyelash Serum (264 orders!), Maybelline mascaras, Natio Mascara, KISS Falscara, 1000HOUR lash kits | ~430 |
+| 13 | 105717159 | **Baby & postpartum** | Sudocrem (×3), Bepanthen (×2), Viva la Vulva (postpartum, 4 products), Lansinoh, Childs Farm, Huggies wipes, Dr. Brown's teats | ~700 |
+| 14 | 105717162 | **Oral care daily** (keep Oracoat slot — broaden) | Oracoat Xylimelts ×2, Biotene Mouthwash + Oral Balance Gel, Miradent xylitol gum ×3, Oral-B Superfloss + Sensitive heads | ~800 |
+| 15 | 105717165 | **Meal replacement** (keep Optifast — full range) | Optifast Vanilla / Chocolate / Banana / Strawberry / Dessert / P+ | ~600 |
+| 16 | 105717169 | **Household & laundry** (replace Optifast clone) | Finish dishwasher (×4 SKUs), Persil capsules (×2), Domestos, Mortein, Astonish | ~400 |
+
+### Comparison: earlier shallow shortlist vs comprehensive map
+
+| Earlier shortlist (9 categories) | Now-comprehensive (15 retail categories) |
+|---|---|
+| Skincare (LRP+CeraVe only) | + Wild Ferns, Weleda, Sukin Signature/Teen, Burt's Bees |
+| Body (Palmer's only) | + Vaseline, Foot Magic |
+| ❌ No Hair care | + BEING (3 SKUs), Sukin, Hask, Shea Moisture (2), Eco Style, SlickHair, Neutrogena T/Gel |
+| ❌ No Cosmetics | + FLASH Eyelash (264 orders!), mascaras, lash glues, brow tint kits |
+| ❌ No Baby/Postpartum | + Sudocrem, Bepanthen, Viva la Vulva (postpartum), Lansinoh, breast pads, baby wipes |
+| ❌ No Hydration | + Nothing Naughty (3 flavors) |
+| ❌ No Daily multi | + Elevit, GO Healthy D+C+Zinc, Clinicians D3 |
+| ❌ No Cosmetics/Household | + Cosmetics daily, Household (Finish + Persil + Mortein) |
+| Oral care = Oracoat alone | Broadened: + Biotene, Miradent, Oral-B |
