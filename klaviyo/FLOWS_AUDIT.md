@@ -237,14 +237,106 @@ Recommended: **option B first** — verify whether they're in any flow message c
 | R8 | unknown | Footer / structure / threshold — not yet verified per template | Need full HTML read of 1–2 templates |
 | R9 | unknown | Trigger timing / branching logic — how does it decide which of 16 emails fires? | Need to inspect flow structure (delays + conditional splits) |
 
-### Compliance escalation
+### Compliance escalation (CORRECTED after Shopify verification)
 
-The Regaine and Oracoat emails are the **single most serious finding** of this entire audit. Both products are restricted under NZ pharmacy regulation:
+Verified product classifications by querying Shopify catalog directly:
 
-- **Regaine** (minoxidil topical solution 5%) — classified as Pharmacist-Only Medicine. Cannot be advertised direct-to-consumer with promotional intent except per the ASA Therapeutic Code 2025 (which has strict format rules: no fear-based claims, no efficacy claims without substantiation, mandatory pharmacist disclaimer). A "time to restock" email almost certainly fails these rules.
-- **Oracoat** — clinical mouth-ulcer adhesive; likely Pharmacy-Only Medicine. Same restrictions apply.
+- **Regaine (msg WdBQF5)** — ✅ **CONFIRMED restricted**
+  - Product type: `Medicines & Professional Services`
+  - Tags: `Pharmacy_Only_check`, `Pharmacy`, `BRAND=Regaine`, `CONCERN=Hair Loss`
+  - All 4 Regaine SKUs in BC catalog (Men's Foam 60g $71.99, Men's Solution 4-month $179.99, Men's Foam 4-month $186.99, Women's archived) carry the Pharmacy_Only_check tag
+  - **A "time to restock" promotional reorder email is a CLAUDE.md restricted-product violation** (rule: "never price-promoted") and likely contravenes ASA Therapeutic & Health Advertising Code 2025
+  - **Action: pause the Regaine branch of this flow today.**
 
-**Recommendation:** pause the Regaine and Oracoat branches of this flow within Klaviyo today, pending legal/ASA review. The other 14 emails are not legally critical but still need brand-voice fixes.
+- **Oracoat Xylimelts (msg X98UwK)** — ❌ **MY EARLIER FLAG WAS WRONG**
+  - Product type: `Personal Care` (NOT Medicines)
+  - Tags: `personal-care`, `oral-care`, `dental-care`, `dry-mouth`, `breath-freshener` — NO Pharmacy tags
+  - These are over-the-counter xylitol oral-comfort lozenges, sold at general retail
+  - **No restriction. Safe to keep in the flow as-is** (subject + preview still need rewrites for brand voice).
+
+### Shopify-grounded product additions / replacements
+
+Pulled top-selling products by orders (last 90 days, 4,325 orders total). Filtered out anything tagged `Pharmacy` / `Pharmacy_Only_check` / `Limit X per Customer` / `_pharmacist-only`.
+
+**Safe high-volume replenishment candidates — RETAIL-FIRST ranking** (pure retail / personal care / consumer supplements before pharmacy-adjacent items):
+
+#### Tier 1: Pure RETAIL (skincare, body care, oral care)
+
+| Rank | Product | Vendor | 90d orders | AOV | Replenishment cycle |
+|---|---|---|---|---|---|
+| 1 | La Roche-Posay Anthelios UVm400 SPF 50+ | La Roche Posay | 79 | $35 | Daily sunscreen, 30–60 days |
+| 2 | CeraVe Face Moisturising Lotion PM 52ml | Cerave | 79 | $27 | Daily skincare, 30–60 days |
+| 3 | Palmer's Tahitian Vanilla Body Oil 192ml | Palmer's | **114** | $20 | Daily body care, 30–60 days |
+| 4 | Palmer's Tahitian Vanilla Body Lotion 400ml | Palmer's | 76 | $12 | Daily body care, 30–60 days |
+| 5 | Blis Tooth Guard M18 Lozenges 30s | BLIS | 75 | $51 | Daily oral care, 30 days |
+| 6 | Miradent Xylitol Spearmint Gum 30s | Miradent | 93 | $13 | Daily oral care, 15–30 days |
+
+#### Tier 2: Consumer SUPPLEMENTS (general retail, no pharmacist consultation needed)
+
+| Rank | Product | Vendor | 90d orders | AOV | Replenishment cycle |
+|---|---|---|---|---|---|
+| 7 | **Elevit Preconception & Pregnancy Multi 100 Tablets** | Elevit | 84 | **$80** | Daily, 100-day cycle; highest AOV |
+| 8 | Sanderson Omega 3 Fish Oil 3000 150 Caps | Sanderson | 84 | $33 | Daily, 75–150 days |
+| 9 | GO Healthy Magnesium Sleep 120 VCaps | Go Healthy | 101 | $33 | Daily, 60–120 days |
+| 10 | Nutra-life Magnesium Glycinate 60s | Nutra-Life | 80 | $22 | Daily, 60 days |
+| 11 | Clinicians Flora Restore 30 Capsules (probiotic) | Clinicians | 114 | $25 | Daily, 30 days |
+| 12 | Clinicians Sunshine Vitamin D3 60 Tablets | Clinicians | 70 | $17 | Daily, 60 days |
+| 13 | Musashi Creatine 350g (sports nutrition) | Musashi | 75 | $33 | Daily, 70 days |
+
+#### Tier 3: Skip (pharmacy-adjacent, may need exclusion check)
+
+- **OPTIFAST VLCD Shake** — clinical meal replacement programme, may need pharmacy/clinical context
+- **Iron Melts Chewable Iron** — supplement but iron supplementation has clinical context; verify tags before including
+- (Anything else with `Pharmacy` or `Pharmacy_Only_check` tags — auto-exclude)
+
+### Recommended Replenishment flow restructure
+
+**Replace 1 branch:**
+- ❌ Remove Regaine branch (msg WdBQF5) — pause, then either delete or convert to a generic "personal care reorder" branch that excludes restricted SKUs
+
+**Keep:**
+- ✅ Oracoat Xylimelts (msg X98UwK) — was incorrectly flagged; rewrite subject only
+- ✅ Meal Plan branches (msg SVg6Ta, Ww7RU8) — likely OPTIFAST related, factual tone
+- ✅ Allergy Relief (msg XVqtQa) — keep but rewrite hero from "Don't Get Caught Without…" to BC tone
+
+**Add new branches for missing top sellers — RETAIL-WEIGHTED priority:**
+
+Tier 1 (retail-first, ship these new branches first):
+1. **Daily skincare** branch — La Roche-Posay SPF + CeraVe PM (combined 158 orders / 90d) — split or combined depending on flow capacity
+2. **Body care** branch — Palmer's Body Oil + Body Lotion (190 orders combined)
+3. **Daily oral care** branch — Blis Tooth Guard + Miradent Xylitol Gum (168 orders combined)
+
+Tier 2 (consumer supplements, ship after retail tier):
+4. **Elevit (preconception/pregnancy)** — high AOV ($80), 84 orders/90d, 100-day cycle
+5. **Magnesium** branch — GO Healthy Sleep + Nutra-life Glycinate (181 orders combined)
+6. **Probiotic** branch — Clinicians Flora Restore (114 orders, 30-day exact cycle)
+7. **Omega 3** branch — Sanderson Fish Oil
+8. **Vitamin D3** branch — Clinicians Sunshine
+9. **Sports nutrition** branch — Musashi Creatine
+
+The current flow is **overweighted on pharmacy/medicine SKUs**. After this rebalance, the flow should target retail/personal-care/consumer-supplement repeat purchases — which is also where Bargain Chemist's strongest brand voice already lives (per BRAND_VOICE.md analysis of 40 sent campaigns: "feel good", "discover", "your routine", "your glow").
+
+**Rewrite all 14 remaining branches** to:
+- Per-category subject (e.g. "Top up your Vitamin D, {{ first_name|default:'there' }}?" / "Time to reorder your Elevit?")
+- Add preview text (4–10 words, factual)
+- Replace generic "Running Low on Your Supplements?" hero with category-specific BC-tone copy
+- Use `first_name` not `person.first_name` to standardise with rest of account
+- Verify `{{ }}` variable syntax (likely fine here, but check)
+
+### Audience filter — this is the real fix
+
+The Replenishment flow currently triggers on `Placed Order` metric for any order. To be ASA-safe and prevent accidental restricted-product targeting:
+
+```
+Add filter on "Was in product variant" condition:
+  EXCLUDE customers whose last order included any product tagged:
+    - Pharmacy_Only_check
+    - Pharmacy
+    - product_type == "Medicines & Professional Services"
+    - any "Limit X per Customer" SKU
+```
+
+This makes the entire flow ASA-safe by default — Regaine and any future restricted products are automatically excluded regardless of which branch fires.
 
 ---
 
