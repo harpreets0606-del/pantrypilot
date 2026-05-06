@@ -1466,6 +1466,82 @@ def audit_action_statuses():
     print(f"  ⏹  = MANUAL in a LIVE flow (paused)")
 
 
+def inspect_flow_trigger(flow_id):
+    """Surface flow trigger metric, profile filter, and split logic
+    (trigger-splits + conditional-splits) by reading every action's
+    definition. Helps see the gap between sophisticated flows (with
+    splits + exits) vs simple ones (Browse/Search Abandonment which
+    are just delay + send-email)."""
+    print(f"\n🎯 INSPECT FLOW TRIGGER + SPLITS: {flow_id}")
+    print("=" * 100)
+
+    # Try several field combinations to coax trigger detail from the API
+    for field_set in [
+        "name,status,trigger_type,trigger_filters,definition",
+        "name,status,trigger_type,trigger_filters",
+        "name,status,trigger_type",
+        None,
+    ]:
+        try:
+            params = {"fields[flow]": field_set} if field_set else None
+            data = api_get(f"flows/{flow_id}", params)
+            print(f"  ✅ Field set worked: {field_set or '(default)'}")
+            attrs = data.get("data", {}).get("attributes", {}) or {}
+            print(f"     keys returned: {sorted(attrs.keys())}")
+            for k, v in attrs.items():
+                if k in ("name", "status", "archived", "created", "updated"):
+                    continue
+                print(f"     {k}: {json.dumps(v, indent=2) if not isinstance(v, str) else v}")
+            break
+        except Exception:
+            continue
+
+    actions = get_flow_actions(flow_id)
+    print(f"\n  Walking {len(actions)} action(s) to surface delay durations + split logic:\n")
+
+    for action in actions:
+        full = safe_get(f"flow-actions/{action['id']}")
+        if not full:
+            continue
+        a_attrs = full.get("data", {}).get("attributes", {}) or {}
+        defn = a_attrs.get("definition") or {}
+        if not isinstance(defn, dict):
+            continue
+        d_data = defn.get("data") or {}
+        a_type = defn.get("type")
+
+        marker = ""
+        details = ""
+
+        if a_type == "time-delay":
+            seconds = d_data.get("seconds") or d_data.get("duration_seconds")
+            unit = d_data.get("unit")
+            quantity = d_data.get("quantity")
+            details = f"delay = {quantity} {unit}" if quantity else f"seconds={seconds}"
+            marker = "⏱ "
+        elif a_type == "trigger-split":
+            paths = d_data.get("paths")
+            details = f"trigger-split paths = {json.dumps(paths)[:300]}"
+            marker = "🔀 "
+        elif a_type == "conditional-split":
+            condition = d_data.get("condition") or d_data.get("filter") or d_data
+            details = f"condition = {json.dumps(condition)[:400]}"
+            marker = "🔀 "
+        elif a_type == "send-email":
+            msg = d_data.get("message") or {}
+            tid = msg.get("template_id")
+            subj = (msg.get("subject_line") or "")[:80]
+            details = f"template={tid} subject='{subj}'"
+            marker = "📧 "
+        else:
+            details = f"data keys: {list(d_data.keys()) if isinstance(d_data, dict) else type(d_data).__name__}"
+            marker = "❓ "
+
+        print(f"  {marker}{action['id']:<10} type={a_type:<20} status={d_data.get('status', '?'):<8}")
+        print(f"             {details}")
+        print()
+
+
 def inspect_flow_config(flow_id_or_all):
     """Pull deep config for a flow (or all non-archived flows).
     Reports send_options (Smart Sending), send_strategy, tracking_options,
@@ -2251,6 +2327,8 @@ def main():
                         help="Bulk deploy all 15 retail-first Replenishment templates. Dry-run unless --confirm.")
     parser.add_argument("--inspect-flow-config", metavar="FLOW_ID",
                         help="Pull deep config (send_options, tracking_options, send_strategy, conversion_metric_id, per-action smart_sending/transactional/add_tracking_params) for a single flow. Pass 'all' to inspect every non-archived flow.")
+    parser.add_argument("--inspect-flow-trigger", metavar="FLOW_ID",
+                        help="Surface trigger metric, trigger filters, profile filter, time-delay durations, trigger-split conditions, and conditional-split conditions for a single flow.")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by --pause-action / --resume-action to actually execute (otherwise dry-run)")
     parser.add_argument("--all", action="store_true",
@@ -2317,6 +2395,9 @@ def main():
 
     if args.inspect_flow_config:
         inspect_flow_config(args.inspect_flow_config)
+
+    if args.inspect_flow_trigger:
+        inspect_flow_trigger(args.inspect_flow_trigger)
 
     if args.pause_action:
         pause_flow_action(args.pause_action, confirm=args.confirm)
