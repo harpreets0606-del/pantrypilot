@@ -18,6 +18,7 @@ on:
           - fix-footers
           - fix-thresholds
           - report-manual-fixes
+          - verify-flows
           - all
 
 jobs:
@@ -110,6 +111,12 @@ jobs:
         env:
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
         run: python scripts/klaviyo_flow_manager.py --report-manual-fixes
+
+      - name: Verify flow state
+        if: ${{ inputs.action == 'verify-flows' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --verify-flows
 
       - name: Run all
         if: ${{ inputs.action == 'all' }}

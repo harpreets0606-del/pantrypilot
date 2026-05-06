@@ -1668,6 +1668,131 @@ def fix_all_templates():
     report_manual_fixes_required()
 
 
+def verify_flows():
+    """Verify operational state: flow statuses (Triple Pixel paused?), volume per flow,
+    and recent activity. Use this before deciding rebuild vs UI swap vs draft-flip."""
+    print("\n🔍 VERIFYING FLOW STATE")
+    print("=" * 100)
+
+    # 1. List every flow with status, trigger, archived, last update
+    flows = []
+    cursor = None
+    while True:
+        params = {
+            "fields[flow]": "name,status,trigger_type,archived,created,updated",
+            "page[size]": 10,
+        }
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    # Sort by name
+    flows.sort(key=lambda x: (x.get("attributes", {}).get("name") or "").lower())
+
+    print(f"\n📋 ALL FLOWS ({len(flows)} total)\n")
+    print(f"  {'ID':<10} {'STATUS':<10} {'ARCH':<6} {'TRIGGER':<28} {'UPDATED':<22} NAME")
+    print("  " + "-" * 110)
+    by_status = {}
+    for f in flows:
+        a = f.get("attributes", {})
+        s = (a.get("status") or "?").lower()
+        by_status[s] = by_status.get(s, 0) + 1
+        archived = "yes" if a.get("archived") else "no"
+        trigger = (a.get("trigger_type") or "?")[:26]
+        updated = (a.get("updated") or "?")[:19]
+        name = a.get("name") or "?"
+        print(f"  {f['id']:<10} {s:<10} {archived:<6} {trigger:<28} {updated:<22} {name}")
+
+    print(f"\n  Status breakdown: {by_status}")
+
+    # 2. Triple Pixel pause verification
+    print("\n🔴 TRIPLE PIXEL FLOW STATUS:")
+    for tid, name in TRIPLE_PIXEL_FLOWS.items():
+        f = next((x for x in flows if x["id"] == tid), None)
+        if not f:
+            print(f"  ⚠️  {tid} ({name}) — NOT FOUND in flow list")
+            continue
+        s = (f["attributes"].get("status") or "?").lower()
+        ok = "✅ PAUSED" if s == "manual" else f"🚨 STILL {s.upper()}"
+        print(f"  {ok}  {tid} — {name}")
+
+    # 3. Per-flow email count (proxy for "how big is this flow")
+    print(f"\n📧 EMAIL ACTIONS PER FLOW (skipping archived):")
+    print(f"  {'ID':<10} {'STATUS':<10} {'ACTIONS':<9} {'EMAILS':<8} NAME")
+    print("  " + "-" * 110)
+    for f in flows:
+        a = f.get("attributes", {})
+        if a.get("archived"):
+            continue
+        s = (a.get("status") or "?").lower()
+        actions = get_flow_actions(f["id"])
+        email_count = 0
+        for action in actions:
+            msgs = get_messages_for_action(action["id"])
+            for m in msgs:
+                ch = (m.get("attributes", {}).get("channel") or "").lower()
+                if not ch or ch == "email":
+                    email_count += 1
+        name = a.get("name") or "?"
+        print(f"  {f['id']:<10} {s:<10} {len(actions):<9} {email_count:<8} {name}")
+        time.sleep(0.1)  # rate limit
+
+    # 4. Recent send volume via flow-values-reports (last 30 days)
+    print(f"\n📊 LAST 30 DAYS RECIPIENTS PER FLOW (proxy for active mid-flow subscribers):")
+    placed_order_id = get_metric_id("Placed Order")
+    if not placed_order_id:
+        print("  ⚠️  Could not find 'Placed Order' metric — skipping volume report")
+    else:
+        live_flows = [f for f in flows if (f["attributes"].get("status") or "").lower() == "live"
+                      and not f["attributes"].get("archived")]
+        for f in live_flows:
+            a = f.get("attributes", {})
+            payload = {
+                "data": {
+                    "type": "flow-values-report",
+                    "attributes": {
+                        "statistics": ["recipients", "delivered", "opens"],
+                        "timeframe": {"key": "last_30_days"},
+                        "conversion_metric_id": placed_order_id,
+                        "filter": f'equals(flow_id,"{f["id"]}")',
+                    }
+                }
+            }
+            r = requests.post(f"{BASE_URL}/flow-values-reports/", headers=HEADERS,
+                              json=payload, timeout=REQUEST_TIMEOUT)
+            if r.status_code == 200:
+                results = r.json().get("data", {}).get("attributes", {}).get("results", [])
+                if results:
+                    stats = results[0].get("statistics", {})
+                    print(f"  {f['id']:<10} recipients={stats.get('recipients', 0):<6} "
+                          f"delivered={stats.get('delivered', 0):<6} "
+                          f"opens={stats.get('opens', 0):<6} {a.get('name')}")
+                else:
+                    print(f"  {f['id']:<10} no data — {a.get('name')}")
+            else:
+                print(f"  {f['id']:<10} ⚠️  HTTP {r.status_code}: {r.text[:120]} — {a.get('name')}")
+            time.sleep(0.4)
+
+    print("\n" + "=" * 100)
+    print("VERIFICATION COMPLETE")
+    print("=" * 100)
+    print("""
+What to check:
+  1. Triple Pixel flows above should all show '✅ PAUSED' (status=manual).
+  2. Flows with HIGH 'recipients' last 30d → mid-flow subscribers exist → rebuild is risky.
+  3. Flows with 0 recipients → safe to rebuild.
+  4. Status='draft' = never went live; 'live' = active; 'manual' = paused.
+""")
+
+
 # ─────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────
@@ -1691,6 +1816,8 @@ def main():
                         help="Rebind each flow's email action to its [COMPLIANCE] template via PATCH /api/flow-actions (revision 2025-10-15+)")
     parser.add_argument("--report-manual-fixes", action="store_true",
                         help="Print list of issues that require manual action (coupons, fear language, etc.)")
+    parser.add_argument("--verify-flows", action="store_true",
+                        help="Verify operational state: flow statuses, Triple Pixel pause, recipients last 30 days")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -1728,6 +1855,9 @@ def main():
 
     if args.report_manual_fixes:
         report_manual_fixes_required()
+
+    if args.verify_flows:
+        verify_flows()
 
     if args.all:
         print_setup_guide(templates, flows)
