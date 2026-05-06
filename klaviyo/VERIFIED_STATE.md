@@ -336,6 +336,52 @@ To verify these, options are:
 
 ---
 
+## Browse + Search Abandonment — flow STRUCTURE (verified via inspect-flow-trigger 2026-05-06)
+
+**Status:** VERIFIED
+**Source:** `--inspect-flow-trigger RtiVC5` + `--inspect-flow-trigger XbQiKg`
+
+### Browse Abandonment (RtiVC5) structure
+
+```
+Trigger:  Metric (specific metric ID not exposed by Klaviyo API revision 2025-10-15)
+Actions:  2 total
+  - 98627562  time-delay  (duration not exposed via API; visible only in UI)
+  - 98627563  send-email  template=Tutaam, draft, Smart Sending ON
+              subject="Still thinking about it{% if first_name %}, {{ first_name }}{% endif %}?"
+```
+
+**Missing vs best practice:**
+- ❌ No `trigger-split` action (no event-time filtering)
+- ❌ No `conditional-split` action (no exit if customer converts)
+- ❌ No E2 follow-up
+- ⚠️ Single delay duration unknown (UI inspection needed)
+
+### Search Abandonment V4 (XbQiKg) structure
+
+```
+Trigger:  Metric (specific metric ID not exposed)
+Actions:  2 total
+  - 105487705  time-delay  (duration not exposed)
+  - 105487706  send-email  template=RPZh8V, draft, Smart Sending ON
+               subject="{% if event.productName %}Still looking for {{ event.productName }}?{% else %}Fo[und...]"
+```
+
+**🚨 New discovery — subject uses `event.productName` not `event.searchQuery`:**
+- The body of template `RPZh8V` references `{{ event.searchQuery }}` (we verified earlier)
+- The subject uses `{{ event.productName }}`
+- These are different fields — meaning either:
+  1. The trigger event provides BOTH (e.g. a custom Boost event "Search Result Clicked" with both productName and searchQuery)
+  2. The subject and body were authored against different events and one is stale
+  3. The flow is misconfigured
+
+**Action:** confirm the actual trigger metric in Klaviyo UI under Flow → Trigger. If trigger is Viewed Product, body's `event.searchQuery` references are stale and won't render. If trigger is Submitted Search, subject's `event.productName` won't render.
+
+**Missing vs best practice (same as Browse):**
+- ❌ No trigger-split / conditional-split
+- ❌ No E2 follow-up
+- ⚠️ Trigger event mismatch between subject and body
+
 ## Browse Abandonment + Search Abandonment V4 — content audit
 
 **Status:** VERIFIED
