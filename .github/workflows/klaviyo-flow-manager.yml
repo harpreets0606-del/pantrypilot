@@ -11,7 +11,6 @@ on:
         options:
           - list-flows
           - pause-triple-pixel
-          - create-templates
           - create-flows
           - audit-flows
           - fix-templates
@@ -69,12 +68,6 @@ jobs:
         env:
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
         run: python scripts/klaviyo_flow_manager.py --pause-triple-pixel
-
-      - name: Create email templates
-        if: ${{ inputs.action == 'create-templates' }}
-        env:
-          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
-        run: python scripts/klaviyo_flow_manager.py --create-templates
 
       - name: Create flow shells
         if: ${{ inputs.action == 'create-flows' }}
