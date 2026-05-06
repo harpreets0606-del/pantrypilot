@@ -253,6 +253,70 @@ conditionGroup 2 (AND with above):
 
 **Implication:** to verify those fields, must use the raw Klaviyo REST API via the script (`scripts/klaviyo_flow_manager.py` already has `safe_get` plumbing — we'd need a `--inspect-flow-config` step, or have the user paste output of a curl). Or use Klaviyo UI manually.
 
+## Per-action message config — verified across all 14 non-archived flows
+
+**Status:** VERIFIED
+**Source:** `--inspect-flow-config all` (raw REST API via script) on 2026-05-06
+**Fact:** Klaviyo API revision 2025-10-15 **rejects** `send_options`, `send_strategy`, `tracking_options`, `conversion_metric_id`, `trigger_filters` as `fields[flow]` values (HTTP 400). At flow level, only `name, status, archived, created, updated, trigger_type` are exposed via API. Default GET also doesn't return those config fields. **They're set/visible only in the Klaviyo UI.**
+
+However, **per-action `definition.data.message` IS exposed** and gives us the per-email config:
+
+### Smart Sending (`smart_sending_enabled`) per email-send action
+
+**ON (Y) — most flows:**
+- All Post-Purchase actions ✅
+- Added to Cart Abandonment E1 (98627502, LIVE) ✅
+- Added to Cart Abandonment E2 (98628345, draft) ✅
+- All Browse Abandonment + ATC Triple Pixel ✅
+- Win-back E1 (105721759, LIVE) ✅, E2 (105721762, draft) ✅
+- Welcome Series - No Coupon all 3 ✅
+- All 13 Replenishment retail-first slots ✅ (good — our V1 deploy preserved Smart Sending)
+- Back in Stock E1 (105627854, LIVE) ✅, E2 (draft) ✅
+- Search Abandonment V4 (draft) ✅
+- Abandoned Checkout - Triple Pixel (all draft) ✅
+
+**🚨 OFF (N) — critical:**
+- **Abandoned Checkout E2/E3/E4** (98627487, 98627489, 98627490, all draft) — ALL THREE follow-up emails after E1. The "$5 off coupon" CLAUDE.md violation email is one of these. If any get activated, customers who recently received any other BC email will be hit again with no suppression.
+- **Welcome Series - Website**: 4 of 7 send-email actions Smart Sending OFF (100893583, 101094506, 101094786, 101094883). Inconsistent setup — if ever activated as-is, half the welcome emails would ignore Smart Sending.
+
+### Transactional flag (`transactional`)
+
+**🚨 ALL emails = `false` (N) across every flow.** No email is flagged transactional anywhere — including Order Confirmation (VJui9n, draft). If/when Order Confirmation activates without `transactional=true`, it'll be subject to marketing-unsubscribe suppression — which is wrong for an order confirmation (customers expect it regardless of marketing opt-out).
+
+### Tracking params (`add_tracking_params`)
+
+**ALL emails = `true` (Y) across every flow.** UTM tracking is enabled universally. Good.
+
+### Custom UTM templates (`custom_tracking_params`)
+
+Set on **only one flow**: Welcome Series - Website (4 of 7 send-email actions):
+```
+utm_campaign = {message_name} ({message_id})
+utm_medium   = email
+utm_source   = {flow_name}
+```
+
+All other flows use Klaviyo's default UTM template (which Klaviyo hard-codes as: `utm_source=email`, `utm_medium=email`, `utm_campaign={Campaign Name}` — pretty generic and not flow-aware). For attribution analytics, the Welcome Series - Website pattern is better — should be applied to other flows.
+
+### Flow-level config visibility — not via API
+
+API revision 2025-10-15 doesn't expose flow-level `send_options`, `send_strategy`, `tracking_options`, `conversion_metric_id` regardless of include params. To verify these you'd need:
+1. Klaviyo UI manual inspection (Flow → Settings → Tracking + Conversion Metric)
+2. Or upgrade revision (newer revisions may expose them)
+3. Or use the Klaviyo Web app's internal API (unsupported)
+
+## Critical configuration findings (verified, action items)
+
+| # | Finding | Severity | Action |
+|---|---|---|---|
+| C1 | **Order Confirmation (VJui9n) is `draft` AND not transactional-flagged.** | 🚨 production-protective | Before activation: set `transactional=true` on its email action. Otherwise unsub'd customers won't receive their order confirmation. |
+| C2 | **Abandoned Checkout E2/E3/E4 have Smart Sending OFF.** | 🚨 deliverability risk | Enable Smart Sending on actions 98627487, 98627489, 98627490 before any are activated (especially given E2 has the $5 coupon — needs both Smart Sending fix + coupon-removal copy fix). |
+| C3 | **Welcome Series - Website has Smart Sending OFF on 4 of 7 emails.** | high if activated | Either consolidate (some emails are duplicates per audit) or enable Smart Sending uniformly. Since flow is `draft`, fix before activating. |
+| C4 | **Custom UTM templates only on Welcome Series - Website (and only 4 of 7 actions there).** | medium attribution gap | Apply same pattern (`utm_campaign={message_name} ({message_id})`, `utm_source={flow_name}`) to all email-send actions for proper flow-level attribution in GA/analytics. |
+| C5 | **Flow-level send_options / send_strategy / tracking_options / conversion_metric_id are not API-exposed.** | medium | Document via UI screenshot or direct inspection of one LIVE flow. |
+
+---
+
 ## What MCP cannot expose (need other tools)
 
 **Status:** VERIFIED (tool inventory)
