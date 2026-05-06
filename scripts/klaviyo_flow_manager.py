@@ -780,6 +780,12 @@ def build_flow_email_payload(content, new_template_id):
     all existing required fields (from_email, from_label, subject_line, etc.)
     and only swapping the template_id."""
     msg = {"template_id": new_template_id}
+    # Preserve message identity so Klaviyo treats this as updating the existing
+    # message (allowed) rather than replacing it (blocked as "link change")
+    if content.get("id"):
+        msg["id"] = content["id"]
+    if content.get("name"):
+        msg["name"] = content["name"]
     # Pass-through required + optional FlowEmail fields from existing content
     for k in ("from_email", "from_label", "reply_to_email", "cc_email", "bcc_email",
               "subject_line", "preview_text", "smart_sending_enabled",
