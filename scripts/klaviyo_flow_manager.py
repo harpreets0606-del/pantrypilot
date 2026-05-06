@@ -692,6 +692,197 @@ FLOWS TO KEEP PAUSED (already done):
 
 
 # ─────────────────────────────────────────────
+# 7. Audit Flows — traverse every flow → action → message → template
+#    and check each template against compliance + brand rules
+# ─────────────────────────────────────────────
+import re
+
+AUDIT_RULES = [
+    # (name, regex, severity, description)
+    ("Stale free shipping ($49)", re.compile(r"\$\s?49\b|over\s+\$?49"), "🔴", "References $49 free shipping (current threshold is $79)"),
+    ("Stale free shipping ($50)", re.compile(r"\$\s?50\b|over\s+\$?50"), "🔴", "References $50 free shipping (current threshold is $79)"),
+    ("Coupon/discount code", re.compile(r"\b(coupon|promo\s*code|discount\s*code|use\s*code|enter\s*code|\d+%\s*off|save\s+\d+%)\b", re.I), "🔴", "Mentions coupon/discount code (we cannot apply codes)"),
+    ("Fear language: expires", re.compile(r"\b(expire(s|d)?|expiring)\b", re.I), "🟠", "ASA Code: 'expires today' borders on play-on-fear"),
+    ("Fear language: last chance", re.compile(r"last\s*chance", re.I), "🟠", "Aggressive urgency, off-brand for Bargain Chemist"),
+    ("Fear language: stock alert", re.compile(r"stock\s*alert|running\s*out\s*fast|don't\s*miss", re.I), "🟠", "Pressure-based scarcity, ASA borderline"),
+    ("Fear language: act now", re.compile(r"act\s*now|hurry|grab\s*yours", re.I), "🟠", "High-pressure CTAs"),
+    ("Missing 'always read the label'", re.compile(r"always\s*read\s*the\s*label", re.I), "✓check", "ASA mandatory disclaimer for therapeutic products"),
+    ("Missing 'symptoms persist' disclaimer", re.compile(r"symptoms\s*persist", re.I), "✓check", "ASA mandatory disclaimer for therapeutic products"),
+    ("Missing UEMA business identifier", re.compile(r"bargain\s*chemist\s*limited", re.I), "✓check", "UEMA s9: business legal name in footer"),
+    ("Missing physical address", re.compile(r"\b(christchurch|auckland|wellington|new\s*zealand|nz\b)", re.I), "✓check", "UEMA s9: physical address in footer"),
+    ("Missing unsubscribe", re.compile(r"\{%\s*unsubscribe", re.I), "✓check", "UEMA s11: functional unsubscribe link"),
+]
+
+
+def safe_get(path):
+    """GET that returns None on 404 instead of raising."""
+    r = requests.get(f"{BASE_URL}/{path}", headers=HEADERS)
+    if r.status_code == 200:
+        return r.json()
+    return None
+
+
+def get_flow_actions(flow_id):
+    data = safe_get(f"flows/{flow_id}/flow-actions/?fields[flow-action]=action_type,settings,status")
+    if not data:
+        return []
+    return data.get("data", [])
+
+
+def get_messages_for_action(action_id):
+    data = safe_get(f"flow-actions/{action_id}/flow-messages/?fields[flow-message]=name,channel,content")
+    if not data:
+        return []
+    return data.get("data", [])
+
+
+def get_template_id_for_message(message_id):
+    data = safe_get(f"flow-messages/{message_id}/relationships/template/")
+    if not data or not data.get("data"):
+        return None
+    return data["data"].get("id")
+
+
+def get_template_html(template_id):
+    data = safe_get(f"templates/{template_id}")
+    if not data:
+        return None
+    return data.get("data", {}).get("attributes", {}).get("html", "")
+
+
+def audit_template(html, name=""):
+    """Run all audit rules against a template's HTML. Returns list of findings."""
+    findings = []
+    if not html:
+        return [("🔴", "Empty template", "Template HTML is empty or missing")]
+    for rule_name, regex, severity, desc in AUDIT_RULES:
+        match = regex.search(html)
+        if severity == "✓check":
+            # These rules check for REQUIRED content — flag if MISSING
+            if not match:
+                findings.append(("🔴", rule_name, desc))
+        else:
+            # These rules check for FORBIDDEN content — flag if PRESENT
+            if match:
+                snippet = match.group(0)
+                findings.append((severity, rule_name, f"{desc} (found: '{snippet}')"))
+    return findings
+
+
+def audit_all_flows():
+    """Pull all live/draft flows, traverse to messages, audit templates."""
+    print("\n🔍 AUDITING ALL FLOWS")
+    print("=" * 80)
+
+    # Get all flows (live + draft + manual)
+    flows_data = safe_get("flows?fields[flow]=name,status,trigger_type&page[size]=100")
+    if not flows_data:
+        print("  ❌ Failed to fetch flows")
+        return
+
+    flows = flows_data.get("data", [])
+    print(f"\nFound {len(flows)} total flows. Auditing email templates...\n")
+
+    summary = {"flows_checked": 0, "templates_checked": 0, "issues_found": 0, "critical": 0}
+    flow_reports = []
+
+    for flow in flows:
+        flow_id = flow["id"]
+        attrs = flow["attributes"]
+        flow_name = attrs["name"]
+        status = attrs["status"]
+
+        # Skip archived flows
+        if attrs.get("archived"):
+            continue
+        # Only audit flows that could send (live or were live recently)
+        if status not in ("live", "draft", "manual"):
+            continue
+
+        actions = get_flow_actions(flow_id)
+        if not actions:
+            continue
+
+        flow_findings = []
+        for action in actions:
+            action_id = action["id"]
+            messages = get_messages_for_action(action_id)
+            for msg in messages:
+                msg_id = msg["id"]
+                msg_attrs = msg.get("attributes", {})
+                msg_name = msg_attrs.get("name", "Unnamed")
+                channel = msg_attrs.get("channel", "")
+                if channel != "email":
+                    continue
+
+                # Subject + preview from message content (fast check before pulling template)
+                content = msg_attrs.get("content", {})
+                subject = content.get("subject", "") if content else ""
+                preview = content.get("preview_text", "") if content else ""
+
+                # Get the template HTML
+                template_id = get_template_id_for_message(msg_id)
+                html = get_template_html(template_id) if template_id else ""
+
+                # Audit subject + preview + html together
+                combined = f"{subject}\n{preview}\n{html}"
+                findings = audit_template(combined, msg_name)
+
+                if findings or subject:
+                    flow_findings.append({
+                        "msg_id": msg_id,
+                        "msg_name": msg_name,
+                        "subject": subject,
+                        "preview": preview,
+                        "template_id": template_id,
+                        "findings": findings,
+                    })
+                    summary["templates_checked"] += 1
+                    summary["issues_found"] += len(findings)
+                    summary["critical"] += sum(1 for f in findings if f[0] == "🔴")
+
+                time.sleep(0.15)  # rate limit safety
+
+        if flow_findings:
+            summary["flows_checked"] += 1
+            flow_reports.append({
+                "id": flow_id,
+                "name": flow_name,
+                "status": status,
+                "messages": flow_findings,
+            })
+
+    # Print report
+    for report in flow_reports:
+        print("┌" + "─" * 78 + "┐")
+        print(f"│ {report['name']}")
+        print(f"│ ID: {report['id']}  ·  Status: {report['status']}")
+        print("└" + "─" * 78 + "┘")
+        for msg in report["messages"]:
+            print(f"\n  📧 {msg['msg_name']} ({msg['msg_id']})")
+            if msg["subject"]:
+                print(f"     Subject: {msg['subject']}")
+            if msg["preview"]:
+                print(f"     Preview: {msg['preview']}")
+            if msg["template_id"]:
+                print(f"     Template: {msg['template_id']}")
+            if not msg["findings"]:
+                print("     ✅ No issues found")
+            else:
+                for severity, rule, desc in msg["findings"]:
+                    print(f"     {severity} {rule}: {desc}")
+        print()
+
+    print("=" * 80)
+    print(f"AUDIT SUMMARY")
+    print(f"  Flows audited:     {summary['flows_checked']}")
+    print(f"  Email templates:   {summary['templates_checked']}")
+    print(f"  Total findings:    {summary['issues_found']}")
+    print(f"  Critical (🔴):     {summary['critical']}")
+    print("=" * 80)
+
+
+# ─────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────
 def main():
@@ -702,6 +893,8 @@ def main():
                         help="Create email templates in Klaviyo")
     parser.add_argument("--create-flows", action="store_true",
                         help="Create draft flow shells in Klaviyo")
+    parser.add_argument("--audit-flows", action="store_true",
+                        help="Audit all flow templates for compliance, brand voice, $79 threshold, coupon residue")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -721,6 +914,9 @@ def main():
 
     if args.all or args.create_flows:
         flows = create_flow_shells()
+
+    if args.audit_flows:
+        audit_all_flows()
 
     if args.all:
         print_setup_guide(templates, flows)
