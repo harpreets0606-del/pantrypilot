@@ -1688,41 +1688,15 @@ def cleanup_duplicate_compliance_templates(dry_run=False):
     print("\n🧹 CLEANING UP DUPLICATE [COMPLIANCE] TEMPLATES")
     print("=" * 80)
 
-    # 1. Walk all flows to find which template IDs are currently bound to a message
-    print("  Walking flows to identify in-use template IDs...")
+    # 1. Build in-use set from local cache (fast — avoids ~150 GET requests).
+    # The cache maps msg_name → keeper template_id and is updated every --fix-footers run.
     in_use_template_ids = set()
-    cursor = None
-    flows = []
-    while True:
-        params = {
-            "fields[flow]": "name,status,archived",
-            "page[size]": 10,
-        }
-        if cursor:
-            params["page[cursor]"] = cursor
-        page = safe_get("flows", params=params)
-        if not page:
-            break
-        flows.extend(page.get("data", []))
-        next_link = page.get("links", {}).get("next") or ""
-        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
-        if not m:
-            break
-        cursor = requests.utils.unquote(m.group(1))
-
-    msg_name_to_in_use = {}  # msg_name -> bound template_id (so we can prefer keeping it)
-    for f in flows:
-        if f.get("attributes", {}).get("archived"):
-            continue
-        for action in get_flow_actions(f["id"]):
-            for msg in get_messages_for_action(action["id"]):
-                content = get_message_content(msg["id"])
-                tid = content.get("template_id")
-                if not tid:
-                    continue
-                in_use_template_ids.add(tid)
-                msg_name_to_in_use[f"msg_{msg['id']}"] = tid
-    print(f"  Found {len(in_use_template_ids)} template IDs bound to flow messages")
+    cache = _load_compliance_cache() if os.path.exists(COMPLIANCE_CACHE_PATH) else {}
+    for tid in cache.values():
+        in_use_template_ids.add(tid)
+    print(f"  Loaded {len(in_use_template_ids)} 'keeper' template IDs from local cache")
+    if not in_use_template_ids:
+        print("  ⚠️  Cache is empty — will fall back to keeping the NEWEST template per name.")
 
     # 2. List all templates and filter for [COMPLIANCE] prefix
     print("\n  Listing all templates (paginated)...")
