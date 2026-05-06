@@ -789,7 +789,7 @@ def audit_all_flows():
     cursor = None
     while True:
         params = {"fields[flow]": "name,status,trigger_type,archived",
-                  "page[size]": 50}
+                  "page[size]": 10}
         if cursor:
             params["page[cursor]"] = cursor
         page = safe_get("flows", params=params, debug=True)
@@ -986,7 +986,7 @@ def _fetch_all_templates():
     flows = []
     cursor = None
     while True:
-        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
+        params = {"fields[flow]": "name,status,archived", "page[size]": 10}
         if cursor:
             params["page[cursor]"] = cursor
         page = safe_get("flows", params=params, debug=True)
@@ -1007,7 +1007,9 @@ def _fetch_all_templates():
         attrs = flow.get("attributes", {})
         if attrs.get("archived"):
             continue
-        if attrs.get("status") not in ("live", "draft", "manual"):
+        # Skip only clearly inactive states; revision 2025-10-15 may use new enum values
+        status = (attrs.get("status") or "").lower()
+        if status in ("archived", "deleted"):
             continue
 
         actions = get_flow_actions(flow["id"])
@@ -1039,7 +1041,7 @@ def _list_existing_compliance_templates():
     page_count = 0
     total_seen = 0
     while True:
-        params = {"fields[template]": "name", "page[size]": 50}
+        params = {"fields[template]": "name", "page[size]": 10}
         if cursor:
             params["page[cursor]"] = cursor
         page = safe_get("templates", params=params, debug=True)
@@ -1085,7 +1087,7 @@ def fix_compliance_footers():
     flows = []
     cursor = None
     while True:
-        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
+        params = {"fields[flow]": "name,status,archived", "page[size]": 10}
         if cursor:
             params["page[cursor]"] = cursor
         page = safe_get("flows", params=params, debug=True)
@@ -1116,11 +1118,14 @@ def fix_compliance_footers():
         attrs = flow.get("attributes", {})
         if attrs.get("archived"):
             continue
-        if attrs.get("status") not in ("live", "draft", "manual"):
+        # Skip only clearly inactive states; revision 2025-10-15 may use new enum values
+        status = (attrs.get("status") or "").lower()
+        if status in ("archived", "deleted"):
             continue
 
         flow_name = attrs.get("name", "?")
-        actions = get_flow_actions(flow["id"])
+        actions = get_flow_actions(flow["id"], debug=True)
+        print(f"  📂 {flow_name} (status={status!r}) — {len(actions)} actions")
 
         for action in actions:
             messages = get_messages_for_action(action["id"])
@@ -1500,7 +1505,7 @@ def rebind_compliance_templates():
     flows = []
     cursor = None
     while True:
-        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
+        params = {"fields[flow]": "name,status,archived", "page[size]": 10}
         if cursor:
             params["page[cursor]"] = cursor
         page = safe_get("flows", params=params)
