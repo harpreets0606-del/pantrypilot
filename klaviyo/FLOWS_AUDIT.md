@@ -395,10 +395,45 @@ This makes the entire flow ASA-safe by default — Regaine and any future restri
 
 ---
 
+---
+
+## Flow 4: [Z] Added to Cart Abandonment (RPQXaa, LIVE) ⭐ GOLD STANDARD
+
+**Trigger:** Added to Cart metric. **Status:** LIVE. **Volume:** 1,408 recipients last 30d.
+**Intent:** Recover ATC abandons.
+**Structure:** 5 actions, 2 emails. Likely: trigger → wait → E1 → wait → E2.
+
+### Per-message audit
+
+| # | Action | Msg | Subject (chars) | Preview | Template | Voice |
+|---|---|---|---|---|---|---|
+| 1 | 98627502 | TCgQED | "This one's popular for a reason" (32) | "Just popping in - your item's still waiting." | VqGJb8 | ✅ Social-proof angle + casual "popping in" |
+| 2 | 98628345 | TpkzDd | "Your cart's still saved" (23) | "No pressure — just a quick reminder." | RWKxKR | ✅ **"No pressure" — exemplary anti-fear** |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| ATC1 | ✅ none | **Cleanest BC voice in the audit so far.** Both emails actively counter fear language ("Just popping in", "No pressure"). Inverse of typical e-commerce panic copy. | Use as the **template/voice exemplar** for rewriting other flows |
+| ATC2 | low | E2 subject 23 chars — on the lower end of BC sweet spot (30–55) but acceptable | Optional: extend to ~35 chars (e.g. `Your cart's still saved, {{ first_name|default:'there' }}`) |
+| ATC3 | medium | E1 social-proof angle ("popular for a reason") — body must actually deliver social proof (review counts, reorder rate) | Verify body content has substance — read template HTML |
+| ATC4 | unknown | Templates are MJML-generated (Klaviyo drag-drop) — need to verify UEMA footer + brand colors | Same as Abandoned Checkout — read full HTML |
+| ATC5 | unknown | No `first_name` personalisation visible in subjects/previews | Worth A/B testing personalised subjects |
+
+**This is the flow whose voice we should clone everywhere else.** Specifically these moves:
+- "No pressure" / "no rush" / "Just popping in" / "Ready when you are" — **anti-fear BC vocabulary**
+- Subject + preview that pair: factual statement + warm reassurance
+- Calm, helpful, Kiwi-casual
+
+If Replenishment / Post-Purchase / Welcome had this voice, the audit would be far cleaner. Keep this as the reference.
+
+---
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
 - 2026-05-06 — Audited Flow 11 (Post-Purchase Series): 13 findings across 2 emails, 4 critical
 - 2026-05-06 — Audited 4 NEW templates we created: 8 critical issues common to all. **Confirmed not in Klaviyo library — Python source deleted from script.**
 - 2026-05-06 — Audited Flow 12 (Replenishment): 16 emails. CORRECTED: only Regaine (msg WdBQF5) is restricted (Pharmacy_Only_check tag); Oracoat Xylimelts is Personal Care, not restricted. Plus retail-first additions plan from Shopify top-sellers.
-- 2026-05-06 — Audited Flow 2 (Abandoned Checkout): 4 emails, 1,714 recipients/30d. **CRITICAL: E2 offers "$5 off" — direct CLAUDE.md "no coupon" violation.** E3 and E4 share identical subject + preview (likely conditional split branches). E1 voice is exemplary BC tone ("no rush"). Templates are MJML-generated, need full HTML check for UEMA footer + brand color compliance.
+- 2026-05-06 — Audited Flow 2 (Abandoned Checkout): 4 emails, 1,714 recipients/30d. **CRITICAL: E2 offers "$5 off" — direct CLAUDE.md "no coupon" violation.** E3+E4 share identical subject + preview. E1 voice exemplary.
+- 2026-05-06 — Audited Flow 4 (Added to Cart Abandonment): 2 emails, 1,408 recipients/30d. **GOLD STANDARD — cleanest BC voice in the audit.** "No pressure" / "Just popping in" — anti-fear copy across both emails. Templates MJML, need HTML verification of footer/colors.
