@@ -336,6 +336,55 @@ To verify these, options are:
 
 ---
 
+## CONSOLIDATED FLOW INVENTORY (15 flows total)
+
+**Status:** VERIFIED
+**Source:** `--audit-action-statuses` + `--inspect-flow-config all` on 2026-05-06
+
+### LIVE flows (7) — actively sending or eligible
+
+| Flow ID | Name | LIVE actions | Issues (verified) |
+|---|---|---|---|
+| RPQXaa | [Z] Added to Cart Abandonment | E1 (98627502) | ✅ Clean — A-grade voice, Smart Sending ON |
+| TsC8GZ | [Z] Welcome Series - No Coupon | E1 + E2 (105721561, 105721565) | Empty preview text on all 3 emails |
+| T7pmf6 | [Z] Win-back - Lapsed Customers | E1 (105721759) | Empty preview text on both emails |
+| Y84ruV | [Z] Abandoned Checkout | E1 (98627483) | E1 fine. **E2-E4 draft + Smart Sending OFF**. E2 has $5 coupon (CLAUDE.md violation) |
+| Ysj7sg | [Z] Back in Stock | E1 (105627854) | Fear language in both: "selling fast", "limited stock", "don't miss your chance" |
+| V9XmEm | [Z] Flu Season - Winter Wellness | E1 (105627866) | Missing UEMA footer (no "Bargain Chemist Limited" + NZ address) |
+| V4cZMd | [Z] Replenishment - Reorder Reminders | **0 actions live** | Flow status=live but every action draft/manual. New retail-first V1 templates deployed today, awaiting activation |
+
+### DRAFT/MANUAL flows (8)
+
+| Flow ID | Name | Status | Recommended action |
+|---|---|---|---|
+| VJui9n | [Z] Order Confirmation | draft | 🚨 **Should be LIVE** (transactional). Set `transactional=true` flag before activation. |
+| RDJQYM | [Z] Post-Purchase Series | manual | Paused today (E1 had wrong content + broken `{ first_name }`). Needs rewrite + rebind to review-request template before re-activating |
+| RtiVC5 | [Z] Browse Abandonment | draft | Audit + activate. Largest unutilised retention flow. |
+| XbQiKg | [B] Search Abandonment V4 | draft | Audit + decide. Has good UTM template pattern (`utm_campaign={message_name} ({message_id})`). |
+| SehWRt | [Z] Welcome Series - Website | draft | 4 of 7 emails have Smart Sending OFF. Either fix + activate (replacing TsC8GZ?) or archive. |
+| RSnNak | [Z] Browse Abandonment - Triple Pixel | draft | Triple Pixel deprecated — archive |
+| VMKAyS | [Z] Abandoned Checkout - Triple Pixel | draft | Same — archive |
+| SnakeG | [Z] Added to Cart Abandonment - Triple Pixel | draft | Same — archive |
+
+### Genuinely missing flows (not in inventory)
+
+Verified by absence in flow list + segment audit:
+
+1. **Birthday flow** — no Date-Based-trigger flow exists
+2. **VIP / High-LTV recognition** — no value-based segment, no flow targeting top-spend customers
+3. **Mum & Bubs welcome series** — `[Z] Baby (30 day engaged)` segment exists but not wired as a flow trigger
+4. **Cross-sell by category** — Replenishment is reorder-only; no flow suggests related categories after first purchase
+5. **Anniversary / Customer-for-N-years** — no Date-Based flow
+
+### What's correctly NOT a missing flow (assumptions corrected)
+
+- ❌ "No SMS channel" — WRONG; SMS infrastructure exists (Sent SMS, Subscribed to SMS Marketing metrics)
+- ❌ "No category segmentation" — WRONG; 10+ category-engagement segments exist
+- ❌ "No Triple Whale tracking" — WRONG; active integration with 5 metrics
+- ❌ "Mum & Bubs / Baby segment doesn't exist" — WRONG; segment exists, just not wired into a flow
+
+---
+
 ## ❓ Unverified — DO NOT make claims about these until checked
 
 The following items I've previously made claims/recommendations about WITHOUT verifying. Need MCP queries before stating any "gap" or "recommendation" involving them:
