@@ -1029,81 +1029,185 @@ def _fetch_all_templates():
 
 def fix_compliance_footers():
     """
-    Inject UEMA + ASA mandatory footer into every Klaviyo template that is
-    missing 'Bargain Chemist Limited' in its HTML.
+    Inject UEMA + ASA mandatory footer into every email flow message whose
+    template is missing 'Bargain Chemist Limited'.
 
-    What gets added:
-      • Bargain Chemist Limited + physical address  (UEMA s9)
-      • 'Always read the label' + 'symptoms persist'  (ASA Therapeutic Code)
-      • {% unsubscribe %}  (UEMA s11)
+    Klaviyo has two template categories:
+    • Standalone (library) templates — directly patchable via PATCH /api/templates/{id}.
+    • Flow-embedded templates — owned by the flow, read-only via /api/templates.
+      For these we: (a) GET the existing HTML, (b) inject the footer,
+      (c) POST a new standalone template, (d) re-assign it to the flow message
+      via PATCH /api/flow-messages/{id}/relationships/template.
 
-    Already-compliant templates are left untouched.
+    Already-compliant messages are skipped. Manual steps are printed for any
+    messages where the relationship re-assignment also fails.
     """
-    print("\n🔧 Fixing UEMA compliance footers across all templates...")
+    print("\n🔧 Fixing UEMA compliance footers across all flow email messages...")
 
-    templates = _fetch_all_templates()
-    print(f"  Found {len(templates)} templates\n")
+    # Collect all active flows
+    flows = []
+    cursor = None
+    while True:
+        params = {"fields[flow]": "name,status,archived", "page[size]": 50}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params, debug=True)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next")
+        if not next_link:
+            break
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    print(f"  Found {len(flows)} total flows. Walking email messages...\n")
 
     fixed = skipped = failed = 0
+    manual_needed = []
 
-    for tpl in templates:
-        tid = tpl["id"]
-        tname = tpl.get("attributes", {}).get("name", "Unnamed")
-
-        full = safe_get(f"templates/{tid}")
-        if not full:
-            print(f"  ⚠️  Cannot fetch: {tname} ({tid})")
-            failed += 1
+    for flow in flows:
+        attrs = flow.get("attributes", {})
+        if attrs.get("archived"):
+            continue
+        if attrs.get("status") not in ("live", "draft", "manual"):
             continue
 
-        html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
+        flow_name = attrs.get("name", "?")
+        actions = get_flow_actions(flow["id"])
 
-        if re.search(r"bargain\s*chemist\s*limited", html, re.I):
-            print(f"  ✅ Already compliant: {tname} ({tid})")
-            skipped += 1
-            time.sleep(0.1)
-            continue
+        for action in actions:
+            messages = get_messages_for_action(action["id"])
+            for msg in messages:
+                channel = (msg.get("attributes", {}).get("channel") or "").lower()
+                if channel and channel not in ("email", ""):
+                    continue
 
-        # Inject just before </body>; fall back to appending
-        tag = "</body>"
-        pos = html.lower().rfind(tag)
-        if pos != -1:
-            new_html = html[:pos] + COMPLIANCE_FOOTER_HTML + "\n" + html[pos:]
-        else:
-            new_html = html + COMPLIANCE_FOOTER_HTML
+                msg_id = msg["id"]
+                msg_name = msg.get("attributes", {}).get("name", "unnamed")
+                label = f"{flow_name} → {msg_name}"
 
-        result = api_patch(f"templates/{tid}", {
-            "data": {
-                "type": "template",
-                "id": tid,
-                "attributes": {"html": new_html},
-            }
-        }, quiet=True)
+                # Get this message's template ID + HTML
+                template_id = get_template_id_for_message(msg_id)
+                if not template_id:
+                    print(f"  ⚠️  No template found for: {label}")
+                    time.sleep(0.05)
+                    continue
 
-        if result is not None:
-            print(f"  ✅ Footer injected: {tname} ({tid})")
-            fixed += 1
-        else:
-            print(f"  ❌ Patch failed: {tname} ({tid})")
-            failed += 1
+                html = get_template_html(template_id) or ""
 
-        time.sleep(0.3)
+                # Skip if already compliant
+                if re.search(r"bargain\s*chemist\s*limited", html, re.I):
+                    print(f"  ✅ Already compliant: {label}")
+                    skipped += 1
+                    time.sleep(0.05)
+                    continue
 
-    print(f"\n  Footer fix summary → {fixed} patched | {skipped} already OK | {failed} failed")
+                # Build the patched HTML
+                tag = "</body>"
+                pos = html.lower().rfind(tag)
+                if pos != -1:
+                    new_html = html[:pos] + COMPLIANCE_FOOTER_HTML + "\n" + html[pos:]
+                else:
+                    new_html = html + COMPLIANCE_FOOTER_HTML
 
-    # Verify a sample to confirm the patch landed
+                # ── Strategy A: patch the template directly (works for library templates) ──
+                direct = api_patch(f"templates/{template_id}", {
+                    "data": {
+                        "type": "template",
+                        "id": template_id,
+                        "attributes": {"html": new_html},
+                    }
+                }, quiet=True)
+
+                if direct is not None:
+                    print(f"  ✅ Template patched directly: {label}")
+                    fixed += 1
+                    time.sleep(0.3)
+                    continue
+
+                # ── Strategy B: create new standalone template + re-assign to message ──
+                new_tpl_name = f"[COMPLIANCE] {msg_name[:70]}"
+                new_tpl = api_post("templates", {
+                    "data": {
+                        "type": "template",
+                        "attributes": {
+                            "name": new_tpl_name,
+                            "html": new_html,
+                        }
+                    }
+                })
+
+                if not new_tpl:
+                    print(f"  ❌ Could not create replacement template for: {label}")
+                    failed += 1
+                    time.sleep(0.2)
+                    continue
+
+                new_tid = new_tpl["data"]["id"]
+
+                # Re-assign the new template to the flow message via relationship PATCH
+                assign = api_patch(f"flow-messages/{msg_id}/relationships/template", {
+                    "data": {
+                        "type": "template",
+                        "id": new_tid,
+                    }
+                }, quiet=True)
+
+                if assign is not None:
+                    print(f"  ✅ New template assigned to message: {label} (ID: {new_tid})")
+                    fixed += 1
+                else:
+                    # Relationship endpoint may not support PATCH — note for manual UI fix
+                    print(f"  ⚠️  Created template {new_tid} but could not auto-assign "
+                          f"to message {msg_id} — manual step needed.")
+                    manual_needed.append({
+                        "flow": flow_name,
+                        "message": msg_name,
+                        "msg_id": msg_id,
+                        "new_template_id": new_tid,
+                    })
+                    failed += 1
+
+                time.sleep(0.4)
+
+    print(f"\n  Footer fix summary → {fixed} fixed | {skipped} already OK | {failed} failed")
+
+    if manual_needed:
+        print(f"""
+  ⚠️  {len(manual_needed)} message(s) need manual template swap in the Klaviyo UI.
+  A compliance-patched template was already created — just re-assign it:
+
+  Steps: Flows → open the flow → click the email node → Edit Email
+         → 'Change Template' → search for '[COMPLIANCE]' → select + Save
+""")
+        for item in manual_needed:
+            print(f"  • {item['flow']}  →  {item['message']}")
+            print(f"    New template ID: {item['new_template_id']}")
+            print()
+
+    # Spot-check one fixed message
     if fixed > 0:
-        print("\n  🔍 Spot-checking first patched template...")
-        # Re-audit one template that was just patched
-        for tpl in templates:
-            tid = tpl["id"]
-            full = safe_get(f"templates/{tid}")
-            if not full:
+        print("\n  🔍 Spot-checking a patched message...")
+        for flow in flows:
+            attrs = flow.get("attributes", {})
+            if attrs.get("archived") or attrs.get("status") not in ("live", "draft", "manual"):
                 continue
-            html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
-            if re.search(r"bargain\s*chemist\s*limited", html, re.I):
-                print(f"  ✅ Verified: footer confirmed present in template {tid}")
-                break
+            actions = get_flow_actions(flow["id"])
+            for action in actions:
+                msgs = get_messages_for_action(action["id"])
+                for msg in msgs:
+                    tid = get_template_id_for_message(msg["id"])
+                    if tid:
+                        html = get_template_html(tid) or ""
+                        if re.search(r"bargain\s*chemist\s*limited", html, re.I):
+                            print(f"  ✅ Verified: compliance footer confirmed in "
+                                  f"{flow['attributes']['name']} → "
+                                  f"{msg['attributes'].get('name', '?')}")
+                            return
+        print("  ⚠️  Could not verify — run --audit-flows to confirm")
 
 
 def fix_stale_thresholds():
