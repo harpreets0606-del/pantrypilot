@@ -1466,6 +1466,115 @@ def audit_action_statuses():
     print(f"  ⏹  = MANUAL in a LIVE flow (paused)")
 
 
+def inspect_flow_config(flow_id_or_all):
+    """Pull deep config for a flow (or all non-archived flows).
+    Reports send_options (Smart Sending), send_strategy, tracking_options,
+    conversion_metric_id at flow level + per-action message-level config
+    (smart_sending_enabled, transactional, add_tracking_params,
+    additional_filters, custom_tracking_params).
+
+    Klaviyo MCP doesn't expose these fields; raw REST API does."""
+    if flow_id_or_all == "all":
+        # Get all non-archived flows
+        flows = []
+        cursor = None
+        while True:
+            params = {"fields[flow]": "name,status,archived", "page[size]": 10}
+            if cursor:
+                params["page[cursor]"] = cursor
+            page = safe_get("flows", params=params)
+            if not page:
+                break
+            flows.extend(page.get("data", []))
+            next_link = page.get("links", {}).get("next") or ""
+            m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+            if not m:
+                break
+            cursor = requests.utils.unquote(m.group(1))
+        flow_ids = [f["id"] for f in flows
+                    if not f.get("attributes", {}).get("archived")]
+    else:
+        flow_ids = [flow_id_or_all]
+
+    for flow_id in flow_ids:
+        _inspect_one_flow_config(flow_id)
+        time.sleep(0.5)
+
+
+def _inspect_one_flow_config(flow_id):
+    print(f"\n🔍 INSPECT FLOW CONFIG: {flow_id}")
+    print("=" * 100)
+
+    # Try with all interesting fields. If any is rejected, Klaviyo will
+    # return a 400; fall back to default response.
+    fields = ("name,status,archived,trigger_type,send_options,send_strategy,"
+              "tracking_options,conversion_metric_id")
+    try:
+        data = api_get(f"flows/{flow_id}", {"fields[flow]": fields})
+    except Exception as e:
+        msg = str(e)
+        if "400" in msg or "Invalid" in msg:
+            print(f"  ⚠️  Filtered query rejected; some fields may not be supported by API revision {REVISION}.")
+            print(f"      Error: {msg[:200]}")
+            print(f"      Falling back to default response.")
+            data = safe_get(f"flows/{flow_id}")
+        else:
+            print(f"  ❌ Fetch failed: {e}")
+            return
+    if not data:
+        return
+
+    attrs = data.get("data", {}).get("attributes", {}) or {}
+    print(f"  Name:                {attrs.get('name')}")
+    print(f"  Status:              {attrs.get('status')}")
+    print(f"  Trigger type:        {attrs.get('trigger_type') or attrs.get('triggerType')}")
+    print(f"  All attribute keys:  {sorted(attrs.keys())}")
+    print()
+    for k in ("send_options", "send_strategy", "tracking_options",
+              "conversion_metric_id", "trigger_filters"):
+        v = attrs.get(k)
+        if v is None or v == {} or v == []:
+            print(f"  {k}: (not set or not exposed by API)")
+        else:
+            print(f"  {k}:")
+            print("    " + json.dumps(v, indent=2).replace("\n", "\n    "))
+
+    # Per-action message-level config
+    actions = get_flow_actions(flow_id)
+    print(f"\n  Per-action config ({len(actions)} actions):")
+    print(f"  {'ACTION':<10} {'TYPE':<18} {'STATUS':<8} {'SMART':<6} {'TRANS':<6} {'TRACK':<6} {'TEMPLATE'}")
+    print("  " + "-" * 100)
+    for action in actions:
+        full = safe_get(f"flow-actions/{action['id']}")
+        if not full:
+            continue
+        a_attrs = full.get("data", {}).get("attributes", {}) or {}
+        defn = a_attrs.get("definition") or {}
+        if not isinstance(defn, dict):
+            continue
+        d_data = defn.get("data") or {}
+        msg = d_data.get("message") if isinstance(d_data, dict) else None
+        if not isinstance(msg, dict):
+            print(f"  {action['id']:<10} {(defn.get('type') or '?'):<18} (no message — non-email action)")
+            continue
+        smart = "Y" if msg.get("smart_sending_enabled") else "N"
+        trans = "Y" if msg.get("transactional") else "N"
+        track = "Y" if msg.get("add_tracking_params") else "N"
+        tid = msg.get("template_id") or "?"
+        status = (d_data.get("status") or "?")[:7]
+        print(f"  {action['id']:<10} {(defn.get('type') or '?'):<18} {status:<8} {smart:<6} {trans:<6} {track:<6} {tid}")
+
+        # Show extra config when present
+        extras = []
+        if msg.get("additional_filters"):
+            extras.append(f"additional_filters={msg['additional_filters']}")
+        if msg.get("custom_tracking_params"):
+            extras.append(f"custom_tracking_params={msg['custom_tracking_params']}")
+        if extras:
+            for e in extras:
+                print(f"               {e}")
+
+
 def deploy_replenishment_template(slot_number, confirm=False):
     """Deploy a single retail-first Replenishment template to its flow-action.
     Process:
@@ -2140,6 +2249,8 @@ def main():
                         help="Deploy a single retail-first Replenishment template (POST template + PATCH flow-action). Dry-run unless --confirm. Test on slot 16 first.")
     parser.add_argument("--deploy-all-replenishment-templates", action="store_true",
                         help="Bulk deploy all 15 retail-first Replenishment templates. Dry-run unless --confirm.")
+    parser.add_argument("--inspect-flow-config", metavar="FLOW_ID",
+                        help="Pull deep config (send_options, tracking_options, send_strategy, conversion_metric_id, per-action smart_sending/transactional/add_tracking_params) for a single flow. Pass 'all' to inspect every non-archived flow.")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by --pause-action / --resume-action to actually execute (otherwise dry-run)")
     parser.add_argument("--all", action="store_true",
@@ -2203,6 +2314,9 @@ def main():
 
     if args.deploy_all_replenishment_templates:
         deploy_all_replenishment_templates(confirm=args.confirm)
+
+    if args.inspect_flow_config:
+        inspect_flow_config(args.inspect_flow_config)
 
     if args.pause_action:
         pause_flow_action(args.pause_action, confirm=args.confirm)
