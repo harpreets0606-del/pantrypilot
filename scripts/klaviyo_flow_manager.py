@@ -1806,8 +1806,16 @@ def verify_flows():
                     }
                 }
             }
-            r = requests.post(f"{BASE_URL}/flow-values-reports/", headers=HEADERS,
-                              json=payload, timeout=REQUEST_TIMEOUT)
+            # Retry on 429 with exponential backoff (flow-values-reports has tight rate limits)
+            for attempt in range(5):
+                r = requests.post(f"{BASE_URL}/flow-values-reports/", headers=HEADERS,
+                                  json=payload, timeout=REQUEST_TIMEOUT)
+                if r.status_code == 429:
+                    wait = 2 ** attempt + 2
+                    print(f"  ⏳ {f['id']:<10} throttled, sleeping {wait}s (attempt {attempt + 1}/5)...")
+                    time.sleep(wait)
+                    continue
+                break
             if r.status_code == 200:
                 results = r.json().get("data", {}).get("attributes", {}).get("results", [])
                 if results:
@@ -1819,7 +1827,7 @@ def verify_flows():
                     print(f"  {f['id']:<10} no data — {a.get('name')}")
             else:
                 print(f"  {f['id']:<10} ⚠️  HTTP {r.status_code}: {r.text[:120]} — {a.get('name')}")
-            time.sleep(0.4)
+            time.sleep(3.0)  # flow-values-reports burst limit ~1 req/3s
 
     print("\n" + "=" * 100)
     print("VERIFICATION COMPLETE")
