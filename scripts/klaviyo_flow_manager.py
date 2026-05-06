@@ -55,8 +55,10 @@ def api_get(path, params=None):
 
 def api_patch(path, payload):
     r = requests.patch(f"{BASE_URL}/{path}", headers=HEADERS, json=payload)
+    print(f"  📡 PATCH {path} → HTTP {r.status_code}")
+    if r.content:
+        print(f"  📄 Response: {r.text[:500]}")
     if r.status_code not in (200, 204):
-        print(f"  ⚠️  PATCH {path} → {r.status_code}: {r.text[:300]}")
         return None
     return r.json() if r.content else {}
 
