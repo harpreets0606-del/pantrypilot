@@ -1381,6 +1381,67 @@ Decision guide:
     print("=" * 100)
 
 
+def audit_action_statuses():
+    """For every non-archived flow, walk each email-send action and print its
+    individual status (live/draft/manual) — so we can see which findings in
+    FLOWS_AUDIT.md are actually shipping vs already paused at action-level."""
+    print("\n🔍 PER-ACTION STATUS AUDIT")
+    print("=" * 100)
+    print(f"  {'FLOW':<40} {'ACTION':<10} {'STATUS':<8} {'TEMPLATE':<10} SUBJECT")
+    print("  " + "-" * 110)
+
+    cursor = None
+    flows = []
+    while True:
+        params = {"fields[flow]": "name,status,archived", "page[size]": 10}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    summary = {"live": 0, "draft": 0, "manual": 0, "other": 0}
+    for f in flows:
+        if f.get("attributes", {}).get("archived"):
+            continue
+        flow_name = (f.get("attributes", {}).get("name") or "?")[:38]
+        flow_status = (f.get("attributes", {}).get("status") or "?").lower()
+        for action in get_flow_actions(f["id"]):
+            full = safe_get(f"flow-actions/{action['id']}")
+            if not full:
+                continue
+            defn = (full.get("data", {}).get("attributes", {}) or {}).get("definition") or {}
+            if not isinstance(defn, dict) or defn.get("type") != "send-email":
+                continue
+            d = defn.get("data") or {}
+            action_status = (d.get("status") or "?").lower()
+            msg = d.get("message") or {}
+            tid = msg.get("template_id") or ""
+            subj = (msg.get("subject_line") or "")[:60]
+            summary[action_status] = summary.get(action_status, 0) + 1
+            marker = ""
+            if flow_status == "live" and action_status == "live":
+                marker = "🚨 "
+            elif flow_status == "live" and action_status == "draft":
+                marker = "⏸️  "
+            elif flow_status == "live" and action_status == "manual":
+                marker = "⏹  "
+            print(f"  {marker}{flow_name:<38} {action['id']:<10} {action_status:<8} {tid:<10} {subj}")
+            time.sleep(0.1)
+
+    print("\n  " + "=" * 110)
+    print(f"  Status breakdown across all email-send actions: {summary}")
+    print(f"  🚨 = LIVE in a LIVE flow (actually shipping)")
+    print(f"  ⏸️  = DRAFT in a LIVE flow (not sending)")
+    print(f"  ⏹  = MANUAL in a LIVE flow (paused)")
+
+
 def pause_flow_action(action_id, confirm=False):
     """Pause a single flow-action by setting its definition.data.status to 'manual'.
     Preserves the rest of the action's definition (message, template_id, etc.) untouched."""
@@ -1855,6 +1916,8 @@ def main():
                         help="Pause a single flow-action (sets definition.data.status to 'manual'). Dry-run unless --confirm.")
     parser.add_argument("--resume-action", metavar="ACTION_ID",
                         help="Resume a previously paused flow-action (status=live). Dry-run unless --confirm.")
+    parser.add_argument("--audit-action-statuses", action="store_true",
+                        help="Walk every flow's email-send actions and print each one's individual status (live/draft/manual) — flow-level status can mask action-level status")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by --pause-action / --resume-action to actually execute (otherwise dry-run)")
     parser.add_argument("--all", action="store_true",
@@ -1909,6 +1972,9 @@ def main():
 
     if args.audit_our_templates:
         audit_our_templates()
+
+    if args.audit_action_statuses:
+        audit_action_statuses()
 
     if args.pause_action:
         pause_flow_action(args.pause_action, confirm=args.confirm)

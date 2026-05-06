@@ -658,6 +658,16 @@ From Replenishment + Back in Stock:
 3. **My [COMPLIANCE] footer injection** added a second footer block to ~34 templates. Original BC templates already had compliant red `#FF0031` legal block. Plan: revert by editing the [COMPLIANCE] templates to strip the injected block.
 4. **Empty preview text on 24 messages** across Replenishment (16) + Welcome (3) + Win-back (2) + Post-Purchase (need to verify) + others = the single most common non-critical fix.
 
+## ⚠️ Critical caveat — action status ≠ flow status
+
+The verify-flows / show-flow commands report the **flow-level** status (live / draft / manual). But Klaviyo allows **individual flow-actions to carry their own status** independent of the parent flow.
+
+Example confirmed today: **Regaine action (105717123)** was already `draft` (not sending) inside the live Replenishment flow. The "ASA violation production-impacting" framing in earlier sections of this audit was too strong.
+
+**Before declaring any other finding "production-impacting", we must check `definition.data.status` per action.** A `live` flow with `draft`/`manual` actions is functionally a partial flow.
+
+Need to add a `--audit-action-statuses` step that walks every flow → action and prints each action's individual status, so the actual blast-radius of each finding is visible. Until that's run, treat all severity ratings as **upper bounds** (worst-case if action were live).
+
 ## Recommended action ordering (after audit)
 
 **Tier 1 — production bugs / legal violations (do today):**
@@ -696,3 +706,4 @@ From Replenishment + Back in Stock:
 - 2026-05-06 — Audited Flow 9 (Flu Season - Winter Wellness): 2 emails, 18 recipients/30d. Subjects both on-brand. E2 promotes flu vaccines + body excerpt suggests therapeutic claim "cut your recovery down significantly" — **needs ASA Therapeutic Code 2025 review** (4th category of risk identified in audit, after restricted products / coupons / fear language). Personalisation token inconsistency: uses `person.first_name` instead of `first_name`.
 - 2026-05-06 — Audited Flow 13 (Welcome Series - No Coupon): 3 emails, 7 recipients/30d. **Mostly clean** — voice is BC-tone, subjects within range, uses correct `first_name` token, E2 price-beat claim is substantiated (10% beat guarantee). Only critical issue: **all 3 emails have empty preview text** — same deliverability issue as Replenishment. Second cleanest flow after Added to Cart Abandonment.
 - 2026-05-06 — Audited Flow 15 (Win-back - Lapsed): 2 emails, 0 recipients/30d. **Third A-grade flow.** Voice on-brand, anti-pressure ("Whenever you're ready") matches ATC gold standard. Only issue: empty preview text on both. After Win-back: complete LIVE-flow audit done; consolidated findings + tiered fix plan added.
+- 2026-05-06 — Tier 1 #1 executed: paused Replenishment Regaine action (105717123) via `--pause-action`. **Discovery:** action was already `draft` status, not `live` — so it wasn't actively shipping. Successful PATCH → `manual` is now explicit. **Implication: need per-action status audit before further pause decisions** — flow-level status can mask action-level status.
