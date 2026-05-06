@@ -753,13 +753,23 @@ def get_template_id_for_message(message_id, debug=False):
     return data["data"].get("id")
 
 
+_MESSAGE_DEBUG_DUMPED = False
+
+
 def get_message_content(message_id, debug=False):
     """Fetch full flow-message and return its content dict (from_email, subject_line, etc.).
     Klaviyo requires these fields when PATCHing a flow-action's email message."""
+    global _MESSAGE_DEBUG_DUMPED
     data = safe_get(f"flow-messages/{message_id}", debug=debug)
     if not data:
         return {}
-    return data.get("data", {}).get("attributes", {}).get("content", {}) or {}
+    attrs = data.get("data", {}).get("attributes", {}) or {}
+    if not _MESSAGE_DEBUG_DUMPED:
+        _MESSAGE_DEBUG_DUMPED = True
+        print(f"  🔍 DEBUG flow-message {message_id} attribute keys: {list(attrs.keys())}")
+        content = attrs.get("content")
+        print(f"  🔍 DEBUG content type: {type(content).__name__}, value: {json.dumps(content)[:600] if content else 'None/empty'}")
+    return attrs.get("content", {}) or {}
 
 
 def build_flow_email_payload(content, new_template_id):
