@@ -206,6 +206,72 @@ Other vendors mentioned in slot configs (Palmer's, CeraVe, Wild Ferns, Weleda, S
 
 ---
 
+## Segment definitions — full structure
+
+**Status:** VERIFIED (8 of 10 visible segments fully read)
+**Source:** `klaviyo_get_segments` with `fields[segment]=name,definition,is_active` on 2026-05-06
+**Fact:** Each `[Z] <Category> (<N> day engaged)` segment uses **identical sophisticated structure**:
+
+```
+conditionGroup 1 (AND):
+  - profile.properties['Preferences'] CONTAINS "<Category>"        ← self-declared interest
+  - [Boost] Clicked Search Result on category-tagged products      (Y2qHKK)
+  - Viewed Product on category-tagged Categories list              (XQ2zfW)
+  - [Boost] Added To Cart on category Collections                  (VKDiey)
+  - Placed Order on category Collections                           (Sxnb5T)
+  ALL within the time window (30/60/90/180 days)
+conditionGroup 2 (AND with above):
+  - email marketing consent = subscribed
+```
+
+**Implications:**
+1. **Bargain Chemist has a Preference Center / profile property `Preferences`** — customers self-identify their category interests. Confirmed values used in segments: `Vitamins & Supplements`, `Allergy`, `Sports Nutrition`, `Baby & Children's Health`, `First Aid`, `Sunscreen`, `Fragrance`, `Hair`.
+2. Segments combine self-declared preference + cross-channel engagement (search, view, ATC, order) + email consent. Best-practice setup.
+3. Sitewide segments don't use Preferences — purely engagement based, plus Triple Pixel `Active on Site` (`SvTg8J`), Klaviyo `Opened Email` (`SZ8GZJ`), `Clicked Email` (`W3AFKt`).
+4. Time-window strategy varies: 30 days (Hair, Baby, Sunscreen, Sitewide-30) / 60 days (Fragrance) / 90 days (Allergy, Sports Nutrition, First Aid) / 180 days (Vitamins, Sitewide-180).
+
+**Need to do:** read the remaining 2 segments (likely 1+ pages remaining); read the actual `Preferences` profile property values in use.
+
+## Active campaigns
+
+**Status:** VERIFIED
+**Source:** `klaviyo_get_campaigns` filtered by `status: any of [Scheduled, Sending, Adding Recipients, Preparing to send]`, `channel: email` on 2026-05-06
+**Fact:** **Zero email campaigns currently scheduled or sending.** No queued blasts right now.
+
+**Need to do:** check SMS-channel campaigns for active state; query recent past campaigns for cadence.
+
+## Klaviyo flow attributes — MCP exposure limits
+
+**Status:** VERIFIED (limitation, not a fact about the account)
+**Source:** `klaviyo_get_flow` returns shape on 2026-05-06
+**Fact:** The MCP `klaviyo_get_flow` tool returns ONLY: `name`, `status`, `archived`, `created`, `updated`, `triggerType`. It does NOT expose:
+- `send_options` (Smart Sending toggle, etc.)
+- `tracking_options` (UTM params, click tracking)
+- `send_strategy`
+- `conversion_metric_id`
+- audience filter / trigger details
+
+**Implication:** to verify those fields, must use the raw Klaviyo REST API via the script (`scripts/klaviyo_flow_manager.py` already has `safe_get` plumbing — we'd need a `--inspect-flow-config` step, or have the user paste output of a curl). Or use Klaviyo UI manually.
+
+## What MCP cannot expose (need other tools)
+
+**Status:** VERIFIED (tool inventory)
+**Fact:** The available Klaviyo MCP tools do not expose:
+- Per-flow `send_options` / `tracking_options` / `send_strategy` / `conversion_metric_id`
+- Account-level frequency caps / send-rate caps
+- Domain authentication (SPF / DKIM / DMARC) status
+- Forms inventory (popup forms, embed forms, multi-step forms) — no `klaviyo_get_forms` tool surfaced
+- Suppressed-list size / bounce stats — not exposed via current tools
+- Profile property schema (only individual profile reads available)
+- Webhook / private app integration details
+
+To verify these, options are:
+1. Raw REST API via `scripts/klaviyo_flow_manager.py` (works, but needs new commands)
+2. Manual Klaviyo UI inspection by user
+3. Klaviyo OpenAPI spec to confirm whether MCP simply doesn't surface these or they're API-not-exposed
+
+---
+
 ## ❓ Unverified — DO NOT make claims about these until checked
 
 The following items I've previously made claims/recommendations about WITHOUT verifying. Need MCP queries before stating any "gap" or "recommendation" involving them:
