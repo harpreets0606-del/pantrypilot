@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Take another look</title>
+<style>@media only screen and (max-width: 620px) {
+  td[style*="padding:36px 32px"], td[style*="padding:36px 40px"], td[style*="padding:32px 40px"], td[style*="padding:28px 40px"], td[style*="padding:24px 40px"], td[style*="padding:20px 40px"] {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  h1 { font-size: 22px !important; line-height: 1.3 !important; }
+  td[style*="font-size:28px"] { font-size: 20px !important; }
+  td[width="33%"] { display: block !important; width: 100% !important; border-left: none !important; border-right: none !important; padding: 12px 16px !important; border-bottom: 1px solid #eee; }
+  .bc-nav a { font-size: 10px !important; }
+  .bc-nav td { padding: 4px 5px !important; }
+  td[width="50%"] { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+}</style>
+</head>
+<body style="margin:0; padding:0; background-color:#f5f5f5; font-family:Helvetica,Arial,sans-serif;">
+<div style="max-width:600px; width:100%; margin:0 auto; background-color:#ffffff;">
+<!-- BC Header: Free Shipping bar -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#7B1523;" width="100%">
+<tr><td align="center" style="padding:8px 16px; font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#ffffff;">
+<a href="https://www.bargainchemist.co.nz" style="color:#ffffff; text-decoration:underline;" target="_blank">Free Shipping on Orders over $79*</a>
+</td></tr>
+</table>
+<!-- BC Header: Logo -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#CC1B2A;" width="100%">
+<tr><td align="center" style="padding:20px 24px;">
+<a href="https://www.bargainchemist.co.nz" style="text-decoration:none; display:block;" target="_blank">
+<img alt="Bargain Chemist" border="0" src="https://cdn.shopify.com/s/files/1/0317/1926/0297/files/logo-2025.png?v=1747706218" style="display:block; margin:0 auto; max-width:100%; height:auto;" width="200"/>
+</a>
+</td></tr>
+</table>
+<!-- BC Header: Nav -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#CC1B2A; border-top:1px solid rgba(255,255,255,0.25);" width="100%">
+<tr><td align="center" class="bc-nav" style="padding:10px 8px;">
+<table border="0" cellpadding="0" cellspacing="0"><tr>
+<td style="padding:4px 10px;"><a href="https://www.bargainchemist.co.nz/collections/all" style="font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#ffffff; text-decoration:none; font-weight:500;" target="_blank">Shop Products</a></td>
+<td style="padding:4px 10px; border-left:1px solid rgba(255,255,255,0.3);"><a href="https://www.bargainchemist.co.nz/collections/clearance" style="font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#ffffff; text-decoration:none; font-weight:500;" target="_blank">Clearance</a></td>
+<td style="padding:4px 10px; border-left:1px solid rgba(255,255,255,0.3);"><a href="https://www.bargainchemist.co.nz/pages/find-a-pharmacy" style="font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#ffffff; text-decoration:none; font-weight:500;" target="_blank">Find a Pharmacy</a></td>
+<td style="padding:4px 10px; border-left:1px solid rgba(255,255,255,0.3);"><a href="https://www.bargainchemist.co.nz/pages/contact" style="font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#ffffff; text-decoration:none; font-weight:500;" target="_blank">Contact Us</a></td>
+</tr></table>
+</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#CC1B2A;" width="100%">
+<tr><td align="center" style="padding:36px 32px 28px;">
+<p style="margin:0 0 8px; font-family:Helvetica,Arial,sans-serif; font-size:13px; font-weight:600; color:rgba(255,255,255,0.75); text-transform:uppercase; letter-spacing:2px;">Saved for you</p>
+<h1 style="margin:0 0 10px; font-family:Helvetica,Arial,sans-serif; font-size:28px; font-weight:bold; color:#ffffff; line-height:1.25;">Take another look, {{ first_name|default:'there' }}</h1>
+<p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:15px; color:rgba(255,255,255,0.85);">Your pick is still here, plus a few related staples.</p>
+</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#f9f9f9;" width="100%">
+<tr><td align="center" style="padding:24px 30px;">
+<a href="{{ event.URL }}" target="_blank" style="display:block; text-decoration:none;">
+<img alt="{{ event.ProductName }}" src="{{ event.ImageURL }}" width="400" style="width:100%; max-width:400px; height:auto; display:block; margin:0 auto 16px; border:0; border-radius:6px;" border="0"/>
+</a>
+<p style="margin:0 0 8px; font-family:Helvetica,Arial,sans-serif; font-size:18px; font-weight:bold; color:#1a1a1a;">{{ event.ProductName }}</p>
+<p style="margin:0 0 16px; font-family:Helvetica,Arial,sans-serif; font-size:24px; font-weight:bold; color:#CC1B2A;">NZ${{ event.Price }}</p>
+<a href="{{ event.URL }}" target="_blank" style="display:inline-block; background-color:#CC1B2A; color:#ffffff; font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; text-decoration:none; padding:14px 36px; border-radius:4px;">View Product</a>
+</td></tr>
+</table>
+<!-- Klaviyo dynamic block placeholder: customers also viewed -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td style="padding:24px 40px;">
+<p style="margin:0 0 16px; font-family:Helvetica,Arial,sans-serif; font-size:14px; font-weight:bold; color:#CC1B2A; text-transform:uppercase; letter-spacing:1px; text-align:center;">Kiwis also love</p>
+<p style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:14px; color:#333333; line-height:1.6; text-align:center;">In Klaviyo's flow editor, drop a Product Block here filtered by event.Categories — shows 3 related products dynamically.</p>
+</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td align="center" style="padding:24px 40px;">
+<a href="https://www.bargainchemist.co.nz/collections/all" target="_blank" style="display:inline-block; background-color:#CC1B2A; color:#ffffff; font-family:Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; text-decoration:none; padding:14px 36px; border-radius:4px;">Browse Full Range</a>
+</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td style="padding:0 40px 32px; font-family:Helvetica,Arial,sans-serif; font-size:13px; color:#888888; line-height:1.5; text-align:center;">Always read the label and use as directed. If symptoms persist, see your healthcare professional.</td></tr>
+</table>
+<!-- Social -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;" width="100%">
+<tr><td align="center" style="padding:9px 18px; font-family:Helvetica,Arial,sans-serif; font-size:28px; font-weight:bold; color:#222222; text-align:center;">Get social with us!</td></tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#ffffff;" width="100%">
+<tr><td align="center" style="padding:9px;">
+<a href="https://tiktok.com/@bargainchemistnz" style="text-decoration:none; display:inline-block; margin:0 5px;" target="_blank"><img alt="TikTok" src="https://d3k81ch9hvuctc.cloudfront.net/assets/email/buttons/black/tiktok_96.png" style="width:48px; display:inline-block;" width="48"/></a>
+<a href="https://www.facebook.com/BargainChemist/" style="text-decoration:none; display:inline-block; margin:0 5px;" target="_blank"><img alt="Facebook" src="https://d3k81ch9hvuctc.cloudfront.net/assets/email/buttons/black/facebook_96.png" style="width:48px; display:inline-block;" width="48"/></a>
+<a href="https://instagram.com/bargainchemistnz" style="text-decoration:none; display:inline-block; margin:0 5px;" target="_blank"><img alt="Instagram" src="https://d3k81ch9hvuctc.cloudfront.net/assets/email/buttons/black/instagram_96.png" style="width:48px; display:inline-block;" width="48"/></a>
+<a href="https://nz.linkedin.com/company/bargain-chemist" style="text-decoration:none; display:inline-block; margin:0 5px;" target="_blank"><img alt="LinkedIn" src="https://d3k81ch9hvuctc.cloudfront.net/company/XCgiqg/images/791081ec-bce5-4d35-9ee4-aa35ada53088.png" style="width:48px; display:inline-block;" width="48"/></a>
+</td></tr>
+</table>
+<!-- Legal disclaimer -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FF0031;" width="100%">
+<tr><td style="padding:15px 30px 9px; font-family:Helvetica,Arial,sans-serif; font-size:11px; color:#ffffff; line-height:1.3; text-align:center; font-weight:100;">
+Please note that not all products may be available in all stores, please call your closest Bargain Chemist pharmacy or visit our store locator to find a <a href="https://www.bargainchemist.co.nz/pages/find-a-store" style="color:#ffffff; text-decoration:underline;">pharmacy near you</a>. Prices shown are online prices only and may differ to in store. Save price, and Why Pay pricing is based on the recommended retailer price (RRP). Where no RRP is supplied, RRP is based on what is found at competing New Zealand retailers. Actual delivered product packaging may differ slightly from the product image shown online. <a href="https://www.bargainchemist.co.nz/pages/best-price-guarantee-our-policy-new-zealands-cheapest-chemist" style="color:#ffffff; text-decoration:underline;">Price beat guarantee</a> - If you find a cheaper everyday price on an identical in stock item at a New Zealand pharmacy we will beat the difference by 10%. *Vitamins and minerals are supplementary to and not a replacement for a balanced diet. Always read the label, use only as directed. If symptoms persist, see your healthcare professional. Weight management products should be used with a balanced diet and exercise. **Pharmacist only products - your pharmacist will advise you whether this preparation is suitable for your condition.
+</td></tr>
+</table>
+<!-- Unsubscribe -->
+<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FF0031;" width="100%">
+<tr><td align="center" style="padding:5px 18px 20px; font-family:Helvetica,Arial,sans-serif; font-size:11px; color:#ffffff; font-weight:100; text-align:center; line-height:1.1;">
+No longer want to receive these emails? {% unsubscribe %}.<br/>
+{{ organization.name }} {{ organization.full_address }}
+</td></tr>
+</table>
+</div>
+</body></html>
