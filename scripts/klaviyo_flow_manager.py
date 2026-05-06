@@ -1264,6 +1264,7 @@ def fix_compliance_footers():
                         "id": action["id"],
                         "attributes": {
                             "definition": {
+                                "id": action["id"],
                                 "type": "send-email",
                                 "data": {
                                     "message": build_flow_email_payload(msg_content, new_tid)
@@ -1606,6 +1607,7 @@ def rebind_compliance_templates():
                         "id": action_id,
                         "attributes": {
                             "definition": {
+                                "id": action_id,
                                 "type": "send-email",
                                 "data": {
                                     "message": build_flow_email_payload(msg_content, new_tid)
