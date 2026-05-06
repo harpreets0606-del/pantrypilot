@@ -15,6 +15,19 @@ If something here turns out wrong, replace it (don't delete) and add a SUPERSEDE
 
 ---
 
+## MCP Tool Capabilities — Klaviyo Template Creation
+
+**Status:** VERIFIED (used successfully in prior sessions) / CURRENTLY FAILING (401 as of 2026-05-06)
+**Source:** `klaviyo_create_email_template` MCP tool — confirmed working in prior session (deployed all 15 replenishment templates); returning 401 authentication_failed as of 2026-05-06 session restart.
+**Fact:**
+- `klaviyo_create_email_template` MCP tool CAN and HAS created templates in Klaviyo successfully (replenishment templates deployed this way)
+- When it returns 401, this is a **MCP server credential expiry issue**, NOT a capability limitation
+- Fix: refresh/rotate the Klaviyo private API key in the MCP server config
+- Do NOT tell the user "we can't create templates via API" — we can. Check credentials first.
+- All 4 abandonment templates ([BC-Abandonment] Browse E1, Browse E2, Search E1, Search E2) are pending deployment — blocked by the 401 credential issue as of 2026-05-06
+
+---
+
 ## Account fundamentals
 
 **Status:** VERIFIED
