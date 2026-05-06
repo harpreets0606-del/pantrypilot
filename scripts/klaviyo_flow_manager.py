@@ -81,7 +81,7 @@ def pause_triple_pixel_flows():
             "data": {
                 "type": "flow",
                 "id": flow_id,
-                "attributes": {"status": "paused"},
+                "attributes": {"status": "manual"},
             }
         })
         if result is not None:
