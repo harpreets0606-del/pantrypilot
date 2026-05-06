@@ -1028,20 +1028,46 @@ def _fetch_all_templates():
     return [{"id": tid, "attributes": {"name": label}} for tid, label in seen.items()]
 
 
+def _list_existing_compliance_templates():
+    """Return {original_msg_name: template_id} for all '[COMPLIANCE] ...' templates
+    already in the Klaviyo library, so re-runs reuse them instead of creating duplicates."""
+    existing = {}
+    cursor = None
+    while True:
+        params = {"fields[template]": "name", "page[size]": 50,
+                  "filter": "starts-with(name,'[COMPLIANCE] ')"}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("templates", params=params)
+        if not page:
+            break
+        for tpl in page.get("data", []):
+            name = tpl.get("attributes", {}).get("name", "")
+            if name.startswith("[COMPLIANCE] "):
+                existing[name[len("[COMPLIANCE] "):]] = tpl["id"]
+        next_link = page.get("links", {}).get("next")
+        if not next_link:
+            break
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+    return existing
+
+
 def fix_compliance_footers():
     """
     Inject UEMA + ASA mandatory footer into every email flow message whose
     template is missing 'Bargain Chemist Limited'.
 
-    Klaviyo has two template categories:
-    • Standalone (library) templates — directly patchable via PATCH /api/templates/{id}.
-    • Flow-embedded templates — owned by the flow, read-only via /api/templates.
-      For these we: (a) GET the existing HTML, (b) inject the footer,
-      (c) POST a new standalone template, (d) re-assign it to the flow message
-      via PATCH /api/flow-messages/{id}/relationships/template.
+    Klaviyo's API does NOT expose a write endpoint for either:
+      • PATCH /api/templates/{id} on flow-embedded templates  (404)
+      • PATCH /api/flow-messages/{id} or its relationships     (405)
 
-    Already-compliant messages are skipped. Manual steps are printed for any
-    messages where the relationship re-assignment also fails.
+    So for flow-embedded templates we create a new '[COMPLIANCE] <msg name>'
+    standalone template containing the patched HTML, and print a copy/paste
+    list of UI swaps the user needs to make in the Klaviyo flow editor.
+    Existing [COMPLIANCE] templates are reused on re-runs to avoid duplicates.
     """
     print("\n🔧 Fixing UEMA compliance footers across all flow email messages...")
 
@@ -1064,9 +1090,15 @@ def fix_compliance_footers():
             break
         cursor = requests.utils.unquote(m.group(1))
 
-    print(f"  Found {len(flows)} total flows. Walking email messages...\n")
+    print(f"  Found {len(flows)} total flows. Walking email messages...")
+
+    # Cache existing [COMPLIANCE] templates so re-runs don't duplicate
+    print("  Checking for existing [COMPLIANCE] templates to reuse...")
+    existing_compliance = _list_existing_compliance_templates()
+    print(f"  Found {len(existing_compliance)} existing [COMPLIANCE] templates\n")
 
     fixed = skipped = failed = 0
+    direct_patched = 0
     manual_needed = []
 
     for flow in flows:
@@ -1114,90 +1146,97 @@ def fix_compliance_footers():
                 else:
                     new_html = html + COMPLIANCE_FOOTER_HTML
 
-                # ── Strategy A: patch the template directly (works for library templates) ──
-                direct = api_patch(f"templates/{template_id}", {
+                # ── Strategy A: try patching the template directly (silent on 404 — expected for embedded) ──
+                direct_url = f"{BASE_URL}/templates/{template_id}"
+                r = requests.patch(direct_url, headers=HEADERS, json={
                     "data": {
                         "type": "template",
                         "id": template_id,
                         "attributes": {"html": new_html},
                     }
-                }, quiet=True)
-
-                if direct is not None:
-                    print(f"  ✅ Template patched directly: {label}")
+                })
+                if r.status_code in (200, 204):
+                    print(f"  ✅ Patched directly (library template): {label}")
+                    direct_patched += 1
                     fixed += 1
                     time.sleep(0.3)
                     continue
 
-                # ── Strategy B: create new standalone template + re-assign to message ──
-                new_tpl_name = f"[COMPLIANCE] {msg_name[:70]}"
-                new_tpl = api_post("templates", {
-                    "data": {
-                        "type": "template",
-                        "attributes": {
-                            "name": new_tpl_name,
-                            "editor_type": "CODE",
-                            "html": new_html,
+                # ── Strategy B: create / reuse '[COMPLIANCE]' template, log for UI swap ──
+                if msg_name in existing_compliance:
+                    new_tid = existing_compliance[msg_name]
+                    # Update the existing [COMPLIANCE] template's HTML to the latest patched version
+                    upd = api_patch(f"templates/{new_tid}", {
+                        "data": {
+                            "type": "template",
+                            "id": new_tid,
+                            "attributes": {"html": new_html},
                         }
-                    }
-                })
-
-                if not new_tpl:
-                    print(f"  ❌ Could not create replacement template for: {label}")
-                    failed += 1
-                    time.sleep(0.2)
-                    continue
-
-                new_tid = new_tpl["data"]["id"]
-
-                # Try re-assigning via PATCH on the flow-message resource itself
-                # (JSON:API allows relationship updates inside the main PATCH body)
-                assign = api_patch(f"flow-messages/{msg_id}", {
-                    "data": {
-                        "type": "flow-message",
-                        "id": msg_id,
-                        "relationships": {
-                            "template": {
-                                "data": {
-                                    "type": "template",
-                                    "id": new_tid,
-                                }
+                    }, quiet=True)
+                    if upd is not None:
+                        print(f"  ♻️  Reused existing [COMPLIANCE] template ({new_tid}): {label}")
+                    else:
+                        print(f"  📋 [COMPLIANCE] template exists ({new_tid}): {label}")
+                else:
+                    new_tpl = api_post("templates", {
+                        "data": {
+                            "type": "template",
+                            "attributes": {
+                                "name": f"[COMPLIANCE] {msg_name[:70]}",
+                                "editor_type": "CODE",
+                                "html": new_html,
                             }
                         }
-                    }
-                }, quiet=True)
-
-                if assign is not None:
-                    print(f"  ✅ New template assigned to message: {label} (ID: {new_tid})")
-                    fixed += 1
-                else:
-                    # Klaviyo does not expose a write endpoint for this relationship.
-                    # The compliance template was created — user must swap it in the UI.
-                    print(f"  📋 Template created ({new_tid}) — swap manually in UI: {label}")
-                    manual_needed.append({
-                        "flow": flow_name,
-                        "message": msg_name,
-                        "msg_id": msg_id,
-                        "new_template_id": new_tid,
                     })
-                    # Count as partial success — template IS ready, just needs UI click
-                    fixed += 1
+                    if not new_tpl:
+                        print(f"  ❌ Could not create [COMPLIANCE] template for: {label}")
+                        failed += 1
+                        time.sleep(0.2)
+                        continue
+                    new_tid = new_tpl["data"]["id"]
+                    print(f"  📋 Created [COMPLIANCE] template ({new_tid}): {label}")
+
+                manual_needed.append({
+                    "flow": flow_name,
+                    "message": msg_name,
+                    "msg_id": msg_id,
+                    "new_template_id": new_tid,
+                })
+                fixed += 1
 
                 time.sleep(0.4)
 
-    print(f"\n  Footer fix summary → {fixed} fixed | {skipped} already OK | {failed} failed")
+    print("\n" + "=" * 80)
+    print(f"FOOTER FIX SUMMARY")
+    print(f"  Patched directly (library templates):  {direct_patched}")
+    print(f"  [COMPLIANCE] templates ready to swap:   {len(manual_needed)}")
+    print(f"  Already compliant (skipped):           {skipped}")
+    print(f"  Failed:                                {failed}")
+    print("=" * 80)
 
     if manual_needed:
-        print(f"""
-  ⚠️  {len(manual_needed)} message(s) need manual template swap in the Klaviyo UI.
-  A compliance-patched template was already created — just re-assign it:
-
-  Steps: Flows → open the flow → click the email node → Edit Email
-         → 'Change Template' → search for '[COMPLIANCE]' → select + Save
-""")
+        # Group by flow for readability
+        by_flow = {}
         for item in manual_needed:
-            print(f"  • {item['flow']}  →  {item['message']}")
-            print(f"    New template ID: {item['new_template_id']}")
+            by_flow.setdefault(item["flow"], []).append(item)
+
+        print(f"""
+📋 MANUAL UI SWAP — {len(manual_needed)} email message(s) across {len(by_flow)} flow(s)
+
+   The compliance-patched HTML is already saved as new templates in your
+   Klaviyo library (named '[COMPLIANCE] <message name>'). To activate them:
+
+   For each row below:
+     1. Flows → open the flow listed
+     2. Click the email message node
+     3. Click 'Edit Email' → 'Change Template'
+     4. Search for the [COMPLIANCE] template → select → Save
+""")
+        for flow_name, items in by_flow.items():
+            print(f"   ━━━ {flow_name} ━━━")
+            for it in items:
+                print(f"     • {it['message']}")
+                print(f"       Template ID: {it['new_template_id']}  (search: \"[COMPLIANCE] {it['message'][:40]}\")")
             print()
 
     if manual_needed or fixed > 0:
