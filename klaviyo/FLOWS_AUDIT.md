@@ -429,6 +429,54 @@ If Replenishment / Post-Purchase / Welcome had this voice, the audit would be fa
 
 ---
 
+---
+
+## Flow 6: [Z] Back in Stock (Ysj7sg, LIVE) 🚨
+
+**Trigger:** Metric (likely "Back in Stock" notification metric). **Status:** LIVE. **Volume:** unknown (throttled in verify-flows).
+**Intent:** Notify customers a product they wanted is back in stock.
+
+**Structure:** 4 actions, 2 emails. Likely: trigger → E1 (immediate notification) → wait → E2 (follow-up).
+
+**Templates use the bespoke BC anatomy** (`@media only screen and (max-width: 620px)` + `bc-nav` class match real BC templates) — same family as Post-Purchase, NOT MJML like Abandoned Checkout / ATC.
+
+### Per-message audit
+
+| # | Action | Msg | Subject | Preview | Template | Voice |
+|---|---|---|---|---|---|---|
+| 1 | 105627854 | UeshNF | `{{ event.ProductName }} is back!` (personalised) | "Great news - it's back in stock. **Grab yours before it sells out again.**" | W2Sbja | 🚨 fear in preview |
+| 2 | 105627857 | VpR8Gx | "Still available - but **selling fast**" | "**Limited stock remaining. Don't miss your chance** to grab one." | RijuTw | 🚨 heavy fear, both lines |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| BIS1 | 🚨 high | E1 preview "**Grab yours before it sells out again**" — scarcity language banned by ASA Code Rule 1(b) and CLAUDE.md | Rewrite preview without scarcity |
+| BIS2 | 🚨 high | E2 subject "**Still available - but selling fast**" — direct fear/urgency violation | Rewrite subject |
+| BIS3 | 🚨 high | E2 preview "**Limited stock remaining. Don't miss your chance**" — multiple banned phrases ("limited stock remaining", "don't miss") | Rewrite preview |
+| BIS4 | medium | "Selling fast" / "limited stock" claims are unverified — if not factually backed by real-time inventory, this is **fake scarcity** (additional ASA violation under truthfulness rule) | Either pull real inventory data into the email or remove the claims entirely |
+| BIS5 | medium | Brand voice **directly contradicts** the ATC gold standard ("No pressure" / "Ready when you are") in the same Klaviyo account — inconsistency hurts trust | Apply ATC voice patterns here |
+| BIS6 | low | E1 subject `{{ event.ProductName }} is back!` — good personalisation, factual, no fear ✅ | Keep |
+| BIS7 | unknown | Need to read template HTML to verify UEMA footer present + brand colors | Inspect |
+
+### Suggested rewrites
+
+| | Current | Suggested (BC voice + ATC-style anti-fear) |
+|---|---|---|
+| **E1 subject** | `{{ event.ProductName }} is back!` | Keep ✅ |
+| **E1 preview** | `Great news - it's back in stock. Grab yours before it sells out again.` | `Great news — it's back. Pick up where you left off.` |
+| **E2 subject** | `Still available - but selling fast` | `Your {{ event.ProductName }} is still here for you` (~50 chars) |
+| **E2 preview** | `Limited stock remaining. Don't miss your chance to grab one.` | `Saved for you — no pressure, no rush.` |
+
+### Why this matters legally
+
+NZ ASA Therapeutic & Health Advertising Code 2025 + general ASA Code rule 1(b) explicitly prohibit:
+- Statements creating "pressure of time" without factual basis (e.g. "selling fast" without verified depletion rate)
+- Implications of scarcity unless substantiated
+- Phrases like "don't miss out" / "last chance" / "running out"
+
+Back in Stock E2 contains 3 of those phrases in 2 lines.
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
@@ -437,3 +485,4 @@ If Replenishment / Post-Purchase / Welcome had this voice, the audit would be fa
 - 2026-05-06 — Audited Flow 12 (Replenishment): 16 emails. CORRECTED: only Regaine (msg WdBQF5) is restricted (Pharmacy_Only_check tag); Oracoat Xylimelts is Personal Care, not restricted. Plus retail-first additions plan from Shopify top-sellers.
 - 2026-05-06 — Audited Flow 2 (Abandoned Checkout): 4 emails, 1,714 recipients/30d. **CRITICAL: E2 offers "$5 off" — direct CLAUDE.md "no coupon" violation.** E3+E4 share identical subject + preview. E1 voice exemplary.
 - 2026-05-06 — Audited Flow 4 (Added to Cart Abandonment): 2 emails, 1,408 recipients/30d. **GOLD STANDARD — cleanest BC voice in the audit.** "No pressure" / "Just popping in" — anti-fear copy across both emails. Templates MJML, need HTML verification of footer/colors.
+- 2026-05-06 — Audited Flow 6 (Back in Stock): 2 emails. **HIGH-severity scarcity/fear violations across both** — "selling fast" / "limited stock remaining" / "don't miss your chance" / "before it sells out again". Subject of E1 (`{{ event.ProductName }} is back!`) is fine; everything else needs rewriting. Direct contradiction of the ATC gold-standard voice in the same account. Templates use bespoke BC anatomy.
