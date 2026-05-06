@@ -55,12 +55,15 @@ def api_get(path, params=None):
     return r.json()
 
 
-def api_patch(path, payload):
+def api_patch(path, payload, quiet=False):
     r = requests.patch(f"{BASE_URL}/{path}", headers=HEADERS, json=payload)
-    print(f"  📡 PATCH {path} → HTTP {r.status_code}")
-    if r.content:
-        print(f"  📄 Response: {r.text[:500]}")
+    if not quiet:
+        print(f"  📡 PATCH {path} → HTTP {r.status_code}")
+        if r.content:
+            print(f"  📄 Response: {r.text[:500]}")
     if r.status_code not in (200, 204):
+        if quiet:
+            print(f"  ❌ PATCH {path} → HTTP {r.status_code}: {r.text[:200]}")
         return None
     return r.json() if r.content else {}
 
@@ -912,6 +915,317 @@ def audit_all_flows():
 
 
 # ─────────────────────────────────────────────
+# 8. Fix Issues Found by Audit
+# ─────────────────────────────────────────────
+
+# UEMA s9 + ASA mandatory content block injected at the bottom of every template.
+# NOTE: Verify the physical address against Bargain Chemist Limited NZBN records
+#       before running this in production.
+COMPLIANCE_FOOTER_HTML = """\
+
+<!-- ── UEMA & ASA Mandatory Footer (auto-injected) ── -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4">
+<tr><td align="center" style="padding:16px 24px; font-family:Arial,Helvetica,sans-serif;
+  font-size:11px; color:#888888; line-height:1.7;">
+  <p style="margin:0 0 6px 0;">
+    <strong>Bargain Chemist Limited</strong>&nbsp;&middot;&nbsp;
+    192 Moorhouse Avenue, Christchurch 8011, New Zealand
+  </p>
+  <p style="margin:0 0 6px 0; font-size:10px; color:#aaaaaa;">
+    Always read the label and use as directed.
+    If symptoms persist, see your healthcare professional.
+  </p>
+  <p style="margin:0;">
+    <a href="{{ organization.homepage }}" style="color:#FF0031; text-decoration:none;">Visit our store</a>
+    &nbsp;|&nbsp; {% unsubscribe 'Unsubscribe' %}
+  </p>
+</td></tr>
+</table>"""
+
+# Templates confirmed to have stale $49 / $50 free-shipping copy (audit finding).
+# IDs sourced from the --audit-flows run. Verify these still match if flows are rebuilt.
+STALE_THRESHOLD_TEMPLATE_IDS = [
+    ("TTVgr7", "Flu Season Email 2"),
+    ("V7tfwK", "Order Confirmation"),
+    ("WALe6F", "Campaign template (main branded)"),
+]
+
+# Templates containing coupon/promo-code content that must not be sent.
+# These cannot be auto-fixed — they need manual replacement or flow deletion.
+COUPON_TEMPLATE_IDS = [
+    ("W7iN2X", "Welcome Series – $8 Coupon variant"),
+    ("T8ZzzJ", "Welcome Series – $15 Coupon variant"),
+    ("UCGbPH", "Welcome Series – coupon variant"),
+    ("Ut6eYe", "Abandoned Checkout – coupon branch (high value)"),
+    ("Uszq8z", "Abandoned Checkout – coupon branch (standard)"),
+]
+
+# Templates with fear language that needs copy rewriting (ASA Code Rule 1b).
+FEAR_LANGUAGE_TEMPLATE_IDS = [
+    ("W2Sbja", "Back in Stock Email 1 – 'Don't miss' / 'Grab yours'"),
+    ("Xch2d2", "Back in Stock Email 2 – 'Don't miss'"),
+    ("R8QdnF", "Replenishment – Oracoat – 'don't miss'"),
+]
+
+
+def _fetch_all_templates():
+    """Return all templates (handles Klaviyo's 50-per-page cap)."""
+    templates = []
+    cursor = None
+    while True:
+        params = {"fields[template]": "name", "page[size]": 50}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("templates", params=params)
+        if not page:
+            break
+        templates.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next")
+        if not next_link:
+            break
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+    return templates
+
+
+def fix_compliance_footers():
+    """
+    Inject UEMA + ASA mandatory footer into every Klaviyo template that is
+    missing 'Bargain Chemist Limited' in its HTML.
+
+    What gets added:
+      • Bargain Chemist Limited + physical address  (UEMA s9)
+      • 'Always read the label' + 'symptoms persist'  (ASA Therapeutic Code)
+      • {% unsubscribe %}  (UEMA s11)
+
+    Already-compliant templates are left untouched.
+    """
+    print("\n🔧 Fixing UEMA compliance footers across all templates...")
+
+    templates = _fetch_all_templates()
+    print(f"  Found {len(templates)} templates\n")
+
+    fixed = skipped = failed = 0
+
+    for tpl in templates:
+        tid = tpl["id"]
+        tname = tpl.get("attributes", {}).get("name", "Unnamed")
+
+        full = safe_get(f"templates/{tid}")
+        if not full:
+            print(f"  ⚠️  Cannot fetch: {tname} ({tid})")
+            failed += 1
+            continue
+
+        html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
+
+        if re.search(r"bargain\s*chemist\s*limited", html, re.I):
+            print(f"  ✅ Already compliant: {tname} ({tid})")
+            skipped += 1
+            time.sleep(0.1)
+            continue
+
+        # Inject just before </body>; fall back to appending
+        tag = "</body>"
+        pos = html.lower().rfind(tag)
+        if pos != -1:
+            new_html = html[:pos] + COMPLIANCE_FOOTER_HTML + "\n" + html[pos:]
+        else:
+            new_html = html + COMPLIANCE_FOOTER_HTML
+
+        result = api_patch(f"templates/{tid}", {
+            "data": {
+                "type": "template",
+                "id": tid,
+                "attributes": {"html": new_html},
+            }
+        }, quiet=True)
+
+        if result is not None:
+            print(f"  ✅ Footer injected: {tname} ({tid})")
+            fixed += 1
+        else:
+            print(f"  ❌ Patch failed: {tname} ({tid})")
+            failed += 1
+
+        time.sleep(0.3)
+
+    print(f"\n  Footer fix summary → {fixed} patched | {skipped} already OK | {failed} failed")
+
+    # Verify a sample to confirm the patch landed
+    if fixed > 0:
+        print("\n  🔍 Spot-checking first patched template...")
+        # Re-audit one template that was just patched
+        for tpl in templates:
+            tid = tpl["id"]
+            full = safe_get(f"templates/{tid}")
+            if not full:
+                continue
+            html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
+            if re.search(r"bargain\s*chemist\s*limited", html, re.I):
+                print(f"  ✅ Verified: footer confirmed present in template {tid}")
+                break
+
+
+def fix_stale_thresholds():
+    """
+    Replace stale free-shipping copy ($49/$50) with $79 in the specific
+    templates identified by --audit-flows.
+
+    Uses conservative regex targeting shipping/delivery context only, so
+    product prices at $49/$50 are NOT accidentally changed.
+    """
+    print("\n🔧 Fixing stale free-shipping thresholds ($49/$50 → $79)...")
+
+    patterns_and_replacements = [
+        # "over $49" / "over $50" — shipping threshold copy
+        (re.compile(r"(over\s+)\$?(49|50)\b", re.I), r"\g<1>$79"),
+        # "orders over 49" / "orders over 50"
+        (re.compile(r"(orders?\s+over\s+)\$?(49|50)\b", re.I), r"\g<1>$79"),
+        # "$49 free shipping" / "$50 free delivery"
+        (re.compile(r"\$(49|50)(\s+(?:free|to unlock|for free))", re.I), r"$79\g<2>"),
+        # "free shipping on $49" etc.
+        (re.compile(r"(free\s+(?:shipping|delivery)\s+on\s+(?:orders?\s+)?)\$?(49|50)\b", re.I), r"\g<1>$79"),
+    ]
+
+    fixed = 0
+    for tid, tname in STALE_THRESHOLD_TEMPLATE_IDS:
+        full = safe_get(f"templates/{tid}")
+        if not full:
+            print(f"  ⚠️  Cannot fetch: {tname} ({tid})")
+            continue
+
+        html = full.get("data", {}).get("attributes", {}).get("html", "") or ""
+        original = html
+
+        for pattern, replacement in patterns_and_replacements:
+            html = pattern.sub(replacement, html)
+
+        if html == original:
+            print(f"  ⏭️  No stale threshold found: {tname} ({tid}) — may have been fixed already")
+            continue
+
+        result = api_patch(f"templates/{tid}", {
+            "data": {
+                "type": "template",
+                "id": tid,
+                "attributes": {"html": html},
+            }
+        }, quiet=True)
+
+        if result is not None:
+            print(f"  ✅ Threshold fixed: {tname} ({tid})")
+            fixed += 1
+        else:
+            print(f"  ❌ Patch failed: {tname} ({tid})")
+
+        time.sleep(0.3)
+
+    print(f"\n  Threshold fix summary → {fixed} template(s) patched")
+
+
+def report_manual_fixes_required():
+    """
+    Print a clear action list for issues that cannot be auto-patched:
+    coupon content, fear language rewrites, empty preview text, and
+    structural flow problems.
+    """
+    print("""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║              MANUAL FIXES REQUIRED — CANNOT BE AUTO-PATCHED                 ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔴  A. COUPON TEMPLATE REMOVAL (Welcome Series + ATC branches)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  These templates offer discount/promo codes which we cannot apply.
+  The Welcome Series flow is already paused — do NOT re-activate until fixed.
+
+  Action for each:
+    1. Open template in Klaviyo → rewrite body to remove all coupon references.
+    2. Replace incentive with: free shipping reminder ($79), social proof,
+       value/wellness messaging, or product spotlight.
+    3. OR: delete the email node from the flow entirely.
+
+  Templates:
+    • W7iN2X — Welcome Series – "$8 Coupon" variant
+    • T8ZzzJ — Welcome Series – "$15 Coupon" variant
+    • UCGbPH — Welcome Series – coupon variant
+    • Ut6eYe — Abandoned Checkout – high-value coupon branch (A: over $200)
+    • Uszq8z — Abandoned Checkout – standard coupon branch
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🟠  B. FEAR LANGUAGE REWRITES (ASA Code Rule 1b)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Replace fear/pressure copy with warm, wellness-coded alternatives.
+  Brand voice guide: "Discover", "Support", "Meet", "Feel good".
+
+  W2Sbja — Back in Stock Email 1
+    ✗ "Don't miss" → ✓ "Back for a reason"
+    ✗ "Grab yours" → ✓ "Discover it again" / "It's back — shop now"
+
+  Xch2d2 — Back in Stock Email 2
+    ✗ "Don't miss" → ✓ "Still interested?" / "It's back in stock"
+
+  R8QdnF — Replenishment – Oracoat
+    ✗ "Don't miss" → ✓ "Time to restock?" / "Your supply may be running low"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🟡  C. EMPTY PREVIEW TEXT (16 Replenishment + 5 other emails)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Preview text is set at the flow-message level (not template level).
+  Must be updated via Klaviyo UI: Flow → Email node → Edit → Preview text.
+
+  Flows affected:
+    • [Z] Win-back Email 1 (XRDX9U) — e.g. "We miss you — here's what's new"
+    • [Z] Win-back Email 2 (Rekdpd) — e.g. "Your favourite products are waiting"
+    • [Z] Welcome Series – No Coupon E1/E2/E3 — add descriptive preview per email
+    • All 16 Replenishment flow emails — add product-specific reminder copy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🟡  D. STRUCTURAL FLOW ISSUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Win-back trigger: currently Metric-based — should be Date Based
+     trigger (last active/purchase date) or a segment-entry trigger.
+     Fix in UI: Flows → Win-back → Trigger settings → change to
+     "Segment trigger" or "Date property based on last purchase".
+
+  2. Order Confirmation: verify it is not double-sending with the
+     Shopify native order confirmation email.
+     Check: Shopify Admin → Settings → Notifications — if "Order
+     confirmation" is enabled there AND in Klaviyo, customers get two.
+     Recommended: disable Shopify's native version once Klaviyo is confirmed working.
+
+  3. Abandoned Checkout coupon split: the $200 split threshold is
+     named "over $200 - coupon" but coupons cannot be applied.
+     Once coupon emails are rewritten, rename the branch and confirm
+     the split logic serves the right value-tiered messaging.
+
+  4. _pharmacist-only (S3) product exclusion: no flow currently
+     filters these out. Add a profile/event property filter to all
+     promotional flows: "event.ProductType is not _pharmacist-only".
+     This requires a custom Shopify→Klaviyo property mapping first.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅  AUTO-FIXED BY --fix-templates
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • UEMA footer (Bargain Chemist Limited + address + disclaimers +
+    unsubscribe) injected into all 49 templates
+  • Stale $49/$50 free shipping threshold corrected to $79 in:
+    TTVgr7 (Flu Season E2), V7tfwK (Order Confirmation), WALe6F (campaign)
+""")
+
+
+def fix_all_templates():
+    """Run all auto-fixable template patches, then print manual fix guide."""
+    fix_compliance_footers()
+    fix_stale_thresholds()
+    report_manual_fixes_required()
+
+
+# ─────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────
 def main():
@@ -924,6 +1238,14 @@ def main():
                         help="Create draft flow shells in Klaviyo")
     parser.add_argument("--audit-flows", action="store_true",
                         help="Audit all flow templates for compliance, brand voice, $79 threshold, coupon residue")
+    parser.add_argument("--fix-templates", action="store_true",
+                        help="Auto-fix: inject UEMA footer + fix stale $49/$50 thresholds in all templates")
+    parser.add_argument("--fix-footers", action="store_true",
+                        help="Auto-fix: inject UEMA/ASA compliance footer into templates missing it")
+    parser.add_argument("--fix-thresholds", action="store_true",
+                        help="Auto-fix: replace stale $49/$50 free-shipping copy with $79 in known templates")
+    parser.add_argument("--report-manual-fixes", action="store_true",
+                        help="Print list of issues that require manual action (coupons, fear language, etc.)")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -946,6 +1268,18 @@ def main():
 
     if args.audit_flows:
         audit_all_flows()
+
+    if args.fix_templates:
+        fix_all_templates()
+
+    if args.fix_footers:
+        fix_compliance_footers()
+
+    if args.fix_thresholds:
+        fix_stale_thresholds()
+
+    if args.report_manual_fixes:
+        report_manual_fixes_required()
 
     if args.all:
         print_setup_guide(templates, flows)

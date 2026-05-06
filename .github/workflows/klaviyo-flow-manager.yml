@@ -13,6 +13,11 @@ on:
           - pause-triple-pixel
           - create-templates
           - create-flows
+          - audit-flows
+          - fix-templates
+          - fix-footers
+          - fix-thresholds
+          - report-manual-fixes
           - all
 
 jobs:
@@ -75,6 +80,36 @@ jobs:
         env:
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
         run: python scripts/klaviyo_flow_manager.py --create-flows
+
+      - name: Audit all flows
+        if: ${{ inputs.action == 'audit-flows' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --audit-flows
+
+      - name: Fix all templates (footers + thresholds)
+        if: ${{ inputs.action == 'fix-templates' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --fix-templates
+
+      - name: Fix compliance footers only
+        if: ${{ inputs.action == 'fix-footers' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --fix-footers
+
+      - name: Fix stale thresholds only
+        if: ${{ inputs.action == 'fix-thresholds' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --fix-thresholds
+
+      - name: Report manual fixes required
+        if: ${{ inputs.action == 'report-manual-fixes' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --report-manual-fixes
 
       - name: Run all
         if: ${{ inputs.action == 'all' }}
