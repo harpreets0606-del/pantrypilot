@@ -753,6 +753,33 @@ def get_template_id_for_message(message_id, debug=False):
     return data["data"].get("id")
 
 
+def get_message_content(message_id, debug=False):
+    """Fetch full flow-message and return its content dict (from_email, subject_line, etc.).
+    Klaviyo requires these fields when PATCHing a flow-action's email message."""
+    data = safe_get(f"flow-messages/{message_id}", debug=debug)
+    if not data:
+        return {}
+    return data.get("data", {}).get("attributes", {}).get("content", {}) or {}
+
+
+def build_flow_email_payload(content, new_template_id):
+    """Build a complete FlowEmail object for PATCH /api/flow-actions, preserving
+    all existing required fields (from_email, from_label, subject_line, etc.)
+    and only swapping the template_id."""
+    msg = {"template_id": new_template_id}
+    # Pass-through required + optional FlowEmail fields from existing content
+    for k in ("from_email", "from_label", "reply_to_email", "cc_email", "bcc_email",
+              "subject_line", "preview_text", "smart_sending_enabled",
+              "transactional", "add_tracking_params", "custom_tracking_params",
+              "additional_filters"):
+        if k in content and content[k] is not None:
+            msg[k] = content[k]
+    # Some Klaviyo responses use `subject` rather than `subject_line` — normalize
+    if "subject_line" not in msg and content.get("subject"):
+        msg["subject_line"] = content["subject"]
+    return msg
+
+
 def get_template_html(template_id):
     data = safe_get(f"templates/{template_id}")
     if not data:
@@ -1218,6 +1245,7 @@ def fix_compliance_footers():
                 _save_compliance_cache(existing_compliance)
 
                 # Try to rebind the flow action right now via 2025-10-15 API
+                msg_content = get_message_content(msg_id)
                 rebind_payload = {
                     "data": {
                         "type": "flow-action",
@@ -1226,7 +1254,7 @@ def fix_compliance_footers():
                             "definition": {
                                 "type": "send-email",
                                 "data": {
-                                    "message": {"template_id": new_tid}
+                                    "message": build_flow_email_payload(msg_content, new_tid)
                                 }
                             }
                         }
@@ -1559,6 +1587,7 @@ def rebind_compliance_templates():
                     continue
 
                 # PATCH /api/flow-actions/{id} with the new template_id
+                msg_content = get_message_content(msg["id"])
                 payload = {
                     "data": {
                         "type": "flow-action",
@@ -1567,9 +1596,7 @@ def rebind_compliance_templates():
                             "definition": {
                                 "type": "send-email",
                                 "data": {
-                                    "message": {
-                                        "template_id": new_tid,
-                                    }
+                                    "message": build_flow_email_payload(msg_content, new_tid)
                                 }
                             }
                         }
