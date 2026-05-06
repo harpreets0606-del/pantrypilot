@@ -1466,6 +1466,175 @@ def audit_action_statuses():
     print(f"  ⏹  = MANUAL in a LIVE flow (paused)")
 
 
+def deploy_replenishment_template(slot_number, confirm=False):
+    """Deploy a single retail-first Replenishment template to its flow-action.
+    Process:
+      1. Render HTML for the slot via replenishment_templates.SLOTS
+      2. POST as a new template to Klaviyo (creates [BC-Replenishment]
+         <category> entry in the template library)
+      3. PATCH the corresponding flow-action with the new template_id,
+         preserving definition.links (the unlock we discovered today)
+      4. Verify by re-reading the action's bound template_id
+
+    Use --confirm to actually deploy (otherwise dry-run preview).
+    Smoke-test on slot 16 (First aid) before bulk deploying — its action
+    is currently draft so a misconfiguration won't ship to customers."""
+    # Late import so the script can be used without replenishment_templates.py
+    try:
+        from replenishment_templates import SLOTS, render_slot
+    except ImportError:
+        # Allow running from repo root: scripts/replenishment_templates.py
+        import os
+        import sys
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from replenishment_templates import SLOTS, render_slot
+
+    print(f"\n🚀 DEPLOY REPLENISHMENT TEMPLATE — slot {slot_number}")
+    print("=" * 80)
+
+    slot = next((s for s in SLOTS if s["slot"] == slot_number), None)
+    if not slot:
+        print(f"  ❌ Slot {slot_number} not found. Available: {sorted(s['slot'] for s in SLOTS)}")
+        return
+
+    action_id = slot["action_id"]
+    template_name = f"[BC-Replenishment] {slot['category']}"
+    print(f"  Slot:           {slot_number}")
+    print(f"  Action ID:      {action_id}")
+    print(f"  Category:       {slot['category']}")
+    print(f"  Template name:  {template_name}")
+    print(f"  Subject:        {slot['subject']}")
+    print(f"  Preview text:   {slot['preview_text']}")
+
+    # 1. Render HTML
+    html = render_slot(slot)
+    print(f"  HTML length:    {len(html):,} chars, {len(slot['products'])} products")
+
+    # 2. Read current action state to capture existing definition.links
+    print("\n  Reading current flow-action state...")
+    current = safe_get(f"flow-actions/{action_id}")
+    if not current:
+        print(f"  ❌ Could not fetch action {action_id}")
+        return
+    attrs = current.get("data", {}).get("attributes", {}) or {}
+    defn = attrs.get("definition") or {}
+    if not isinstance(defn, dict):
+        print(f"  ❌ Unexpected definition shape on action")
+        return
+    existing_msg = (defn.get("data") or {}).get("message") or {}
+    existing_links = defn.get("links")
+    existing_status = (defn.get("data") or {}).get("status") or "?"
+    existing_template = existing_msg.get("template_id") or "?"
+    print(f"  Current status:        {existing_status}")
+    print(f"  Current template_id:   {existing_template}")
+
+    if not confirm:
+        print(f"\n  Dry-run mode. Re-run with --confirm to deploy.")
+        print(f"  Will: (1) POST new template '{template_name}' to Klaviyo")
+        print(f"        (2) PATCH flow-action {action_id} to use it (preserving links)")
+        print(f"        (3) Keep status='draft' so the email doesn't ship until you flip it live")
+        return
+
+    # 3. POST new template
+    print(f"\n  Creating template '{template_name}'...")
+    create_payload = {
+        "data": {
+            "type": "template",
+            "attributes": {
+                "name": template_name,
+                "editor_type": "CODE",
+                "html": html,
+            }
+        }
+    }
+    new_tpl = api_post("templates", create_payload)
+    if not new_tpl:
+        print(f"  ❌ Template POST failed")
+        return
+    new_template_id = new_tpl["data"]["id"]
+    print(f"  ✅ Template created: {new_template_id}")
+
+    # 4. PATCH flow-action with new template_id, preserving links + status
+    print(f"\n  Rebinding flow-action {action_id} to template {new_template_id}...")
+    new_msg = dict(existing_msg)
+    new_msg["template_id"] = new_template_id
+    # Update subject + preview text from the slot config
+    new_msg["subject_line"] = slot["subject"]
+    new_msg["preview_text"] = slot["preview_text"]
+
+    definition_payload = {
+        "id": action_id,
+        "type": "send-email",
+        "data": {
+            "message": new_msg,
+            "status": existing_status if existing_status in ("live", "draft", "manual") else "draft",
+        }
+    }
+    if existing_links is not None:
+        definition_payload["links"] = existing_links
+
+    patch_payload = {
+        "data": {
+            "type": "flow-action",
+            "id": action_id,
+            "attributes": {
+                "definition": definition_payload,
+            }
+        }
+    }
+    r = requests.patch(f"{BASE_URL}/flow-actions/{action_id}",
+                       headers=HEADERS, json=patch_payload, timeout=REQUEST_TIMEOUT)
+    if r.status_code in (200, 204):
+        print(f"  ✅ Rebind succeeded ({r.status_code})")
+    else:
+        print(f"  ❌ Rebind failed: HTTP {r.status_code}")
+        print(f"     Response: {r.text[:600]}")
+        print(f"     Note: template {new_template_id} was still created; you may want to delete it.")
+        return
+
+    # 5. Verify
+    print("\n  Verifying...")
+    verify = safe_get(f"flow-actions/{action_id}")
+    if verify:
+        v_msg = ((verify.get("data", {}).get("attributes", {}).get("definition") or {})
+                 .get("data") or {}).get("message") or {}
+        v_template = v_msg.get("template_id")
+        v_subject = v_msg.get("subject_line")
+        if v_template == new_template_id:
+            print(f"  ✅ Verified: action now bound to {new_template_id}")
+            print(f"  ✅ Verified subject: {v_subject}")
+        else:
+            print(f"  ⚠️  Verification: template_id is {v_template!r} (expected {new_template_id})")
+
+
+def deploy_all_replenishment_templates(confirm=False):
+    """Bulk deploy all 15 retail-first templates. Calls deploy_replenishment_template
+    for each slot. Stops on the first failure to avoid partial state."""
+    try:
+        from replenishment_templates import SLOTS
+    except ImportError:
+        import os
+        import sys
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from replenishment_templates import SLOTS
+
+    print(f"\n🚀 BULK DEPLOY {len(SLOTS)} REPLENISHMENT TEMPLATES")
+    print("=" * 80)
+    if not confirm:
+        print("  Dry-run. Re-run with --confirm to deploy all.")
+        for s in SLOTS:
+            print(f"  Slot {s['slot']:>2} → action {s['action_id']} → category {s['category']}")
+        return
+
+    for s in SLOTS:
+        deploy_replenishment_template(s["slot"], confirm=True)
+        time.sleep(1.0)  # pace the deploys
+
+    print("\n" + "=" * 80)
+    print(f"✅ Deployed {len(SLOTS)} templates. All flow-actions remain in 'draft' until you flip them live.")
+    print("=" * 80)
+
+
 def pause_flow_action(action_id, confirm=False):
     """Pause a single flow-action by setting its definition.data.status to 'manual'.
     Preserves the rest of the action's definition (message, template_id, etc.) untouched."""
@@ -1967,6 +2136,10 @@ def main():
                         help="Resume a previously paused flow-action (status=live). Dry-run unless --confirm.")
     parser.add_argument("--audit-action-statuses", action="store_true",
                         help="Walk every flow's email-send actions and print each one's individual status (live/draft/manual) — flow-level status can mask action-level status")
+    parser.add_argument("--deploy-replenishment-template", metavar="SLOT", type=int,
+                        help="Deploy a single retail-first Replenishment template (POST template + PATCH flow-action). Dry-run unless --confirm. Test on slot 16 first.")
+    parser.add_argument("--deploy-all-replenishment-templates", action="store_true",
+                        help="Bulk deploy all 15 retail-first Replenishment templates. Dry-run unless --confirm.")
     parser.add_argument("--confirm", action="store_true",
                         help="Required by --pause-action / --resume-action to actually execute (otherwise dry-run)")
     parser.add_argument("--all", action="store_true",
@@ -2024,6 +2197,12 @@ def main():
 
     if args.audit_action_statuses:
         audit_action_statuses()
+
+    if args.deploy_replenishment_template is not None:
+        deploy_replenishment_template(args.deploy_replenishment_template, confirm=args.confirm)
+
+    if args.deploy_all_replenishment_templates:
+        deploy_all_replenishment_templates(confirm=args.confirm)
 
     if args.pause_action:
         pause_flow_action(args.pause_action, confirm=args.confirm)
