@@ -336,6 +336,48 @@ To verify these, options are:
 
 ---
 
+## Browse Abandonment + Search Abandonment V4 — content audit
+
+**Status:** VERIFIED
+**Source:** `klaviyo_get_email_template Tutaam` + `klaviyo_get_email_template RPZh8V` on 2026-05-06
+**Fact:**
+
+### Browse Abandonment (RtiVC5, draft) — template `Tutaam`
+
+Single email (action 98627563), Smart Sending ON, fires after 1 time-delay.
+
+Content state:
+- Subject: `Still thinking about it{% if first_name %}, {{ first_name }}{% endif %}?` ✅
+- Hero subtitle: *"You were this close. The item you checked out is still in stock — but popular products don't always stay that way."* ⚠️ mild scarcity ("don't always stay that way") — borderline ASA Code 1(b)
+- Personalisation: uses `{{ event.URL }}`, `{{ event.ProductName }}`, `{{ event.ImageURL }}`, `{{ event.Price }}` — proper Browse-event vars
+- CTA: "Get It Now" → `{{ event.URL }}` (direct product link)
+- Has price-beat guarantee block (substantiated)
+- Has my injected duplicate UEMA footer (192 Moorhouse — address mismatch with Klaviyo registered Belfast)
+- No custom UTM params (uses Klaviyo defaults; less attribution-friendly)
+
+**Reason it's not performing:** flow is `draft`, hasn't been activated. Content ~85% there. Need: soften scarcity line, then activate.
+
+### Search Abandonment V4 (XbQiKg, draft) — template `RPZh8V`
+
+Single email (action 105487706), Smart Sending ON, fires after 1 time-delay.
+
+Content state:
+- Subject: uses `{{ event.searchQuery }}` and `{{ event.productName }}` (truncated in earlier output)
+- Hero: *"You recently searched for "{{ event.searchQuery|default:'' }}". Pick up your search where you left off or browse our popular categories below."* ✅ factual, no fear
+- CTA: "RETURN TO SEARCH" → `bargainchemist.co.nz/search?q={{ event.searchQuery|default:'' }}`
+- Category fallbacks (verified URLs): `/collections/vitamins-supplements`, `/collections/home-household`, `/collections/cold-flu`, `/collections/weight-management`, `/collections/allergies-hay-fever-sinus`, `/collections/fragrances`
+- Trigger requires Klevu/Boost `Submitted Search` event (confirmed metric exists)
+
+**Reason it's not performing:** flow is `draft`, hasn't been activated. Content is solid. Likely waiting on confidence in Klevu/Boost search-event reliability before turning on.
+
+### Both flows — common gaps
+
+- ⚠️ Single email only (no E2 follow-up, no escalation logic)
+- ⚠️ My injected duplicate footer with Moorhouse address (matches the address-mismatch issue noted earlier)
+- ⚠️ No `custom_tracking_params` set — Klaviyo defaults applied. For attribution consistency they'd benefit from the same template Welcome Series - Website uses (`utm_campaign={message_name} ({message_id})`, `utm_source={flow_name}`)
+
+---
+
 ## CONSOLIDATED FLOW INVENTORY (15 flows total)
 
 **Status:** VERIFIED
