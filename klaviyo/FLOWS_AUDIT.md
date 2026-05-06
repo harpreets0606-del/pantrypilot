@@ -186,8 +186,71 @@ These 4 templates were authored from scratch in the script and pushed to Klaviyo
 
 Recommended: **option B first** — verify whether they're in any flow message currently. If they aren't bound to live actions, deleting is safer than rewriting + potentially shipping bad copy.
 
+---
+
+## Flow 12: [Z] Replenishment - Reorder Reminders (V4cZMd, LIVE) 🚨
+
+**Trigger:** Placed Order metric. **Status:** LIVE. **Volume:** unknown (throttled).
+**Intent:** Reorder reminders, product/category-specific.
+
+**Surprise finding:** **16 email messages**, not 13 (verify-flows undercounted). 50 actions total — likely uses a **conditional split per product category** so customer gets the email matching what they bought.
+
+### Account-wide observations from this flow
+
+- ✅ Variable syntax CORRECT here: `{{ person.first_name|default:'friend' }}` — confirms the broken `{ first_name }` bug is **isolated to Post-Purchase Series**, not universal
+- ✅ All 16 use shared 600px responsive CSS — built from a single base template
+- 🚨 All 16 messages have **EMPTY preview text** — major deliverability + click-rate hit
+- 🚨 All 16 messages share an **IDENTICAL subject line**: `{{ person.first_name|default:'friend' }}, time to restock?` — inbox providers may flag as duplicate; users see same line repeatedly across the sequence
+
+### Per-message inventory (subject = identical, preview = empty across all)
+
+| # | Action ID | Msg ID | Template | Hero / category | Severity |
+|---|---|---|---|---|---|
+| 1 | 105717123 | WdBQF5 | RTUhv2 | "Time to Reorder Your **Regaine**" | 🚨 **CRITICAL** — Regaine = minoxidil 5%, Pharmacist-Only Medicine in NZ, ASA Therapeutic Code restricts advertising |
+| 2 | 105717126 | TNaUxX | TUNbVw | "Running Low on Your Supplements?" | high (fear-adjacent, generic) |
+| 3 | 105717129 | RnHYqR | Tygapr | "Running Low on Your Supplements?" | high |
+| 4 | 105717132 | UXzKrP | T55Smr | "Running Low on Your Supplements?" | high |
+| 5 | 105717135 | YyrwsM | SEwQEP | "Running Low on Your Supplements?" | high |
+| 6 | 105717138 | XVqtQa | SfXNYd | "**Don't Get Caught Without Your Allergy Relief**" | 🚨 **HIGH** — fear language ("Don't get caught"), ASA Rule 1(b) violation |
+| 7 | 105717141 | Xiprdx | RY53Mw | "Running Low on Your Supplements?" | high |
+| 8 | 105717144 | YtNg7p | Xqycyc | "Running Low on Your Supplements?" | high |
+| 9 | 105717147 | TCUpRb | TXxc7R | "Running Low on Your Supplements?" | high |
+| 10 | 105717150 | XdLaS9 | TAZazL | "Running Low on Your Supplements?" | high |
+| 11 | 105717153 | UNjeK3 | VUp6fj | "Running Low on Your Supplements?" | high |
+| 12 | 105717156 | YpaZKZ | RQm3cm | "Running Low on Your Supplements?" | high |
+| 13 | 105717159 | XL9X9n | QVrdp3 | "Running Low on Your Supplements?" | high |
+| 14 | 105717162 | X98UwK | WYVqLk | "Running Low on Your **Oracoat**?" | 🚨 **CRITICAL** — Oracoat OraCoating gel is a therapeutic mouth-ulcer adhesive; needs ASA review for promotional advertising |
+| 15 | 105717165 | SVg6Ta | XKMdXA | "Nearly Time to Restock Your Meal Plan" | low (factual, BC-tone) |
+| 16 | 105717169 | Ww7RU8 | V4rwDM | "Nearly Time to Restock Your Meal Plan" | low |
+
+### Findings
+
+| # | Severity | Issue | Action required |
+|---|---|---|---|
+| R1 | 🚨 CRITICAL | **Regaine email (WdBQF5)** is shipping promotional content for a Pharmacist-Only Medicine — direct violation of ASA Therapeutic & Health Advertising Code 2025 + CLAUDE.md restricted-product rule | Pause this branch; audit product list against `_pharmacist-only` tag |
+| R2 | 🚨 CRITICAL | **Oracoat email (X98UwK)** likely violates same — needs Medsafe / ASA classification check | Verify product classification; pause if restricted |
+| R3 | 🚨 high | **Allergy email (XVqtQa)** subject hero "Don't Get Caught Without…" is fear language | Rewrite to BC voice: "Top up your hayfever essentials" or similar |
+| R4 | 🚨 high | **All 16 emails identical subject** | Personalise per category: "Top up your daily multi", "Reorder your skincare routine", etc. |
+| R5 | 🚨 high | **All 16 empty preview text** | Add per-message preview matching BC patterns (4–10 words, factual or pithy benefit) |
+| R6 | medium | 12 templates use generic "Running Low on Your Supplements?" hero — fear-adjacent + repetitive | Differentiate by actual category (vitamins / probiotics / digestive / etc.) and rewrite to BC tone |
+| R7 | medium | `person.first_name` used instead of `first_name` (both valid, but BC campaigns use `first_name`) | Standardise across flows |
+| R8 | unknown | Footer / structure / threshold — not yet verified per template | Need full HTML read of 1–2 templates |
+| R9 | unknown | Trigger timing / branching logic — how does it decide which of 16 emails fires? | Need to inspect flow structure (delays + conditional splits) |
+
+### Compliance escalation
+
+The Regaine and Oracoat emails are the **single most serious finding** of this entire audit. Both products are restricted under NZ pharmacy regulation:
+
+- **Regaine** (minoxidil topical solution 5%) — classified as Pharmacist-Only Medicine. Cannot be advertised direct-to-consumer with promotional intent except per the ASA Therapeutic Code 2025 (which has strict format rules: no fear-based claims, no efficacy claims without substantiation, mandatory pharmacist disclaimer). A "time to restock" email almost certainly fails these rules.
+- **Oracoat** — clinical mouth-ulcer adhesive; likely Pharmacy-Only Medicine. Same restrictions apply.
+
+**Recommendation:** pause the Regaine and Oracoat branches of this flow within Klaviyo today, pending legal/ASA review. The other 14 emails are not legally critical but still need brand-voice fixes.
+
+---
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
 - 2026-05-06 — Audited Flow 11 (Post-Purchase Series): 13 findings across 2 emails, 4 critical
-- 2026-05-06 — Audited 4 NEW templates we created (template_abandoned_checkout_email3, template_browse_abandonment_email2, template_browse_abandonment_email3, template_atc_email3): 8 critical issues common to all + 11 per-template issues. **Recommend NOT using them; verify if in-flow first, otherwise delete.**
+- 2026-05-06 — Audited 4 NEW templates we created (template_abandoned_checkout_email3, template_browse_abandonment_email2, template_browse_abandonment_email3, template_atc_email3): 8 critical issues common to all + 11 per-template issues. **Confirmed not in Klaviyo library — Python source deleted from script.**
+- 2026-05-06 — Audited Flow 12 (Replenishment - Reorder Reminders): 16 emails (not 13 as previously reported), all share identical subject + empty preview, **2 CRITICAL ASA violations (Regaine + Oracoat = pharmacist-only medicines being price-promoted)**, 1 high-severity fear language (Allergy email). Production-impacting. Recommend pausing the Regaine and Oracoat branches today.
