@@ -754,6 +754,7 @@ def get_template_id_for_message(message_id, debug=False):
 
 
 _MESSAGE_DEBUG_DUMPED = False
+_FAILURE_DEBUG_DUMPED = False
 
 
 def get_message_content(message_id, debug=False):
@@ -1279,6 +1280,22 @@ def fix_compliance_footers():
                     print(f"  🔁 Rebound flow action to new template: {label}")
                     rebound += 1
                 else:
+                    # Diagnostic: dump the failing action's structure once so we can see
+                    # if there's a pattern (action_type mismatch, locked relationships, etc.)
+                    global _FAILURE_DEBUG_DUMPED
+                    if not _FAILURE_DEBUG_DUMPED:
+                        _FAILURE_DEBUG_DUMPED = True
+                        raw = safe_get(f"flow-actions/{action['id']}")
+                        if raw:
+                            d = raw.get("data", {})
+                            a = d.get("attributes", {}) or {}
+                            print(f"  🔍 DEBUG failed action {action['id']} keys: {list(a.keys())}")
+                            print(f"  🔍 DEBUG action_type: {a.get('action_type')!r}")
+                            defn = a.get("definition") or {}
+                            if isinstance(defn, dict):
+                                print(f"  🔍 DEBUG definition.type: {defn.get('type')!r}")
+                                print(f"  🔍 DEBUG definition keys: {list(defn.keys())}")
+                            print(f"  🔍 DEBUG links: {json.dumps(d.get('links'))[:300]}")
                     manual_needed.append({
                         "flow": flow_name,
                         "message": msg_name,
