@@ -254,6 +254,50 @@ TEMPLATES = {
 }
 
 
+def deploy_templates(keys=None):
+    """POST abandonment templates to Klaviyo. Returns dict of key → template_id."""
+    import os
+    import requests
+
+    api_key = os.environ.get("KLAVIYO_API_KEY")
+    if not api_key:
+        raise SystemExit("KLAVIYO_API_KEY not set")
+
+    headers = {
+        "Authorization": f"Klaviyo-API-Key {api_key}",
+        "revision": "2025-01-15",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+    targets = {k: TEMPLATES[k] for k in (keys or TEMPLATES.keys())}
+    results = {}
+
+    for key, t in targets.items():
+        payload = {
+            "data": {
+                "type": "template",
+                "attributes": {
+                    "name": t["name"],
+                    "html": t["render"](),
+                    "editor_type": "CODE",
+                },
+            }
+        }
+        r = requests.post("https://a.klaviyo.com/api/templates", json=payload, headers=headers)
+        if r.status_code in (200, 201):
+            tid = r.json()["data"]["id"]
+            print(f"  ✅ {t['name']} → {tid}")
+            results[key] = tid
+        elif r.status_code == 409:
+            # Already exists — fetch existing ID
+            print(f"  ⚠️  {t['name']} already exists (409) — skipping. Delete old copy if you want to redeploy.")
+        else:
+            print(f"  ❌ {t['name']} failed: {r.status_code} {r.text[:200]}")
+
+    return results
+
+
 if __name__ == "__main__":
     import argparse
     import os
@@ -263,8 +307,15 @@ if __name__ == "__main__":
     parser.add_argument("--key", choices=list(TEMPLATES.keys()), help="Single template")
     parser.add_argument("--all", action="store_true",
                         help="Write all 4 to ./previews/abandonment/")
+    parser.add_argument("--deploy", action="store_true",
+                        help="POST all 4 templates to Klaviyo")
     parser.add_argument("--out", help="Output file for --key")
     args = parser.parse_args()
+
+    if args.deploy:
+        print("Deploying abandonment templates to Klaviyo...")
+        deploy_templates()
+        sys.exit(0)
 
     if args.all:
         os.makedirs("previews/abandonment", exist_ok=True)
