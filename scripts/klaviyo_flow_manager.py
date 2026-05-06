@@ -531,19 +531,19 @@ def create_all_templates():
 # 4. Get Metric IDs (needed for flow triggers)
 # ─────────────────────────────────────────────
 def get_metric_id(name_fragment):
-    # Klaviyo 2025-10-15 caps metrics page size at ~10; paginate.
+    # Klaviyo 2025-10-15 metrics endpoint rejects page[size] and fields[metric];
+    # call with no params and follow next links.
     cursor = None
     while True:
-        params = {"fields[metric]": "name", "page[size]": 10}
-        if cursor:
-            params["page[cursor]"] = cursor
+        params = {"page[cursor]": cursor} if cursor else None
         try:
             data = api_get("metrics", params)
         except Exception:
             return None, None
         for m in data.get("data", []):
-            if name_fragment.lower() in m["attributes"]["name"].lower():
-                return m["id"], m["attributes"]["name"]
+            name = m.get("attributes", {}).get("name") or ""
+            if name_fragment.lower() in name.lower():
+                return m["id"], name
         next_link = data.get("links", {}).get("next") or ""
         match = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
         if not match:
@@ -1775,9 +1775,7 @@ def verify_flows():
         cursor = None
         listed = 0
         while listed < 30:
-            params = {"fields[metric]": "name", "page[size]": 10}
-            if cursor:
-                params["page[cursor]"] = cursor
+            params = {"page[cursor]": cursor} if cursor else None
             try:
                 data = api_get("metrics", params)
             except Exception as e:
