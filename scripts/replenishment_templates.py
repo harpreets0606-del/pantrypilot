@@ -570,11 +570,9 @@ def get_slot_by_action_id(action_id):
     return None
 
 
-if __name__ == "__main__":
-    # Smoke test: render slot 2 to stdout
-    import sys
-    slot = SLOTS[0]
-    html = render_replenishment_template(
+def render_slot(slot):
+    """Render a slot config dict to its HTML template."""
+    return render_replenishment_template(
         hero_kicker=slot["hero_kicker"],
         hero_headline=slot["hero_headline"],
         hero_subtitle=slot["hero_subtitle"],
@@ -586,4 +584,40 @@ if __name__ == "__main__":
         disclaimer=slot["disclaimer"],
         title_tag=slot["title_tag"],
     )
-    sys.stdout.write(html)
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description="Preview Replenishment templates")
+    parser.add_argument("--slot", type=int, help="Slot number 2-16 (default: 2)", default=2)
+    parser.add_argument("--all", action="store_true",
+                        help="Write all 15 slots as separate HTML files in ./previews/")
+    parser.add_argument("--out", help="Output file path (default: stdout). UTF-8 encoded.")
+    args = parser.parse_args()
+
+    if args.all:
+        import os
+        os.makedirs("previews", exist_ok=True)
+        for slot in SLOTS:
+            path = f"previews/slot-{slot['slot']:02d}-{slot['category']}.html"
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(render_slot(slot))
+            print(f"  wrote {path}")
+        print(f"\n✅ {len(SLOTS)} previews written to ./previews/")
+        sys.exit(0)
+
+    slot = next((s for s in SLOTS if s["slot"] == args.slot), None)
+    if not slot:
+        print(f"❌ Slot {args.slot} not found. Available: {sorted(s['slot'] for s in SLOTS)}")
+        sys.exit(1)
+
+    html = render_slot(slot)
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"✅ Wrote slot {slot['slot']} ({slot['category']}) to {args.out}")
+    else:
+        # stdout — let shell redirection handle it (may have encoding issues on Windows)
+        sys.stdout.write(html)
