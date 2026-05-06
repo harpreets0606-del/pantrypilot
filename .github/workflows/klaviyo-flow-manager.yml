@@ -1,0 +1,83 @@
+name: Klaviyo Flow Manager
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Which action to run'
+        required: true
+        default: 'list-flows'
+        type: choice
+        options:
+          - list-flows
+          - pause-triple-pixel
+          - create-templates
+          - create-flows
+          - all
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Verify Klaviyo API key is set
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: |
+          if [ -z "$KLAVIYO_API_KEY" ]; then
+            echo "::error::KLAVIYO_API_KEY secret is not set in repo settings"
+            exit 1
+          fi
+          echo "✅ KLAVIYO_API_KEY is configured"
+
+      - name: List flows
+        if: ${{ inputs.action == 'list-flows' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: |
+          python -c "
+          import os, requests
+          headers = {
+            'Authorization': f'Klaviyo-API-Key {os.environ[\"KLAVIYO_API_KEY\"]}',
+            'revision': '2024-10-15'
+          }
+          r = requests.get('https://a.klaviyo.com/api/flows?fields[flow]=name,status,trigger_type', headers=headers)
+          for f in r.json().get('data', []):
+            a = f['attributes']
+            print(f\"  {f['id']:8s} | {a['status']:8s} | {a['name']}\")
+          "
+
+      - name: Pause Triple Pixel flows
+        if: ${{ inputs.action == 'pause-triple-pixel' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --pause-triple-pixel
+
+      - name: Create email templates
+        if: ${{ inputs.action == 'create-templates' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --create-templates
+
+      - name: Create flow shells
+        if: ${{ inputs.action == 'create-flows' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --create-flows
+
+      - name: Run all
+        if: ${{ inputs.action == 'all' }}
+        env:
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+        run: python scripts/klaviyo_flow_manager.py --all

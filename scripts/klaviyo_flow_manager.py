@@ -11,13 +11,15 @@ Usage:
     python3 klaviyo_flow_manager.py --all
 """
 
+import os
 import requests
 import json
 import argparse
 import sys
 import time
 
-API_KEY = "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564"
+# Read API key from environment variable (GitHub Actions secret), fall back to local default
+API_KEY = os.environ.get("KLAVIYO_API_KEY", "pk_XCgiqg_6f9d304481501e6aef41ce91b33d767564")
 BASE_URL = "https://a.klaviyo.com/api"
 REVISION = "2024-10-15"
 
