@@ -477,6 +477,57 @@ NZ ASA Therapeutic & Health Advertising Code 2025 + general ASA Code rule 1(b) e
 
 Back in Stock E2 contains 3 of those phrases in 2 lines.
 
+---
+
+## Flow 9: [Z] Flu Season - Winter Wellness (V9XmEm, LIVE) ⚠️
+
+**Trigger:** Added to List (so it's a list-based campaign series, not metric-driven). **Status:** LIVE. **Volume:** 18 recipients last 30d.
+**Intent:** Seasonal flu/winter wellness education + pharmacy product promotion.
+
+**Templates use bespoke BC anatomy** (link color `#FF0031` matches brand red, responsive media queries match other BC templates).
+
+### Per-message audit
+
+| # | Action | Msg | Subject | Preview | Template | Voice |
+|---|---|---|---|---|---|---|
+| 1 | 105627866 | QW6y2L | `Stay well this winter, {{ person.first_name|default:'friend' }}` | "Your guide to staying healthy and protected this flu season." | SJwrxf | ✅ BC pattern "[Verb] [benefit]"; warm, factual |
+| 2 | 105627868 | S7vnUC | "Have you booked your flu vaccine yet?" | "Flu vaccines are one of the best ways to protect yourself and family." | YtcgUa | ⚠️ vaccine promotion — needs ASA review |
+
+### Findings
+
+| # | Severity | Issue | Action |
+|---|---|---|---|
+| FS1 | 🚨 high | **E2 promotes flu vaccines** via direct marketing email. NZ ASA Therapeutic Code 2025 has specific rules for advertising prescription/pharmacist-administered medicines. Need to verify the body includes: (a) "consult your healthcare professional" disclaimer, (b) no efficacy claims without substantiation, (c) appropriate audience targeting (no implicit child/pregnant-woman targeting without disclaimers) | Read E2 full HTML; verify ASA compliance |
+| FS2 | 🚨 high | **Body excerpt of E2 contains potential therapeutic claim**: "*The right products at the right time can cut your recovery down significantly.*" — this is an efficacy claim and needs clinical substantiation per ASA Therapeutic Code 2025 | Either substantiate or remove |
+| FS3 | medium | E1 uses `person.first_name`; ATC and others use `first_name`. **Inconsistent personalisation tokens across flows** | Standardise on `first_name` (matches BC campaign pattern) |
+| FS4 | medium | E1 preview 60 chars; E2 preview 70 chars — both **longer than BC's 4–10 word sweet spot** | Trim to ~6–8 words |
+| FS5 | low | E1 subject pattern follows BC "Stay [outcome] this [time]" — exemplary | Keep |
+| FS6 | low | E2 subject is a factual question — no fear, no urgency | Keep |
+| FS7 | unknown | Need to verify UEMA footer + brand-color compliance + threshold ($79) in both templates | Read full HTML |
+
+### Why E2 is the highest concern
+
+The audit so far has surfaced 3 different categories of risk:
+
+1. **Restricted-product promotion** (Replenishment Regaine — Pharmacy_Only_check)
+2. **Coupon offers** (Abandoned Checkout E2 — "$5 off")
+3. **Fear/scarcity language** (Back in Stock E2)
+
+E2 of Flu Season introduces a **fourth category: therapeutic claims about prescription medicines** (flu vaccine + "cut your recovery down significantly"). NZ ASA Code 2025 is particularly strict about therapeutic-product advertising; vaccines are mentioned by name in the Therapeutic & Health Advertising Code requiring:
+- "Consult your healthcare professional" disclaimer
+- No statements implying immunity guarantee
+- No fear-based motivation to vaccinate
+- Clinically substantiated efficacy claims only
+
+Subject + preview don't show those issues yet, but the body excerpt hints at a problem. Worth a full read.
+
+### Suggested rewrites (preview text only — subjects are mostly OK)
+
+| | Current | Suggested |
+|---|---|---|
+| E1 preview | "Your guide to staying healthy and protected this flu season." (60 chars) | "Your winter wellness guide is here." (~36 chars, factual, BC tone) |
+| E2 preview | "Flu vaccines are one of the best ways to protect yourself and family." (70 chars) | "Flu jab info — book at your local pharmacy." (~44 chars, neutral, no efficacy claim) |
+
 ## Flow audit log
 
 - 2026-05-06 — Established BRAND_VOICE.md from 40 sent campaigns
@@ -486,3 +537,4 @@ Back in Stock E2 contains 3 of those phrases in 2 lines.
 - 2026-05-06 — Audited Flow 2 (Abandoned Checkout): 4 emails, 1,714 recipients/30d. **CRITICAL: E2 offers "$5 off" — direct CLAUDE.md "no coupon" violation.** E3+E4 share identical subject + preview. E1 voice exemplary.
 - 2026-05-06 — Audited Flow 4 (Added to Cart Abandonment): 2 emails, 1,408 recipients/30d. **GOLD STANDARD — cleanest BC voice in the audit.** "No pressure" / "Just popping in" — anti-fear copy across both emails. Templates MJML, need HTML verification of footer/colors.
 - 2026-05-06 — Audited Flow 6 (Back in Stock): 2 emails. **HIGH-severity scarcity/fear violations across both** — "selling fast" / "limited stock remaining" / "don't miss your chance" / "before it sells out again". Subject of E1 (`{{ event.ProductName }} is back!`) is fine; everything else needs rewriting. Direct contradiction of the ATC gold-standard voice in the same account. Templates use bespoke BC anatomy.
+- 2026-05-06 — Audited Flow 9 (Flu Season - Winter Wellness): 2 emails, 18 recipients/30d. Subjects both on-brand. E2 promotes flu vaccines + body excerpt suggests therapeutic claim "cut your recovery down significantly" — **needs ASA Therapeutic Code 2025 review** (4th category of risk identified in audit, after restricted products / coupons / fear language). Personalisation token inconsistency: uses `person.first_name` instead of `first_name`.
