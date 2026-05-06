@@ -1681,7 +1681,117 @@ def fix_all_templates():
     report_manual_fixes_required()
 
 
-def show_template(template_id):
+OUR_CREATED_TEMPLATE_NAMES = [
+    "[Z] Abandoned Checkout – Email 3 (72hr Final)",
+    "[Z] Browse Abandonment – Email 2 (24hr Social Proof)",
+    "[Z] Browse Abandonment – Email 3 (72hr Bestsellers)",
+    "[Z] ATC Abandonment – Email 3 (72hr Final)",
+]
+
+
+def audit_our_templates():
+    """For each of the 4 templates we created in --create-templates, find:
+       (a) does it exist in Klaviyo, (b) is it bound to any flow message,
+       (c) what is that flow's name + status (live/draft)?
+    Answers: are these templates active in production or just sitting in the library?"""
+    print("\n🔍 AUDITING OUR 4 CREATED TEMPLATES")
+    print("=" * 100)
+
+    # 1. Find each template by name (paginate templates with contains filter)
+    name_to_id = {}
+    cursor = None
+    page_no = 0
+    while True:
+        params = {"filter": 'contains(name,"[Z]")'}
+        if cursor:
+            params["page[cursor]"] = cursor
+        try:
+            data = api_get("templates", params)
+        except Exception:
+            break
+        page_no += 1
+        for t in data.get("data", []):
+            n = (t.get("attributes", {}).get("name") or "")
+            if n in OUR_CREATED_TEMPLATE_NAMES:
+                # If duplicates exist (older runs), keep the newest
+                created = t.get("attributes", {}).get("created") or ""
+                existing = name_to_id.get(n)
+                if not existing or created > existing[1]:
+                    name_to_id[n] = (t["id"], created)
+        next_link = data.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    print(f"\nTemplate library status:")
+    for n in OUR_CREATED_TEMPLATE_NAMES:
+        if n in name_to_id:
+            print(f"  ✅ EXISTS  {name_to_id[n][0]:<10} {n}")
+        else:
+            print(f"  ❌ MISSING            {n}")
+
+    if not name_to_id:
+        print("\n  None of the 4 templates were found in the library.")
+        return
+
+    target_ids = {tid: n for n, (tid, _) in name_to_id.items()}
+
+    # 2. Walk every flow → action → message and check if template_id matches any of ours
+    print(f"\nSearching all flows for these template IDs...")
+    cursor = None
+    flows = []
+    while True:
+        params = {"fields[flow]": "name,status,archived", "page[size]": 10}
+        if cursor:
+            params["page[cursor]"] = cursor
+        page = safe_get("flows", params=params)
+        if not page:
+            break
+        flows.extend(page.get("data", []))
+        next_link = page.get("links", {}).get("next") or ""
+        m = re.search(r"page%5Bcursor%5D=([^&]+)", next_link)
+        if not m:
+            break
+        cursor = requests.utils.unquote(m.group(1))
+
+    bindings = {tid: [] for tid in target_ids}
+    for f in flows:
+        if f.get("attributes", {}).get("archived"):
+            continue
+        flow_name = f.get("attributes", {}).get("name", "?")
+        flow_status = (f.get("attributes", {}).get("status") or "?").lower()
+        for action in get_flow_actions(f["id"]):
+            for msg in get_messages_for_action(action["id"]):
+                content = get_message_content(msg["id"])
+                tid = content.get("template_id")
+                if tid in target_ids:
+                    bindings[tid].append({
+                        "flow_id": f["id"],
+                        "flow_name": flow_name,
+                        "flow_status": flow_status,
+                        "action_id": action["id"],
+                        "msg_id": msg["id"],
+                    })
+
+    # 3. Report
+    print(f"\n{'TEMPLATE':<60} {'TID':<10} BOUND TO")
+    print("-" * 100)
+    for tid, name in target_ids.items():
+        binds = bindings[tid]
+        if not binds:
+            print(f"  {name[:58]:<60} {tid:<10} ❌ NOT BOUND TO ANY FLOW")
+        else:
+            for b in binds:
+                status_marker = "🚨 LIVE" if b["flow_status"] == "live" else f"📝 {b['flow_status']}"
+                print(f"  {name[:58]:<60} {tid:<10} {status_marker} {b['flow_name']} (msg={b['msg_id']})")
+    print("=" * 100)
+    print("""
+Decision guide:
+  ❌ NOT BOUND TO ANY FLOW   → safe to DELETE (just sitting in library, not in production)
+  📝 draft                   → safe to DELETE or REWRITE before flow goes live
+  🚨 LIVE                    → DO NOT DELETE — currently sending. Must rewrite + reassign.
+""")
     """Dump a single template's full HTML to stdout so we can inspect rendering issues."""
     print(f"\n📄 TEMPLATE: {template_id}")
     print("=" * 100)
@@ -2055,6 +2165,8 @@ def main():
                         help="Print every email's subject/preview/from/excerpt for a single flow")
     parser.add_argument("--show-template", metavar="TEMPLATE_ID",
                         help="Print a single template's full HTML")
+    parser.add_argument("--audit-our-templates", action="store_true",
+                        help="Check which flows the 4 templates we created (--create-templates) are bound to and whether those flows are live/draft")
     parser.add_argument("--all", action="store_true",
                         help="Run all steps")
     args = parser.parse_args()
@@ -2107,6 +2219,9 @@ def main():
 
     if args.show_template:
         show_template(args.show_template)
+
+    if args.audit_our_templates:
+        audit_our_templates()
 
     if args.all:
         print_setup_guide(templates, flows)
