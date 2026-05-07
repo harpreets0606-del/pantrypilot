@@ -170,7 +170,8 @@ When you assign a global template to a flow message, Klaviyo creates an internal
 | Update flow status (draft↔live↔manual) | `/api/flows/{id}/` | PATCH | ✅ Stable |
 | **Update flow definition (steps/branches/profile_filter/triggers)** | — | — | ❌ **Not supported — verified 2026-05-07** |
 | Update flow audience / profile filter via API | — | — | ❌ **Not supported. PATCH /api/flows/{id} with `definition` returns HTTP 400 "definition is not a valid field for the resource flow". Only `status` is updatable. Audience filters / triggers must be edited in Klaviyo UI.** |
-| Delete flow | `/api/flows/{id}/` | DELETE | ✅ Stable |
+| Archive a flow | — | — | ❌ **Not supported via API — verified 2026-05-08.** PATCH /api/flows/{id} with `archived: true` returns HTTP 400 `"'archived' is not a valid field for the resource 'flow'"`. POST /api/flows/{id}/archive/ returns 404. There is no known archive-action endpoint. The Klaviyo UI's "Archive" button is not exposed via REST. **Workarounds:** (1) DELETE the flow if disposable; (2) Archive via the Klaviyo UI for flows worth keeping with archive metadata. |
+| Delete flow | `/api/flows/{id}/` | DELETE | ✅ Stable — returns HTTP 204. Verified 2026-05-08 across 7 flows in one session. Klaviyo does NOT auto-delete cloned message templates; they orphan and remain in the global template list. |
 
 ### Create Flow — operational details
 
@@ -248,13 +249,27 @@ Required field: `param` (the UTM key name). Optional/required: `value` (static s
 }
 ```
 
-**conditional-split action — schema NOT YET VERIFIED.** Errors confirmed:
+**conditional-split action — schema accepted, RUNTIME BROKEN (verified 2026-05-08).**
+
+Schema (verified accepted on POST /api/flows/):
 - `data.profile_filter` is required (object, not array)
 - `data.condition_groups` is INVALID (was the wrong guess)
 - `links.next_if_true` and `links.next_if_false` are required (NOT `true`/`false`)
 - Action type for splits is conditional-branch, distinct from boolean-branch
+- `data.metric_filters[0].property = '$value'` accepted on POST without complaint
 
-**TODO when we need conditional splits via API:** create one in UI with the desired filter, dump it via `klaviyo-dump-flow-definition.ps1`, copy schema. Until then, build linear flow and add splits in UI manually.
+**Runtime evaluator BROKEN for `metric_filters` on `$value`:**
+
+v3 sandbox empirical test (`klaviyo_v3_sandbox_test.py`, results in `snapshots/2026-05-08/v3-sandbox-v2/verify-results.json`):
+- 9 profiles injected with synthetic metric events at $values [5, 20, 29, 30, 50, 78, 79, 80, 120]
+- Conditional-split branched at `<30` (Tier A), `<79` (Tier B), `else` (Tier C)
+- Of the 2 profiles whose events processed before flow-pause: BOTH ($5 and $20, expected Tier A) routed to Tier C (the `else` branch)
+- 100% routing failure rate on routable cases
+- Klaviyo's evaluator silently treats `$value < N` numeric comparisons as FALSE; everything falls through to `else`
+
+**Implication:** Do NOT use `conditional-split` actions with `metric_filters` on numeric event properties for production flows. Klaviyo platform bug.
+
+**Workaround that IS verified working:** Move tier-branching into the template body using `{% if %}{% elif %}{% else %}` Liquid + `{{ event|lookup:'$value' }}` (see `klaviyo-template-syntax-verified.md`). Render-probe verified end-to-end. Single flow action per email (no split needed); branching happens at render time using the event payload directly.
 
 ### Practical implication for Bargain Chemist
 

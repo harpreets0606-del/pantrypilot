@@ -247,3 +247,29 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
   - Y84ruV "Copy of Email #4" (VCjCxL) duplicate of Email #4 (TuHa4f) — user previously identified as a copy-paste; flow trigger-split routes to one or the other based on cart $79 threshold. Confirm intent vs. accidental duplicate.
   - RPQXaa naming cleanup (cosmetic)
   - Order Confirmation flow handled by Shopify natively — should be marked "intentionally-not-in-Klaviyo" in flow-execution-plan.md
+
+## 2026-05-08 — Klaviyo runtime conditional-split with metric_filters CONFIRMED BROKEN
+
+- **Context**: v3 sandbox flow `Vny5bc` built via API with `conditional-split` action, `metric_filters[0].property='$value'`, branches at `<30` (Tier A), `<79` (Tier B), and `else` (Tier C). 9 test profiles injected via `klaviyo_v3_sandbox_test.py --phase=reinject` at $values [5, 20, 29, 30, 50, 78, 79, 80, 120]. Verify ran via `--phase=verify` after the 8-min wait.
+- **Result** (snapshot at `.claude/bargain-chemist/snapshots/2026-05-08/v3-sandbox-v2/verify-results.json`):
+  - $5 → expected Tier A, **routed to Tier C** ❌
+  - $20 → expected Tier A, **routed to Tier C** ❌
+  - 7 other profiles ($29–$120) returned `no-email-yet` (likely casualties of cleanup script flipping flow to manual mid-flight; the routed-cases are the conclusive signal)
+  - **2/2 routable profiles routed to wrong tier (100% routing failure rate).** Both fell through to the `else` branch (Tier C), suggesting Klaviyo's evaluator silently treats `$value < N` numeric comparisons as FALSE.
+- **Falsifiable prediction (from prior session)**: "Runtime conditional-split with metric_filters routes correctly based on $value" — **FALSIFIED.**
+- **Implication**: Cannot trust API-built `conditional-split` actions with `metric_filters` on `$value`. Schema is accepted on POST; runtime routing is broken. UI-built trigger-splits (like the one currently in Y84ruV action 98627485) are unverified — same family of mechanism, no positive evidence they route correctly.
+- **Action taken**: Architectural pivot for Y84ruV — move tier-branching from runtime trigger-split into template body using `{% if %}{% elif %}{% else %}` Liquid (render-probe verified 2026-05-08 in `klaviyo-template-syntax-verified.md`). Eliminates dependency on broken runtime evaluator.
+- **Confidence**: High on the bug (2/2 routed to wrong tier; no false-negative possible from the routed cases). Medium on the no-email-yet count for the other 7 — cleanup may have aborted in-flight processing.
+- **Learning**: Klaviyo's beta `POST /api/flows/` accepts the `conditional-split` schema without complaint, but the runtime evaluator does not implement it correctly. Klaviyo platform bug, not ours. Filed as memory; no action needed beyond avoiding the mechanism.
+
+## 2026-05-08 — Cleanup: 7 disposable flows DELETEd
+
+- **Context**: 5 sandbox PROBE flows + 2 superseded drafts (VaRyRc Y84ruV-v2 rebuild, TsC8GZ Welcome No-Coupon) needed removal. Discovered Klaviyo has no public archive API (PATCH /api/flows/{id} rejects `archived` field with HTTP 400; POST /api/flows/{id}/archive/ returns 404). Pivoted to DELETE.
+- **Action taken**:
+  1. PATCH UPj2XH, Vny5bc to `status=manual` (safety pause for the 2 LIVE probes) — both HTTP 200.
+  2. DELETE /api/flows/{id} for all 7: WCMUGZ, WFhERT, UPj2XH, XG3YXL, Vny5bc, VaRyRc, TsC8GZ — all HTTP 204.
+- **State after** (verified via GET /api/flows): 15 flows visible (down from 22). 6 LIVE: RPQXaa, T7pmf6, Ua5LdS, V9XmEm, YdejKf, Ysj7sg. 1 MANUAL: RDJQYM. 8 DRAFT.
+- **Side effects**: Cloned message templates from deleted flows orphan but remain in template list (Klaviyo doesn't auto-delete). Local artifacts under `.claude/bargain-chemist/snapshots/` preserved.
+- **Script**: `.claude/bargain-chemist/scripts/klaviyo_cleanup_probe_flows.py` (commit `aab4858`).
+- **Confidence**: High. Verify step confirmed all 7 absent from flow list.
+- **Learning**: Klaviyo "Archive" UI feature has no REST API equivalent (verified 2026-05-08 — see `klaviyo-api-capabilities.md`). For disposable flows: DELETE only path. For flows worth keeping in a hidden-archived state: manual UI archive only.
