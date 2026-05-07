@@ -2,6 +2,31 @@
 
 *Replaces the incorrect assumption made in this session that flows are read-only via API. Verified against Klaviyo developer docs.*
 
+## Universal Content API (deep-research finding 2026-05-07)
+
+| Operation | Endpoint | Verb | Status |
+|-----------|----------|------|--------|
+| Create universal content block | `/api/universal-content/` | POST | ✅ Stable (GA) |
+| Get universal content | `/api/universal-content/{id}/` | GET | ✅ Stable |
+| **Update universal content** | `/api/universal-content/{id}/` | PATCH | ✅ Stable — **propagates to all templates using the block** |
+| Delete universal content | `/api/universal-content/{id}/` | DELETE | ✅ Stable |
+
+**Critical insight:** Updating a universal content block applies the change to every email template that references it. This is the right primitive for shared compliance blocks (legal footer, pharmacy reg #, pharmacist name) and value-props strip.
+
+Updateable block types: `button`, `drop_shadow`, `horizontal_rule`, `html`, `image`, `spacer`, `text`.
+
+For our compliance footer use case: create ONE `html` block with the full legal+unsubscribe footer including pharmacy registration, pharmacist name, address macros. Reference it in every email template via `<div data-klaviyo-universal-block="block_id">&nbsp;</div>`. Future updates to compliance fields = single PATCH, propagates everywhere.
+
+## Editor types (verified)
+
+| editor_type | Create via API | Update HTML via API |
+|-------------|----------------|---------------------|
+| `CODE` (pure HTML) | ✅ | ✅ for owned globals; ❌ for flow-cloned (404 bug) |
+| `USER_DRAGGABLE` (hybrid) | ✅ | ✅ |
+| `SYSTEM_DRAGGABLE` (native drag-drop) | ❌ Not allowed | ✅ definition field only |
+
+Klaviyo's flow editor and email designer create SYSTEM_DRAGGABLE templates by default. Templates we POST via API are CODE.
+
 ## Templates
 
 | Operation | Endpoint | Verb | Status |
