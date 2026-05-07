@@ -35,13 +35,16 @@ Write-Host ("  Pulled. HTML length = {0} chars" -f $html.Length)
 # === Step 2: Replace 6 image blocks with emoji divs ===
 Write-Host ''
 Write-Host '=== Step 2: Swap icons -> emoji ===' -ForegroundColor Cyan
+# Build emoji from Unicode codepoints to avoid mojibake when PowerShell
+# reads this file as a non-UTF-8 codepage (default on en-US Windows).
+$VS16     = [char]0xFE0F  # variation selector (renders preceding char as emoji)
 $swaps = @(
-    @{ Icon='throat-icon';      Emoji='🍵' },   # Throat & Cough
-    @{ Icon='nasal-icon';       Emoji='🌬️' },   # Nasal & Sinus
-    @{ Icon='cold-flu-icon';    Emoji='🤒' },   # Cold & Flu
-    @{ Icon='probiotics-icon';  Emoji='🦠' },   # Probiotics
-    @{ Icon='pain-relief-icon'; Emoji='💊' },   # Pain Relief
-    @{ Icon='vitamins-icon';    Emoji='☀️' }    # Vitamins
+    @{ Icon='throat-icon';      Emoji=[char]::ConvertFromUtf32(0x1F375) },                  # 🍵
+    @{ Icon='nasal-icon';       Emoji=([char]::ConvertFromUtf32(0x1F32C) + $VS16) },        # 🌬️
+    @{ Icon='cold-flu-icon';    Emoji=[char]::ConvertFromUtf32(0x1F912) },                  # 🤒
+    @{ Icon='probiotics-icon';  Emoji=[char]::ConvertFromUtf32(0x1F9A0) },                  # 🦠
+    @{ Icon='pain-relief-icon'; Emoji=[char]::ConvertFromUtf32(0x1F48A) },                  # 💊
+    @{ Icon='vitamins-icon';    Emoji=([char]::ConvertFromUtf32(0x2600) + $VS16) }          # ☀️
 )
 
 foreach ($s in $swaps) {
