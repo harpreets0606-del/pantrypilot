@@ -44,7 +44,11 @@ TEMPLATES_DIR = REPO / ".claude/bargain-chemist/templates"
 TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
 
 W2SBJA_ID = "W2Sbja"  # design reference template
-SCRATCH_TID = "UH72Vm"  # owned global used for render-test PATCH cycles
+# Scratch template for render-test PATCH cycles. Created fresh per run +
+# DELETEd at end (try-finally). Avoids depending on a fixed template ID
+# that may have been deleted between runs (which is what happened to
+# UH72Vm on 2026-05-08).
+SCRATCH_NAME = f"BC PROBE - render scratch (delete me)"
 REVISION = "2025-10-15"
 
 
@@ -271,65 +275,84 @@ def static_check(html, label):
 
 
 # ---------------------------------------------------------------------------
+# Scratch-template lifecycle (create fresh + DELETE on cleanup)
+# ---------------------------------------------------------------------------
+
+def create_scratch(key):
+    """POST a fresh scratch template. Returns its ID."""
+    body = {"data": {"type": "template", "attributes": {
+        "name": SCRATCH_NAME,
+        "editor_type": "CODE",
+        "html": "<html><body>placeholder — will be PATCHed by build script</body></html>",
+    }}}
+    r = requests.post("https://a.klaviyo.com/api/templates/",
+                      headers=hdrs(key, content=True), json=body, timeout=30)
+    if r.status_code not in (200, 201):
+        sys.exit(f"❌ failed to create scratch template: HTTP {r.status_code}\n{r.text[:300]}")
+    sid = r.json()["data"]["id"]
+    print(f"  Created scratch template: {sid}")
+    return sid
+
+
+def delete_scratch(key, sid):
+    """DELETE the scratch template. Idempotent (404 = already gone)."""
+    r = requests.delete(f"https://a.klaviyo.com/api/templates/{sid}/",
+                        headers=hdrs(key), timeout=30)
+    if r.status_code in (200, 204):
+        print(f"  Cleaned up scratch template: {sid}")
+    elif r.status_code == 404:
+        print(f"  Scratch already gone: {sid}")
+    else:
+        print(f"  ⚠️  scratch cleanup HTTP {r.status_code}: {r.text[:200]}")
+
+
+# ---------------------------------------------------------------------------
 # Render-test (runs against constructed HTML by PATCHing scratch template)
 # ---------------------------------------------------------------------------
 
-def render_test(key, label, html, expected_phrases_per_value):
-    """PATCH UH72Vm with `html`, render at each $value, assert expected
-    phrase present + zero Liquid leakage. Returns (ok, diagnostics)."""
-    # Snapshot scratch
-    r = requests.get(f"https://a.klaviyo.com/api/templates/{SCRATCH_TID}/",
-                     headers=hdrs(key), timeout=30)
-    r.raise_for_status()
-    rollback = r.json()["data"]["attributes"]["html"]
+def render_test(key, sid, label, html, expected_phrases_per_value):
+    """PATCH scratch template with `html`, render at each $value, assert
+    expected phrase present + zero Liquid leakage. Returns (ok, diagnostics)."""
+    # PATCH scratch with candidate
+    body = {"data": {"type": "template", "id": sid,
+                     "attributes": {"html": html}}}
+    rp = requests.patch(f"https://a.klaviyo.com/api/templates/{sid}/",
+                        headers=hdrs(key, content=True), json=body, timeout=30)
+    if rp.status_code != 200:
+        return False, [f"PATCH scratch {sid} failed HTTP {rp.status_code}: {rp.text[:300]}"]
+    time.sleep(0.3)
 
-    try:
-        # PATCH with candidate
-        body = {"data": {"type": "template", "id": SCRATCH_TID,
-                         "attributes": {"html": html}}}
-        rp = requests.patch(f"https://a.klaviyo.com/api/templates/{SCRATCH_TID}/",
-                            headers=hdrs(key, content=True), json=body, timeout=30)
-        if rp.status_code != 200:
-            return False, [f"PATCH UH72Vm failed HTTP {rp.status_code}: {rp.text[:300]}"]
-        time.sleep(0.3)
-
-        diags = []
-        for value, expected in expected_phrases_per_value:
-            ctx_body = {"data": {"type": "template", "attributes": {
-                "id": SCRATCH_TID,
-                "context": {
-                    "first_name": "Sam",
-                    "organization": {
-                        "name": "Bargain Chemist",
-                        "full_address": "1 Radcliffe Road, Belfast, Christchurch 8051, New Zealand",
-                        "url": "https://www.bargainchemist.co.nz",
-                    },
-                    "event": {"$value": value, "extra": {"full_landing_site": "https://www.bargainchemist.co.nz/cart"}},
-                }
-            }}}
-            rr = requests.post("https://a.klaviyo.com/api/template-render/",
-                               headers=hdrs(key, content=True), json=ctx_body, timeout=30)
-            save(f"{label}-render-v{value}.json",
-                 {"status": rr.status_code, "value": value, "body": rr.text[:8000]})
-            if rr.status_code != 200:
-                diags.append(f"v={value}: HTTP {rr.status_code}")
-                continue
-            rendered = rr.json()["data"]["attributes"]["html"]
-            if "{%" in rendered or "{{" in rendered:
-                m = re.search(r'(\{[%{][^}]{0,80})', rendered)
-                diags.append(f"v={value}: Liquid leakage: {m.group(1) if m else '?'}")
-                continue
-            if expected not in rendered:
-                diags.append(f"v={value}: expected phrase '{expected}' not in render")
-                continue
-            print(f"     v={value:>4}  ✅  '{expected[:60]}' present, no leakage")
-        return (len(diags) == 0), diags
-    finally:
-        # Always restore scratch
-        body = {"data": {"type": "template", "id": SCRATCH_TID,
-                         "attributes": {"html": rollback}}}
-        requests.patch(f"https://a.klaviyo.com/api/templates/{SCRATCH_TID}/",
-                       headers=hdrs(key, content=True), json=body, timeout=30)
+    diags = []
+    for value, expected in expected_phrases_per_value:
+        ctx_body = {"data": {"type": "template", "attributes": {
+            "id": sid,
+            "context": {
+                "first_name": "Sam",
+                "organization": {
+                    "name": "Bargain Chemist",
+                    "full_address": "1 Radcliffe Road, Belfast, Christchurch 8051, New Zealand",
+                    "url": "https://www.bargainchemist.co.nz",
+                },
+                "event": {"$value": value, "extra": {"full_landing_site": "https://www.bargainchemist.co.nz/cart"}},
+            }
+        }}}
+        rr = requests.post("https://a.klaviyo.com/api/template-render/",
+                           headers=hdrs(key, content=True), json=ctx_body, timeout=30)
+        save(f"{label}-render-v{value}.json",
+             {"status": rr.status_code, "value": value, "body": rr.text[:8000]})
+        if rr.status_code != 200:
+            diags.append(f"v={value}: HTTP {rr.status_code} — {rr.text[:200]}")
+            continue
+        rendered = rr.json()["data"]["attributes"]["html"]
+        if "{%" in rendered or "{{" in rendered:
+            m = re.search(r'(\{[%{][^}]{0,80})', rendered)
+            diags.append(f"v={value}: Liquid leakage: {m.group(1) if m else '?'}")
+            continue
+        if expected not in rendered:
+            diags.append(f"v={value}: expected phrase '{expected}' not in render")
+            continue
+        print(f"     v={value:>4}  ✅  '{expected[:60]}' present, no leakage")
+    return (len(diags) == 0), diags
 
 
 # ---------------------------------------------------------------------------
@@ -361,54 +384,62 @@ def main():
     key = load_key()
     w2sbja_html = fetch_w2sbja(key)
 
-    # Build E1 + E4 specs and validate each one fully before writing
-    EMAILS = [
-        (E1_SPEC, [
-            (20,  "NZ's lowest pharmacy prices"),
-            (50,  "Free shipping kicks in at $79"),
-            (120, "free-shipping tier ($79+)"),
-        ]),
-        (E4_SPEC, [
-            (20,  "Still here when you're ready"),
-            (50,  "one or two items from free shipping"),
-            (120, "Free shipping's already on"),
-        ]),
-    ]
+    # Create fresh scratch template; cleanup in finally
+    print(f"\n=== Creating scratch template for render-tests ===")
+    sid = create_scratch(key)
 
-    constructed = {}  # spec_label -> html (only set if fully validated)
-    overall_ok = True
+    try:
+        # Build E1 + E4 specs and validate each one fully before writing
+        EMAILS = [
+            (E1_SPEC, [
+                (20,  "NZ's lowest pharmacy prices"),
+                (50,  "Free shipping kicks in at $79"),
+                (120, "free-shipping tier ($79+)"),
+            ]),
+            (E4_SPEC, [
+                (20,  "Still here when you're ready"),
+                (50,  "one or two items from free shipping"),
+                (120, "Free shipping's already on"),
+            ]),
+        ]
 
-    for spec, expected_per_value in EMAILS:
-        label = spec["filename"].replace(".html", "")
-        print(f"\n{'='*70}\nBuilding: {label}\n{'='*70}")
-        candidate = construct(w2sbja_html, spec)
-        save(f"{label}-candidate.html", candidate)
-        print(f"  Candidate: {len(candidate)} bytes")
+        constructed = {}  # spec_label -> html (only set if fully validated)
+        overall_ok = True
 
-        # 1. Static checks
-        if not static_check(candidate, label):
-            print(f"  ❌ {label} BLOCKED by static checks. Skipping render-test.")
-            overall_ok = False
-            continue
+        for spec, expected_per_value in EMAILS:
+            label = spec["filename"].replace(".html", "")
+            print(f"\n{'='*70}\nBuilding: {label}\n{'='*70}")
+            candidate = construct(w2sbja_html, spec)
+            save(f"{label}-candidate.html", candidate)
+            print(f"  Candidate: {len(candidate)} bytes")
 
-        # 2. Render-test (PATCH UH72Vm + render + restore)
-        print(f"  Render-testing at $value 20/50/120 …")
-        ok, diags = render_test(key, label, candidate, expected_per_value)
-        if not ok:
-            print(f"  ❌ {label} render-test FAILED:")
-            for d in diags:
-                print(f"     - {d}")
-            overall_ok = False
-            continue
+            # 1. Static checks
+            if not static_check(candidate, label):
+                print(f"  ❌ {label} BLOCKED by static checks. Skipping render-test.")
+                overall_ok = False
+                continue
 
-        # 3. Stage for write (only after BOTH checks pass)
-        constructed[label] = candidate
-        print(f"  ✅ {label} VALIDATED — staged for write")
+            # 2. Render-test (PATCH scratch + render at 3 cart values)
+            print(f"  Render-testing at $value 20/50/120 …")
+            ok, diags = render_test(key, sid, label, candidate, expected_per_value)
+            if not ok:
+                print(f"  ❌ {label} render-test FAILED:")
+                for d in diags:
+                    print(f"     - {d}")
+                overall_ok = False
+                continue
 
-    # Atomic write: only commit to /templates/ if EVERYTHING passed
-    if not overall_ok:
-        print(f"\n{'='*70}\n❌ BUILD FAILED — no files written. See {OUT} for diagnostics.\n{'='*70}")
-        sys.exit(1)
+            # 3. Stage for write (only after BOTH checks pass)
+            constructed[label] = candidate
+            print(f"  ✅ {label} VALIDATED — staged for write")
+
+        # Atomic write: only commit to /templates/ if EVERYTHING passed
+        if not overall_ok:
+            print(f"\n{'='*70}\n❌ BUILD FAILED — no files written. See {OUT} for diagnostics.\n{'='*70}")
+            sys.exit(1)
+    finally:
+        # Always clean up the scratch template (success or failure)
+        delete_scratch(key, sid)
 
     print(f"\n{'='*70}\nWriting validated templates to {TEMPLATES_DIR}/\n{'='*70}")
     for label, html in constructed.items():
