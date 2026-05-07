@@ -1,5 +1,5 @@
 {
   "status": 200,
   "html": "<html><body>{% if event.value < 79 %}low{% else %}high{% endif %}</body></html>",
-  "body": "{\"data\":{\"type\":\"template\",\"id\":\"UH72Vm\",\"attributes\":{\"name\":\"BC OWNED - Y84ruV-v2 Email1 cart-aware\",\"editor_type\":\"CODE\",\"html\":\"<html><head></head><body>low</body></html>\",\"text\":null,\"amp\":null,\"created\":\"2026-05-07T11:38:32+00:00\",\"updated\":\"2026-05-07T11:53:09+00:00\"},\"links\":{\"self\":\"https://a.klaviyo.com/api/templates/UH72Vm/\"}},\"links\":{\"self\":\"https://a.klaviyo.com/api/template-render/\"}}"
+  "body": "{\"data\":{\"type\":\"template\",\"id\":\"UH72Vm\",\"attributes\":{\"name\":\"BC OWNED - Y84ruV-v2 Email1 cart-aware\",\"editor_type\":\"CODE\",\"html\":\"<html><head></head><body>low</body></html>\",\"text\":null,\"amp\":null,\"created\":\"2026-05-07T11:38:32+00:00\",\"updated\":\"2026-05-07T11:55:51+00:00\"},\"links\":{\"self\":\"https://a.klaviyo.com/api/templates/UH72Vm/\"}},\"links\":{\"self\":\"https://a.klaviyo.com/api/template-render/\"}}"
 }

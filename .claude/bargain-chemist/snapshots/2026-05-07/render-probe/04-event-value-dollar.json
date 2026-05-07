@@ -1,5 +1,5 @@
 {
   "status": 400,
   "html": "<html><body>val={{ event.$value }}</body></html>",
-  "body": "{\"errors\":[{\"id\":\"d66249ae-18a2-4f92-975a-50b7099cfd71\",\"status\":400,\"code\":\"bad_request\",\"title\":\"Bad request\",\"detail\":\"Unable to render given template with provided context. Please check included django syntax and ensure it is compatible with provided context.\",\"source\":{\"pointer\":\"/data\"},\"links\":{},\"meta\":{}}]}"
+  "body": "{\"errors\":[{\"id\":\"96edf6ef-6e84-44f4-8bc7-18c1e744d5ac\",\"status\":400,\"code\":\"bad_request\",\"title\":\"Bad request\",\"detail\":\"Unable to render given template with provided context. Please check included django syntax and ensure it is compatible with provided context.\",\"source\":{\"pointer\":\"/data\"},\"links\":{},\"meta\":{}}]}"
 }
