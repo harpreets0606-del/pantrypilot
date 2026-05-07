@@ -121,7 +121,7 @@ def build_sandbox_flow_definition():
                             # Audience: only test profiles
                             {"conditions": [{
                                 "type": "profile-property",
-                                "property": "is_test_profile",
+                                "property": "properties['is_test_profile']",
                                 "filter": {"type": "string", "operator": "equals", "value": "true"}
                             }]},
                             # Marketability
