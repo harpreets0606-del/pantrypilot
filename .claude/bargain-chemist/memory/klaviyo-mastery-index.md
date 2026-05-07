@@ -50,7 +50,7 @@ When a 🟡 or ❓ entry blocks a task, write a probe (one capability per probe)
 | Update audience / profile filter | ❌ | n/a | `klaviyo-api-capabilities.md` line 172 | 2026-05-07 | Returns "definition is not a valid field for the resource flow". UI only. |
 | Archive a flow | ❌ | n/a | `decisions-log.md` 2026-05-08 | 2026-05-08 | `archived` is NOT a patchable field. `POST /api/flows/{id}/archive/` returns 404. **Workarounds:** DELETE for disposable; UI for retain-archived. |
 | Delete flow | ✅ | `DELETE /api/flows/{id}/` | cleanup script 2026-05-08, 7 deletes HTTP 204 | 2026-05-08 | Cloned message templates orphan but stay in template list. Local snapshots unaffected. |
-| Delete a single flow-action | ❓ | TBD | probe `probe_flow_action_delete.py` | — | If `DELETE /api/flow-actions/{id}` works, in-place flow surgery is possible. If not, must DELETE+recreate the flow. |
+| Delete a single flow-action | ❌ | n/a | `probe_flow_action_delete.py` 2026-05-08 | 2026-05-08 | `DELETE /api/flow-actions/{id}` returns HTTP 405 Method Not Allowed. Nested form `DELETE /api/flows/{flow_id}/flow-actions/{action_id}` returns 404. Must DELETE+recreate the entire flow (Path B). |
 
 ## C. Flow actions
 
@@ -94,15 +94,15 @@ See `klaviyo-template-syntax-verified.md` for full details + render-probe eviden
 | `{{ event.$value }}` direct dotted access | ❌ | render-probe 07 | 2026-05-08 | Django parser breaks on `$` in identifier. Returns 400. |
 | `{% if event\|lookup:'$value' < 79 %}` numeric compare | ✅ | render-probe + probe-elif | 2026-05-08 | |
 | `{% if %}{% elif %}{% else %}` | ✅ | probe-elif at $value=20/50/120 | 2026-05-08 | 3/3 PASS standalone + 3/3 PASS embedded in 50KB chrome (`email1-3tier/`). |
-| `{% if %}{% elif %}{% else %}` boundary edges ($29/$30/$78/$79) | ❓ | — | — | Not yet probed. **probe_elif_boundaries.py** queued. |
+| `{% if %}{% elif %}{% else %}` boundary edges ($0/$29/$29.99/$30/$30.01/$78.99/$79/$79.01/$120) | ✅ | `probe_elif_boundaries.py` 2026-05-08 | 2026-05-08 | 9/9 numeric cases PASS, both bare and defensive `{% with %}+default:0` patterns. Strict `<30` excludes 30 (→B); strict `<79` excludes 79 (→C). Matches free-ship policy. |
 | `{% with v=… %}…{% endwith %}` | ✅ | `klaviyo-template-syntax-verified.md` line 20 | 2026-05-08 | |
-| Empty / null / missing `event\|lookup:'$missing'` | ❓ | — | — | **probe_null_value_handling.py** queued. Affects defensive default usage in templates. |
+| Empty / null / missing `event\|lookup:'$missing'` | ✅ | `probe_null_value_handling.py` 2026-05-08 | 2026-05-08 | Missing key renders as literal `'None'` (visible to recipient). `\|default:0` catches both missing AND explicit null. Conditional `{% if missing < 79 %}` evaluates TRUE (None < num is True in Django). String `$value` does NOT coerce to numeric in `<` compare; falls to `else`. |
 | `\|float`, `\|round(2)` | ❌ | klaviyo-template-syntax-verified.md line 33 | 2026-05-08 | Jinja2-only. Falls through as literal text. |
 | `\|floatformat:2`, `\|add:-N` | ✅ | klaviyo-template-syntax-verified.md line 34 | 2026-05-08 | Django-native. |
 | `{% currency_format %}` | ✅ | live TuHa4f cart loop | 2026-05-08 | |
 | `{% unsubscribe 'Click here' %}` Klaviyo tag | ✅ | live use, klaviyo-template-syntax-verified.md line 22 | 2026-05-08 | |
 | Chained `\|replace:'a','b'\|other_filter` | ❌ | klaviyo-api-capabilities.md lines 5-9 | 2026-05-07 | Parser tokenizes comma as filter delimiter. Drop replace; rely on Shopify 301 redirect. |
-| Liquid in `subject_line` field (parses same as body) | ❓ | Klaviyo docs claim same parser, not directly probed | — | **probe_subject_liquid.py** queued. Recommended default: static subjects. |
+| Liquid in `subject_line` field (parses same as body) | ✅ | `probe_subject_liquid.py` 2026-05-08 | 2026-05-08 | 9/9 candidate patterns parse cleanly via `/api/template-render` (same Django parser). `{{ first_name\|default:'…' }}` and `{% if event\|lookup:'$value' < 79 %}…{% else %}…{% endif %}` both safe in subject. **Regression evidence**: confirmed the buggy `{{ first_name\|default:'Your' }} order's…` form renders as `"Sarah order's…"` (broken possessive). Recommendation: prefer static subjects when name doesn't fit grammatically. |
 | Arithmetic in templates (`{{ 79 - x }}`) | ❌ | klaviyo-template-syntax-verified.md line 35 | 2026-05-08 | Django doesn't support expression syntax. Use `\|add:-N` or compute server-side. |
 
 ## F. Events & metrics

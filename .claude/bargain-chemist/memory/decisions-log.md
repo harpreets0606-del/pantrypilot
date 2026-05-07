@@ -273,3 +273,45 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
 - **Script**: `.claude/bargain-chemist/scripts/klaviyo_cleanup_probe_flows.py` (commit `aab4858`).
 - **Confidence**: High. Verify step confirmed all 7 absent from flow list.
 - **Learning**: Klaviyo "Archive" UI feature has no REST API equivalent (verified 2026-05-08 — see `klaviyo-api-capabilities.md`). For disposable flows: DELETE only path. For flows worth keeping in a hidden-archived state: manual UI archive only.
+
+## 2026-05-08 — Y84ruV v3 deployed (in-template 3-tier conditional, Path B rebuild)
+
+- **Context**: Old Y84ruV had a trigger-split (action 98627485) on cart `$value < $79` routing to two send-actions whose templates were byte-identical (TuHa4f + VCjCxL, MD5 `bceb32b6fc38d15785eaaf9f32ac8d3c`). Plus E4-high subject had a Liquid grammar bug (`{{ first_name|default:'Your' }} order's one click away` rendered as `"Sarah order's one click away"`). v3 sandbox verify on 2026-05-08 confirmed Klaviyo's runtime conditional-split with `metric_filters` on `$value` is broken (2/2 wrong-tier).
+- **Architectural decision**: Drop the runtime trigger-split entirely. Move tier-branching into the template body using verified `{% if %}{% elif %}{% else %}` + `{{ event|lookup:'$value' }}` Liquid pattern. 3-tier copy bands at `<$30` / `<$79` / `else`.
+- **Path B chosen** (DELETE old + POST new flow) because `probe_flow_action_delete.py` confirmed `DELETE /api/flow-actions/{id}` returns HTTP 405 (Method Not Allowed) — single-action surgery not possible.
+- **Design source**: W2Sbja (Back in Stock E1 — old version, "It's Back in Stock"). Used as visual chrome (red header, orange hero, cream/orange urgency-note panel re-styled as 3-tier banner, red footer with full ASA disclaimer + unsubscribe). All fear/scarcity language from W2Sbja stripped.
+- **Validation gates run before deploy**:
+  - `probe_elif_boundaries`: 9/9 numeric cases PASS at $0/$29/$29.99/$30/$30.01/$78.99/$79/$79.01/$120, both bare and defensive `{% with %}+default:0` patterns
+  - `probe_null_value_handling`: 11/11 cases — confirmed defensive `|default:0` catches both missing and explicit null; missing routes to Tier A safely
+  - `probe_subject_liquid`: 9/9 candidate subject patterns parse cleanly via same Django parser (Liquid is safe in subject_line, but we chose static for E1/E4 to remove any parser-risk surface)
+  - `build_y84ruv_templates.py`: 6/6 in-template renders PASS at $20/$50/$120 across both E1 and E4, zero Liquid leakage
+  - `klaviyo_rebuild_y84ruv_v3.py` Phase A defense-in-depth: 6/6 fresh-cloned-template renders PASS
+- **Deployed artifacts**:
+  - New flow `Sr3hxz` — `[Z] Abandoned Checkout v3 - tiered (rebuilt 2026-05-08)`, status=draft
+  - Linear structure: trigger Checkout Started (VvcTue) → 1h delay → E1 → 23h delay → E4 → end
+  - Profile filter: hasn't placed an order since flow start AND hasn't started another checkout since flow start AND has email marketing consent
+  - E1 owned global template: `RqSXkv` (`BC OWNED - Y84ruV-v3 E1 tiered (2026-05-08)`)
+  - E4 owned global template: `RXgKBJ` (`BC OWNED - Y84ruV-v3 E4 tiered (2026-05-08)`)
+  - Subject E1: "Your cart's saved — pick up when you're ready" (static)
+  - Subject E4: "Your order's one click away" (static — fixes prior `first_name|default:'Your'` grammar bug)
+  - Old `Y84ruV` DELETEd (HTTP 204). Snapshot of pre-delete definition saved to `snapshots/2026-05-08/y84ruv-v3/phaseB-old-flow-snapshot.json`.
+- **Orphans created** (cleanup later, harmless):
+  - Templates from dry-run #1: `X44nU8` (E1), `TZAqap` (E4) — not used by any flow
+  - Templates from old Y84ruV that orphaned on flow DELETE: `TUbBRk` (SYSTEM_DRAGGABLE, has the Header Block validation issue — moot now), `TuHa4f` (CODE), `VCjCxL` (CODE, duplicate of TuHa4f)
+- **Pending user-side steps**:
+  1. Open `https://www.klaviyo.com/flow/Sr3hxz/edit`
+  2. Send test sends from the flow editor at cart $20 / $50 / $120 (one per tier)
+  3. Confirm 3 distinct banner blocks render correctly
+  4. Flip flow to LIVE via Klaviyo UI 'Set Live' button (or `PATCH /api/flows/Sr3hxz/ {"status":"live"}`)
+- **Falsifiable prediction (14 days post-LIVE)**:
+  - E1 open rate ≥ 35% (Klaviyo benchmark for checkout abandonment is 39%; we're below to allow for first-touch sender warming)
+  - E1 click rate ≥ 4% (benchmark 5.4%)
+  - Combined E1+E4 RPR ≥ $1.50/recipient (lower bound; Klaviyo benchmark $1.68 for cart-abandon flows)
+  - Tier B (cart $30-$78) click rate ≥ Tier A click rate (Tier B has actionable "$X away from free shipping" CTA, Tier A has trust-only copy)
+  - Zero leftover `{% %}` Liquid markers in delivered emails (= renderer working correctly; falsifiable via received-email inspection)
+- **Confidence**: High on the templates (every Liquid pattern probe-verified, every render check passed). Medium on the engagement prediction (small sample, no Bargain Chemist-specific baseline yet). High on the deploy mechanism (Path B with rollback file for emergency restore).
+- **Rollback plan**: snapshot at `snapshots/2026-05-08/y84ruv-v3/phaseB-old-flow-snapshot.json` captures the old Y84ruV definition pre-delete. To restore: POST a fresh flow using that snapshot's definition (won't have the same flow ID, but same structure). DELETE Sr3hxz first.
+- **Scripts**:
+  - `.claude/bargain-chemist/scripts/build_y84ruv_templates.py` (commit `2d235cf`) — fetches W2Sbja, constructs candidates, render-validates, atomic-write
+  - `.claude/bargain-chemist/scripts/klaviyo_rebuild_y84ruv_v3.py` (commit `2d235cf`) — Phase A POST + render-test, Phase B (--apply) snapshot + new flow + delete old
+  - `.claude/bargain-chemist/scripts/extract_y84ruv_previews.py` (commit `2d235cf`) — defensive HTML-from-snapshot extractor for browser preview
