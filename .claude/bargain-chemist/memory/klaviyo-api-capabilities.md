@@ -7,11 +7,36 @@
 | Operation | Endpoint | Verb | Status |
 |-----------|----------|------|--------|
 | Create email template (HTML) | `/api/templates/` | POST | ✅ Stable |
-| Get template | `/api/templates/{id}/` | GET | ✅ Stable |
-| Update template | `/api/templates/{id}/` | PATCH | ✅ Stable |
+| Get template (global) | `/api/templates/{id}/` | GET | ✅ Stable |
+| Update template (global) | `/api/templates/{id}/` | PATCH | ✅ Stable for global templates |
+| **PATCH a flow-cloned template** | `/api/templates/{id}/` | PATCH | ❌ **BROKEN — known bug** |
 | Delete template | `/api/templates/{id}/` | DELETE | ✅ Stable |
 | Render template | `/api/template-render/` | POST | ✅ Stable |
 | Clone template | `/api/template-clone/` | POST | ✅ Stable |
+| Get template for flow message | `/api/flow-messages/{id}/template/` | GET | ✅ Stable |
+
+### The flow-cloned template bug (verified 2026-05-07, multiple Klaviyo community threads)
+
+When you assign a global template to a flow message, Klaviyo creates an internal cloned copy. That copy:
+- Returns a real-looking template ID (e.g. `VMMpC9`)
+- Is reachable via `GET /api/flow-messages/{id}/?include=template`
+- Returns 200 on `GET /api/templates/{cloned_id}/`
+- **Returns 404 on `PATCH /api/templates/{cloned_id}/`** with `"Template with id 'X' does not exist"`
+- Same behaviour with beta revision header `2024-10-15.pre`
+- Same behaviour for campaign-message cloned templates
+
+**This is a Klaviyo platform bug, NOT a config issue.** Don't try to PATCH flow-cloned templates from a script — it will always 404. Multiple community threads since 2024 confirm Klaviyo hasn't fixed it.
+
+**Workarounds:**
+1. **Manual paste in Klaviyo UI** (fastest for one-off edits) — open `https://www.klaviyo.com/email-editor/{cloned_id}/edit`, paste new HTML, save. Goes live in flow immediately.
+2. **Update the global template, then re-assign it in the flow editor** — Klaviyo will re-clone, picking up your changes. UI action required either way.
+3. **Treat templates as immutable inside flows** — for any non-trivial content change, plan to delete + recreate the flow rather than fight the API.
+
+### Implication for our deployment workflow
+
+- Initial flow build via API: ✅ works (templates get cloned but that's fine for first-time)
+- Iterating on copy/HTML: ❌ has to happen in the Klaviyo UI for now
+- We will NOT add a "re-deploy template content" PowerShell script — it can't work until Klaviyo fixes this bug
 
 **Scope:** `templates:write`. The Klaviyo MCP token in this session **does not have it** (returns 401). The user's PowerShell key in `.env.local` **does** — that's how we'll deploy.
 
