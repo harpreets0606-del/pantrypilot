@@ -290,7 +290,9 @@ def build_sandbox_flow_definition():
 
 
 def patch_flow_action_live(action_id, key):
-    """PATCH a send-email flow action to status=live so emails actually send."""
+    """PATCH a send-email flow action to status=live so emails actually send.
+    Tries 2024-10-15.pre first (no definition required), falls back to
+    2025-10-15 with definition wrapper if needed."""
     body = {
         "data": {
             "type": "flow-action",
@@ -298,13 +300,33 @@ def patch_flow_action_live(action_id, key):
             "attributes": {"status": "live"}
         }
     }
+    # Try pre-revision first — it accepts simple status-only PATCH
     r = requests.patch(
         f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
-        headers=hdrs(key, REVISION_GET, content=True),
+        headers=hdrs(key, REVISION_CREATE, content=True),
         json=body,
         timeout=20
     )
-    return r.status_code, r.text[:200]
+    if r.status_code == 200:
+        return r.status_code, r.text[:200]
+
+    # If pre-revision fails, try 2025-10-15 with definition wrapper
+    body_with_def = {
+        "data": {
+            "type": "flow-action",
+            "id": action_id,
+            "attributes": {
+                "definition": {"status": "live"}
+            }
+        }
+    }
+    r2 = requests.patch(
+        f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
+        headers=hdrs(key, REVISION_GET, content=True),
+        json=body_with_def,
+        timeout=20
+    )
+    return r2.status_code, r2.text[:300]
 
 
 def phase_build(key):
