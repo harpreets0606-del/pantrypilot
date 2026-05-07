@@ -1,0 +1,4 @@
+{
+  "status": 400,
+  "body": "{\"errors\":[{\"id\":\"1ede0939-c53b-4c8f-8f6f-b08f9e74df84\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"All custom profile properties must be of the form: properties['property name']\",\"source\":{\"pointer\":\"/data/attributes/definition/profile_filter/condition_groups/0/conditions/0/property\"},\"links\":{},\"meta\":{}}]}"
+}
