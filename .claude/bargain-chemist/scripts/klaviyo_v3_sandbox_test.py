@@ -310,17 +310,15 @@ def patch_flow_action_live(action_id, key):
     attrs = get_resp.get("data", {}).get("attributes", {})
     definition = attrs.get("definition", attrs.get("data", {}))
 
-    # Inject live status into the definition
-    if isinstance(definition, dict):
-        definition["status"] = "live"
-    else:
-        definition = {"status": "live"}
-
+    # status is a sibling of definition at attributes level, not inside definition
     body = {
         "data": {
             "type": "flow-action",
             "id": action_id,
-            "attributes": {"definition": definition}
+            "attributes": {
+                "status": "live",
+                "definition": definition
+            }
         }
     }
     r = requests.patch(
