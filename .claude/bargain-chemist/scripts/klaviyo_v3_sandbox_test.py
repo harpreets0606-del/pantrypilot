@@ -723,20 +723,12 @@ def phase_verify(key):
 # PHASE: CLEANUP
 # =================================================================
 
-def phase_reinject(key):
-    """Fire fresh Checkout Started events for profiles that were BOT_PROTECTION suppressed
-    during the original inject. Call this AFTER manually re-subscribing those profiles.
-    Fires events only for profiles whose $value maps to boundaries given via --values."""
-    import argparse as _ap
-    # Parse --values from remaining argv
-    import sys as _sys
-    vals_raw = []
-    for i, a in enumerate(_sys.argv):
-        if a == "--values" and i + 1 < len(_sys.argv):
-            vals_raw = _sys.argv[i + 1].split(",")
-            break
-    if not vals_raw:
-        # Default: all Tier C + boundary v=78
+def phase_reinject(key, values_str=""):
+    """Fire fresh Checkout Started events for specific profiles.
+    Pass values_str as comma-separated ints e.g. '78,79,80,120' or '100'."""
+    if values_str:
+        vals_raw = values_str.split(",")
+    else:
         vals_raw = ["78", "79", "80", "120"]
     try:
         target_vals = [int(v.strip()) for v in vals_raw]
@@ -809,7 +801,7 @@ def main():
     if args.phase == "inject":
         return phase_inject(key)
     if args.phase == "reinject":
-        return phase_reinject(key)
+        return phase_reinject(key, args.values)
     if args.phase == "ensure-live":
         return phase_ensure_live(key)
     if args.phase == "verify":
