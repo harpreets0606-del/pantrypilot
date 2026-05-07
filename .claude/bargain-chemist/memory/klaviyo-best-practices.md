@@ -68,6 +68,38 @@
 - **Exit**: Placed Order
 - **A/B test priority**: Subject angle (urgency vs reassurance), free-ship progress bar vs static threshold
 
+#### Cart-value tier playbook — DATA-DRIVEN, verified 2026-05-08
+
+Single binary `<$79` / `≥$79` split is wrong for Bargain Chemist. Real cart-value distribution from 200-event live sample:
+- 64.5% under $79 (median $49.62, mean $65.17)
+- 35.5% at/above $79
+- **77% of under-$79 carts are MORE than $30 below threshold** — saying "add $X for free shipping" lands wrong (gap too big to feel actionable).
+
+**Three tiers, verified Klaviyo Django syntax (see `klaviyo-template-syntax-verified.md`):**
+
+| Tier | Cart `$value` | Share | Right copy angle | Reason |
+|---|---|---|---|---|
+| **A** | < $30 | 29% | Trust + price ("Your cart is saved at NZ's lowest pharmacy prices") | Free-ship gap too large to feel actionable; small-impulse psychology |
+| **B** | $30–$78 | 35.5% | Free-ship gap nudge ("Free shipping kicks in at $79 — add a few more items") | Gap is bridgeable in 1-2 items; highest-leverage segment |
+| **C** | ≥ $79 | 35.5% | Honest reassurance ("Your cart was at our free-shipping tier ($79+) — finish checkout when you're ready") | Already qualified at submission; no logistics ask. Use past-tense to avoid ASA misleading-promise risk (cart can change between submission and click). |
+
+Tier C MUST NOT use "free shipping is yours" or any future-tense promise — user could remove items between submission and click, no longer qualify. Use past-tense "was at" or "qualifies at submission".
+
+**Implementation pattern in template body:**
+```django
+{% if event|lookup:'$value' < 30 %}
+  [ Tier A copy ]
+{% elif event|lookup:'$value' < 79 %}
+  [ Tier B copy ]
+{% else %}
+  [ Tier C copy ]
+{% endif %}
+```
+
+**Subject + preview**: keep universal (single line for all tiers). Tier-based subject lines are technically possible but add maintenance burden and complicate A/B testing.
+
+**Verified deploy workflow:** `scripts/klaviyo_rebuild_email1_branded.py` — surgical edit of source brand template + render-test all tier paths + auto-rollback if any tier fails.
+
 ### Browse Abandonment
 - **Trigger**: Viewed Product (or Klaviyo's "Active on Site")
 - **Filter**: hasn't added to cart in last 24h, hasn't bought product
