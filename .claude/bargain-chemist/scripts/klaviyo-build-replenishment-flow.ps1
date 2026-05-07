@@ -37,11 +37,16 @@ $IdsFile = ".claude/bargain-chemist/snapshots/$Date/replenishment-template-ids.j
 if (-not (Test-Path $IdsFile)) { Write-Error "Template IDs not found: $IdsFile - run klaviyo-deploy-replenishment-templates.ps1 first"; exit 1 }
 $Ids = Get-Content $IdsFile -Raw | ConvertFrom-Json
 
-# Build a key -> templateId map
+# Build a key -> templateId map (explicit assignment avoids PS indexer parsing quirk)
 $T = @{}
-foreach ($t in $Ids) { $T[$t.Key] = $t.TemplateId }
+foreach ($t in $Ids) {
+    $k   = $t.Key
+    $tid = $t.TemplateId
+    $T.Add($k, $tid)
+}
 foreach ($k in 'vitamins','skincare','haircare','oralcare','babycare','fallback') {
     if (-not $T.ContainsKey($k)) { Write-Error "Missing template ID for: $k"; exit 1 }
+    Write-Host ("  {0,-10} -> {1}" -f $k, $T[$k]) -ForegroundColor DarkGray
 }
 
 $AuthHeader = "Authorization: Klaviyo-API-Key $($env:KLAVIYO_PRIVATE_KEY)"
@@ -262,10 +267,11 @@ $payload = @{
 
 $bodyJson = $payload | ConvertTo-Json -Depth 100 -Compress
 
-# Save request body for debugging
-$OutDir = ".claude/bargain-chemist/snapshots/$Date"
+# Save request body for debugging (absolute paths - System.IO has its own CWD)
+$RepoRoot = (Get-Location).Path
+$OutDir   = Join-Path $RepoRoot ".claude/bargain-chemist/snapshots/$Date"
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
-$ReqFile = "$OutDir/replenishment-v2-request.json"
+$ReqFile  = Join-Path $OutDir 'replenishment-v2-request.json'
 [System.IO.File]::WriteAllText($ReqFile, ($payload | ConvertTo-Json -Depth 100), [System.Text.UTF8Encoding]::new($false))
 Write-Host ("Request body saved: $ReqFile") -ForegroundColor DarkGray
 
@@ -273,7 +279,7 @@ Write-Host ("Request body saved: $ReqFile") -ForegroundColor DarkGray
 Write-Host '=== POST /api/flows (revision 2024-10-15.pre, beta) ===' -ForegroundColor Cyan
 $bodyFile = [System.IO.Path]::GetTempFileName()
 [System.IO.File]::WriteAllText($bodyFile, $bodyJson, [System.Text.UTF8Encoding]::new($false))
-$RespFile = "$OutDir/replenishment-v2-response.json"
+$RespFile = Join-Path $OutDir 'replenishment-v2-response.json'
 
 $postArgs = @(
     '--silent', '--show-error',
@@ -297,8 +303,9 @@ if ($httpCode -eq '201') {
     Write-Host ("OK  HTTP 201  new flow id = $newFlowId") -ForegroundColor Green
     Write-Host ''
     Write-Host '=== Snapshotting full definition ===' -ForegroundColor Cyan
-    $SnapFile = "$OutDir/all-flows/$newFlowId.json"
-    New-Item -ItemType Directory -Force -Path "$OutDir/all-flows" | Out-Null
+    $AllFlowsDir = Join-Path $OutDir 'all-flows'
+    New-Item -ItemType Directory -Force -Path $AllFlowsDir | Out-Null
+    $SnapFile = Join-Path $AllFlowsDir "$newFlowId.json"
     $getArgs = @(
         '--silent', '--show-error',
         '--max-time', '30',
