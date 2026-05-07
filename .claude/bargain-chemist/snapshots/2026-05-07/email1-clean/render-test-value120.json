@@ -1,4 +1,4 @@
 {
   "status": 400,
-  "body": "{\"errors\":[{\"id\":\"f85c38d8-f16e-4bde-856c-0818157400ed\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'template-render' is not the resource type expected at this endpoint. 'template' is the expected resource type.\",\"source\":{\"pointer\":\"/data/type\"},\"links\":{},\"meta\":{}}]}"
+  "body": "{\"errors\":[{\"id\":\"dacd882f-fce5-4686-a300-8da5b8f790aa\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'id' is a required field for the resource 'template'.\",\"source\":{\"pointer\":\"/data/attributes/id\"},\"links\":{},\"meta\":{}},{\"id\":\"dacd882f-fce5-4686-a300-8da5b8f790aa\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'html' is not a valid field for the resource 'template'.\",\"source\":{\"pointer\":\"/data/attributes/html\"},\"links\":{},\"meta\":{}}]}"
 }
