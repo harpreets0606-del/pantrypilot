@@ -184,3 +184,33 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
 - **Prediction**: removing the year claim has no measurable impact on conversion (trust line still present); this is a compliance + accuracy fix, not a performance lever.
 - **Confidence**: High that the rule prevents recurrence. The 1984 error is now traceable to a single root cause (unverified copy in `no-coupon-strategy.md`) — fixed.
 - **Learning**: Any factual specific in user-facing copy must trace to a user-approved source. Memory files written in prior sessions are NOT a source of truth for facts unless those facts have an explicit "user approved" line in this decisions log.
+
+## 2026-05-07 — DEPLOYED: 1984 + ASA fear-phrase fixes to 13 live flow emails
+
+- **Context**: Following the 1984 fabrication discovery, applied surgical HTML fixes to every live flow email containing the bad copy. Klaviyo's legacy `PATCH /api/templates/{id}/` returns 404 for flow-cloned templates, so used the working `PATCH /api/flow-actions/{id}/` (revision 2025-10-15) re-assignment workflow.
+- **Workflow** (now codified as `scripts/klaviyo_deploy_compliance_fixes.py`):
+  1. POST /api/templates with fixed HTML → owned global template (named `BC OWNED - <oldId> - 1984 fix YYYY-MM-DD`)
+  2. PATCH /api/flow-actions/{action_id} swapping `definition.data.message.template_id` to the owned global ID
+  3. Klaviyo internally clones the owned template into a fresh cloned ID, which becomes the live template for the flow message
+- **13 actions deployed (flow → action → old-clone → new-clone)**:
+  - YdejKf 105917207  UpdhCT → VZASFD  (Welcome E1)
+  - YdejKf 105917209  UVB5U8 → WtmqBu  (Welcome E2)
+  - YdejKf 105917211  XgqKFQ → UvF2qd  (Welcome E3)
+  - RPQXaa 98627502   TgFsGf → USNhYE  (Cart E1)
+  - RPQXaa 98628345   QRewz9 → UCUwWu  (Cart E2)
+  - Ua5LdS 105926049  VjuB7J → Wg5TLb  (Replenishment E1 Vitamins)
+  - Ua5LdS 105926052  WuTrZA → UdLfdw  (Replenishment E2 Skincare)
+  - Ua5LdS 105926055  U5svSu → YbKhNV  (Replenishment E3 Hair Care)
+  - Ua5LdS 105926058  RDZzKn → RixM24  (Replenishment E4 Oral Care)
+  - Ua5LdS 105926061  X3hegP → UbKf4Z  (Replenishment E5 Baby & Family)
+  - Ua5LdS 105926062  SPqqDe → XBkvpb  (Replenishment E6 Fallback)
+  - V9XmEm 105627868  YtcgUa → XmsJkZ  (Flu E2)
+  - Ysj7sg 105627854  W2Sbja → XccdEd  (Back in Stock E1)
+- **Verified post-deploy** (GET /api/templates/{newCloneId} → check `data.attributes.html`):
+  - All 13 confirmed: `1984=no, fear-hits=0` (live HTML clean).
+  - Old cloned IDs are now orphaned but still exist in templates list.
+- **Note on subscribers mid-flow**: Klaviyo holds an inflight subscriber on the previous clone reference, so people already in the flow continue with the previous (un-fixed) HTML; new entrants get the fixed clone. For the 5-day-old flows (V9XmEm, Ysj7sg) the inflight cohort is small. For YdejKf/RPQXaa/Ua5LdS (1-2 days old), even smaller.
+- **Prediction**: zero measurable impact on engagement metrics (open/click/CTR). This was a compliance + accuracy fix, not a creative test.
+- **Confidence**: High on the deployment itself. Medium on the inflight-cohort behaviour assumption (Klaviyo docs confirm clone reference is captured at flow-entry time, but worth re-checking next session via campaign report).
+- **Action taken**: Deployed via Python script. Snapshots of every POST/GET/PATCH/verify response saved to `.claude/bargain-chemist/snapshots/2026-05-07/deploy/`.
+- **Rollback path**: each old cloned ID still exists. To revert any one message: `PATCH /api/flow-actions/{action_id}` setting `template_id` back to the original cloned ID listed above.
