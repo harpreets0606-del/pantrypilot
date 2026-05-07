@@ -47,7 +47,7 @@ a { color:#FF0031; text-decoration:underline; }
 <!-- BODY INTRO -->
 <tr><td style="padding:32px 40px 18px 40px;font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#333333;line-height:1.7;">
 <p style="margin:0 0 18px 0;">Hi {{ first_name|default:'there' }},</p>
-<p style="margin:0 0 0 0;">Just a heads up - the item in your cart is still available, but stock moves fast at our prices. Grab it before someone else does.</p>
+<p style="margin:0 0 0 0;">Your cart's still here - including <strong>{{ event|lookup:'Product Name'|default:'the item below' }}</strong>. Stock moves fast at our prices, so grab everything before someone else does.</p>
 </td></tr>
 
 <!-- SINGLE PRODUCT CARD (Added to Cart event) -->

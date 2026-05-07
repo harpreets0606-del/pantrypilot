@@ -46,7 +46,7 @@ a { color:#FF0031; text-decoration:underline; }
 <!-- BODY -->
 <tr><td style="padding:32px 40px 20px 40px;font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#333333;line-height:1.7;">
 <p style="margin:0 0 18px 0;">Hi {{ first_name|default:'there' }},</p>
-<p style="margin:0 0 24px 0;">You left something behind — and we've been holding it for you. These items are still in stock, but we can't promise for how long.</p>
+<p style="margin:0 0 24px 0;">Your cart's been waiting - including <strong>{{ event|lookup:'Product Name'|default:'what you saved' }}</strong>. Stock's still here for now, but we can't hold it forever.</p>
 </td></tr>
 
 <!-- SINGLE PRODUCT CARD (Added to Cart event) -->
