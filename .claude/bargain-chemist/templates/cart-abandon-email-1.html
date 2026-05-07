@@ -11,7 +11,8 @@ a { color:#FF0031; text-decoration:underline; }
   .wrapper { width:100%!important; max-width:100%!important; }
   h1 { font-size:22px!important; line-height:1.3!important; }
   td[width="33%"] { display:block!important; width:100%!important; border-left:none!important; border-right:none!important; padding:12px 16px!important; border-bottom:1px solid #eee!important; }
-  .product-col { display:block!important; width:100%!important; padding:12px 20px!important; }
+  .pcard-img { width:100%!important; padding:0 0 16px 0!important; display:block!important; }
+  .pcard-body { padding:0!important; display:block!important; }
 }
 </style>
 </head>
@@ -38,15 +39,15 @@ a { color:#FF0031; text-decoration:underline; }
 
 <!-- HERO -->
 <tr><td align="center" style="background-color:#FF0031;padding:36px 30px 32px 30px;">
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;margin:0 0 10px 0;padding-bottom:0;">Last chance</p>
-<h1 style="font-family:Helvetica,Arial,sans-serif;font-size:28px;font-weight:bold;color:#ffffff;line-height:1.2;margin:0 0 14px 0;">{{ first_name|default:'Hey' }}, your cart is still waiting</h1>
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,0.9);line-height:1.6;margin:0;padding-bottom:0;">Don't let NZ's best pharmacy prices slip away — complete your order today.</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;margin:0 0 10px 0;padding-bottom:0;">Still here for you</p>
+<h1 style="font-family:Helvetica,Arial,sans-serif;font-size:28px;font-weight:bold;color:#ffffff;line-height:1.2;margin:0 0 14px 0;">{{ first_name|default:'Hey' }}, you forgot something</h1>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,0.9);line-height:1.6;margin:0;padding-bottom:0;">Your cart's saved at NZ's lowest pharmacy prices.</p>
 </td></tr>
 
-<!-- BODY -->
-<tr><td style="padding:32px 40px 20px 40px;font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#333333;line-height:1.7;">
+<!-- BODY INTRO -->
+<tr><td style="padding:32px 40px 18px 40px;font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#333333;line-height:1.7;">
 <p style="margin:0 0 18px 0;">Hi {{ first_name|default:'there' }},</p>
-<p style="margin:0 0 24px 0;">You left something behind — and we've been holding it for you. These items are still in stock, but we can't promise for how long.</p>
+<p style="margin:0 0 0 0;">You added something great to your cart - but didn't quite check out. No worries, we've saved it for you. Ready whenever you are.</p>
 </td></tr>
 
 <!-- SINGLE PRODUCT CARD (Added to Cart event) -->
@@ -59,7 +60,7 @@ a { color:#FF0031; text-decoration:underline; }
 </a>
 </td>
 <td class="pcard-body" valign="middle" style="padding:20px 20px 20px 0;">
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px 0;padding-bottom:0;">Last chance - your cart</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px 0;padding-bottom:0;">Saved in your cart</p>
 <p style="font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;color:#222;margin:0 0 6px 0;padding-bottom:0;line-height:1.3;">{{ event|lookup:'Product Name'|default:'Your item' }}</p>
 <p style="font-family:Helvetica,Arial,sans-serif;font-size:18px;font-weight:bold;color:#FF0031;margin:0 0 14px 0;padding-bottom:0;">{% currency_format event|lookup:'Price'|floatformat:2 %}</p>
 <a href="{{ event|lookup:'URL'|default:'https://www.bargainchemist.co.nz/cart' }}" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#fff;text-decoration:none;padding:10px 22px;border-radius:3px;background-color:#FF0031;">View Product</a>
@@ -68,24 +69,15 @@ a { color:#FF0031; text-decoration:underline; }
 </table>
 </td></tr>
 
-<!-- FREE SHIPPING NUDGE -->
-<tr><td style="padding:0 20px 24px 20px;">
-<table border="0" cellpadding="0" cellspacing="0" style="background-color:#FFF8F8;border-left:4px solid #FF0031;" width="100%">
-<tr><td style="padding:16px 20px;">
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#333333;margin:0;line-height:1.6;padding-bottom:0;">&#x1F69A; <strong>Free shipping on orders over $79.</strong> You may already be close — check your cart and top up to unlock free delivery.</p>
-</td></tr>
-</table>
-</td></tr>
-
-<!-- CTA -->
+<!-- MAIN CTA -->
 <tr><td align="center" style="padding:0 40px 36px 40px;">
-<a href="https://www.bargainchemist.co.nz/cart" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:4px;background-color:#FF0031;">Complete My Order</a>
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#888888;margin:16px 0 0 0;text-align:center;padding-bottom:0;">Price beat guarantee — find it cheaper at any NZ pharmacy and we'll beat it by 10%.</p>
+<a href="https://www.bargainchemist.co.nz/cart" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:4px;background-color:#FF0031;">Go to Your Cart</a>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;color:#888;margin:16px 0 0 0;text-align:center;padding-bottom:0;">Price Beat Guarantee - find it cheaper at any NZ pharmacy and we'll beat it by 10%.</p>
 </td></tr>
 
-<!-- REASSURANCE -->
+<!-- TRUST STRIP -->
 <tr><td style="background-color:#7B1523;padding:20px 30px;">
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#ffffff;text-align:center;margin:0;line-height:1.6;padding-bottom:0;">&#x1F512; <strong>Safe &amp; secure checkout.</strong> Trusted by thousands of Kiwis since 1984.</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#ffffff;text-align:center;margin:0;line-height:1.6;padding-bottom:0;"><strong>Free shipping on orders over $79.</strong> Trusted NZ pharmacists with 30+ stores nationwide.</p>
 </td></tr>
 
 <!-- VALUE PROPS -->
@@ -127,7 +119,7 @@ a { color:#FF0031; text-decoration:underline; }
 
 <!-- LEGAL -->
 <tr><td align="center" style="background-color:#FF0031;padding:15px 30px 10px 30px;">
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:9px;color:#ffffff;line-height:1.5;text-align:center;margin:0;padding-bottom:0;">Please note that not all products may be available in all stores, please call your closest Bargain Chemist pharmacy or visit our <a href="https://www.bargainchemist.co.nz/pages/find-a-store" style="color:#ffffff;text-decoration:underline;">store locator</a>. Prices shown are online prices only and may differ to in store. <a href="https://www.bargainchemist.co.nz/pages/best-price-guarantee-our-policy-new-zealands-cheapest-chemist" style="color:#ffffff;text-decoration:underline;">Price beat guarantee</a> — If you find a cheaper everyday price on an identical in-stock item at a New Zealand pharmacy we will beat the difference by 10%. *Vitamins and minerals are supplementary to and not a replacement for a balanced diet. Always read the label, use only as directed. If symptoms persist, see your healthcare professional. Weight management products should be used with a balanced diet and exercise.</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:9px;color:#ffffff;line-height:1.5;text-align:center;margin:0;padding-bottom:0;">Please note that not all products may be available in all stores, please call your closest Bargain Chemist pharmacy or visit our <a href="https://www.bargainchemist.co.nz/pages/find-a-store" style="color:#ffffff;text-decoration:underline;">store locator</a>. Prices shown are online prices only and may differ to in store. <a href="https://www.bargainchemist.co.nz/pages/best-price-guarantee-our-policy-new-zealands-cheapest-chemist" style="color:#ffffff;text-decoration:underline;">Price beat guarantee</a> - If you find a cheaper everyday price on an identical in-stock item at a New Zealand pharmacy we will beat the difference by 10%. *Vitamins and minerals are supplementary to and not a replacement for a balanced diet. Always read the label, use only as directed. If symptoms persist, see your healthcare professional. Weight management products should be used with a balanced diet and exercise.</p>
 </td></tr>
 <tr><td align="center" style="background-color:#FF0031;padding:8px 18px 20px 18px;">
 <p style="font-family:Helvetica,Arial,sans-serif;font-size:11px;color:#ffffff;text-align:center;line-height:1.5;margin:0;padding-bottom:0;">No longer want to receive these emails? {% unsubscribe 'Unsubscribe' %}.<br/>{{ organization.name }} {{ organization.full_address }}</p>
