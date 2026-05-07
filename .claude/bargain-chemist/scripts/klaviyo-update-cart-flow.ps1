@@ -94,10 +94,12 @@ foreach ($p in $Plan) {
     if ($Mode -eq 'verify') { continue }
 
     # PATCH: set custom_tracking_params (and confirm status:live for safety)
+    # UtmParam schema: { param: '<utm_key>', value: '<static_value>' }
+    # Verified via 400 error from Klaviyo API on 2026-05-07
     $newUtm = @(
-        @{ type='static'; value='klaviyo';            name='utm_source'   }
-        @{ type='static'; value='email';              name='utm_medium'   }
-        @{ type='static'; value=$p.UtmCampaign;       name='utm_campaign' }
+        [ordered]@{ param='utm_source';   value='klaviyo' }
+        [ordered]@{ param='utm_medium';   value='email' }
+        [ordered]@{ param='utm_campaign'; value=$p.UtmCampaign }
     )
     $msg | Add-Member -NotePropertyName custom_tracking_params -NotePropertyValue $newUtm -Force
     $defn.data.message = $msg

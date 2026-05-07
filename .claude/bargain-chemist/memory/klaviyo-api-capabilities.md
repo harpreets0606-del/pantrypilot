@@ -141,6 +141,12 @@ Top-level `data.attributes.definition`:
 ```
 **Constraint (verified by API error 2026-05-07):** `delay_until_weekdays` and `delay_until_time` are ONLY valid when `unit` is `"days"`. For minutes/hours/weeks, omit them entirely. Setting them on a non-day delay returns `400 invalid`.
 
+**UtmParam schema** (for `data.message.custom_tracking_params[]` in flow-actions):
+```json
+{ "param": "utm_source", "value": "klaviyo" }
+```
+Required field: `param` (the UTM key name). Optional/required: `value` (static string). Fields `name` and `type` are NOT valid (returns 400). Verified via API error on 2026-05-07.
+
 **send-email action:**
 ```json
 {
