@@ -21,7 +21,7 @@ The brand competes on **EDLP (Everyday Low Pricing)**, not promo cycles. The per
 
 1. **Price Beat Guarantee** — "Find it cheaper at any NZ pharmacy and we'll beat it by 10%" — this IS the offer; it's a permanent policy, not a promo.
 2. **Free shipping over $79** — threshold nudge, not a code.
-3. **Trust / longevity** — "Trusted NZ pharmacists since 1984", **30+ stores nationwide**.
+3. **Trust / longevity** — "Trusted NZ pharmacists", **30+ stores nationwide**.
 4. **Product feed / social proof** — best sellers, reviews, scarcity (low stock).
 5. **Reminder / urgency** — "Your cart's still here", "Items selling fast".
 6. **Convenience** — find-a-store, click & collect, repeat-order ease.

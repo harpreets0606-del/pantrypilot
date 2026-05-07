@@ -19,6 +19,30 @@ Note: direct curl to `a.klaviyo.com` is blocked in this sandbox. Use `klaviyo_ge
 
 ---
 
+## NO UNVERIFIED FACTS RULE — ABSOLUTE
+
+**Never put any factual claim into a template, campaign, flow, popup, subject line, footer, memory file, or guide unless the user has personally verified and approved it.**
+
+This includes (non-exhaustive):
+- Founding year, store count, customer count, review count, employee count
+- Awards, certifications, accreditations, memberships
+- Specific product claims (efficacy, ingredients, comparisons)
+- Statistics ("9 out of 10 Kiwis", "thousands of customers")
+- Partnerships, endorsements, affiliations
+- Geographic claims ("NZ's largest", "most stores in X region")
+- Price-match terms beyond what's documented in the user-approved Price Beat Guarantee
+
+Workflow:
+1. **Before drafting anything containing a factual claim**, ask the user to confirm the value, OR cite a primary source already in `memory/` that the user previously approved.
+2. **If the user has not confirmed it and there is no approved source**, write the copy WITHOUT the claim. Do not infer, estimate, "round to a sensible number", or pull from prior session memory unless the prior session explicitly logged user approval in `memory/decisions-log.md`.
+3. **When in doubt, leave the claim out and ask.** Generic phrasing is always preferred over a fabricated specific.
+
+Why this rule exists: a prior session inserted "since 1984" as Bargain Chemist's founding year (unverified, never approved) into 16 live templates and the no-coupon strategy memory file. The error compounded across reuses. This rule is the permanent fix.
+
+If you discover an unverified claim in a template, memory file, or guide, **flag it to the user before doing anything else** — do not patch silently.
+
+---
+
 ## How to work on this account
 
 ### Always do these things

@@ -160,3 +160,27 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
 **Falsifiable prediction:** Fixing Ysj7sg E2 subject from "Still available - but selling fast" to "{{ event.ProductName }} is still available" will improve E2 open rate. Baseline to pull: Ysj7sg flow report before fix.
 **Confidence:** High on ASA violations (explicit rule breaches). Medium on conversion impact of fixes.
 **Action taken:** Fixes not yet applied — user to implement or instruct Claude to action.
+
+## 2026-05-07 — "Since 1984" fabricated founding-year claim removed + new no-unverified-facts rule
+
+- **Context**: User flagged the trust-block line "Trusted by thousands of Kiwis since 1984. 30+ stores nationwide." in a template. Investigation showed "since 1984" was never verified against any primary source — it originated in `memory/no-coupon-strategy.md` (written in a prior session) and propagated through 16 LIVE Klaviyo templates plus 12 local draft files, the activation guide, the welcome flow build spec, and a deploy script.
+- **User decisions** (this session):
+  - **Founding-year claim**: REMOVE ENTIRELY from every template and memory/guide file. Do not replace with a different year.
+  - **"30+ stores nationwide"**: APPROVED — keep as-is.
+  - **"Trusted by thousands of Kiwis"**: APPROVED — keep as-is.
+- **Action taken**:
+  1. Stripped "since 1984" + the fabricated "Bargain Chemist has been serving New Zealanders since 1984 — that's over 40 years..." paragraph from all 16 affected live templates (HTML written to `.claude/bargain-chemist/templates/fixes/<id>.html` ready to apply).
+  2. Cleaned 12 local files (cart-abandon-email-1/2/3, welcome-email-1/2/3, flu-recovery-e2, replenishment-master, ACTIVATION-GUIDE.md, welcome-flow-build-spec.md, klaviyo-create-welcome-flow.ps1, no-coupon-strategy.md).
+  3. Live Klaviyo PATCH still pending — to be applied via UI Source paste or working API path.
+  4. Added permanent **NO UNVERIFIED FACTS RULE** to `.claude/bargain-chemist/CLAUDE.md` — prohibits inserting any factual claim (founding year, store count, customer count, awards, statistics, partnerships, etc.) into copy or memory without explicit user verification + approval.
+- **User-approved factual claims register** (only items in this list may be used in copy):
+  - Free shipping threshold: **$79 NZD**
+  - **Price Beat 10% Guarantee**
+  - **30+ stores nationwide**
+  - **Trusted by thousands of Kiwis** (generic, no number)
+  - Standard NZ pharmacy regulatory phrasing: *"Always read the label and use as directed. If symptoms persist, see your healthcare professional."*
+  - Trading name: **Bargain Chemist** / domain `bargainchemist.co.nz`
+- **Anything else requires explicit user approval before use.**
+- **Prediction**: removing the year claim has no measurable impact on conversion (trust line still present); this is a compliance + accuracy fix, not a performance lever.
+- **Confidence**: High that the rule prevents recurrence. The 1984 error is now traceable to a single root cause (unverified copy in `no-coupon-strategy.md`) — fixed.
+- **Learning**: Any factual specific in user-facing copy must trace to a user-approved source. Memory files written in prior sessions are NOT a source of truth for facts unless those facts have an explicit "user approved" line in this decisions log.

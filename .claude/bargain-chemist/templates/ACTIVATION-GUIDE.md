@@ -45,7 +45,7 @@
 **File:** `.claude/bargain-chemist/templates/welcome-email-3.html`
 **Template name:** `BC — Welcome Email 3 — Last Nudge`
 **Subject line:** `{{ first_name|default:'Still here' }} — 3 reasons NZ shops at Bargain Chemist`
-**Preview text:** `Price beat guarantee, free shipping, trusted pharmacists since 1984.`
+**Preview text:** `Price beat guarantee, free shipping, trusted pharmacists.`
 
 ### Assign to flows:
 - **Welcome Series Website (SehWRt)** → find Email 6 action (message ID `VJwtx3`) → "Change template"
@@ -92,5 +92,5 @@ The current flow ends at Email 2 (message `TpkzDd`, ~25.5h after Email 1).
 |-------|---------|--------------|
 | Welcome E1 | `Welcome to Bargain Chemist, {{ first_name\|default:'there' }} 👋` | `NZ's most trusted pharmacy — and your best price starts now.` |
 | Welcome E2 | `{{ first_name\|default:'There' }}, here's what's flying off our shelves` | `NZ's best-selling vitamins, skincare and pharmacy essentials — see what Kiwis love.` |
-| Welcome E3 | `{{ first_name\|default:'Still here' }} — 3 reasons NZ shops at Bargain Chemist` | `Price beat guarantee, free shipping, trusted pharmacists since 1984.` |
+| Welcome E3 | `{{ first_name\|default:'Still here' }} — 3 reasons NZ shops at Bargain Chemist` | `Price beat guarantee, free shipping, trusted pharmacists.` |
 | Cart E3 | `Last chance — your cart's waiting 🛒` | `Don't let NZ's best pharmacy prices slip away. Complete your order today.` |

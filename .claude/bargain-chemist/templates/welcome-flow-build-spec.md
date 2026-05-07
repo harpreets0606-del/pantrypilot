@@ -104,7 +104,7 @@ Add these on the trigger card → "Flow filters":
 ### Step 8 — Send Email (Email 3)
 - **Template:** `BC - Welcome Email 3 - Last Nudge`
 - **Subject line:** `{{ first_name|default:'Still here' }} — 3 reasons NZ shops at Bargain Chemist`
-- **Preview text:** `Price beat guarantee, free shipping, trusted pharmacists since 1984.`
+- **Preview text:** `Price beat guarantee, free shipping, trusted pharmacists.`
 - **From name:** `Bargain Chemist`
 - **From email:** `hello@bargainchemist.co.nz`
 - **Reply-to:** `hello@bargainchemist.co.nz`

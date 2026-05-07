@@ -143,7 +143,7 @@ $Msg2 = New-EmailMessage `
 $Msg3 = New-EmailMessage `
     'Welcome Email 3 - Last Nudge' `
     "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist" `
-    "Price beat guarantee, free shipping, trusted pharmacists since 1984." `
+    "Price beat guarantee, free shipping, trusted pharmacists." `
     $Tpl3
 
 $FlowDef = [ordered]@{
