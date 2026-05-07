@@ -66,10 +66,12 @@ E1_PREVIEW = "Your items are waiting. Free shipping over $79."
 E4_SUBJECT = "Your order's one click away"
 E4_PREVIEW = "Free shipping over $79 — same Bargain Chemist price."
 
-# Template HTML files (built 2026-05-08 by inline builder, committed alongside
-# this script). Each contains the verified 3-tier conditional.
-E1_HTML_FILE = TEMPLATES_DIR / "cart-recover-e1-tiered.html"
-E4_HTML_FILE = TEMPLATES_DIR / "cart-recover-e4-tiered.html"
+# Template HTML files. Built + render-validated by build_y84ruv_templates.py
+# (which fetches W2Sbja design live, constructs candidates, render-tests Liquid
+# in-template, and only writes finalized HTML if all checks pass). If these
+# files don't exist, run that script first.
+E1_HTML_FILE = TEMPLATES_DIR / "cart-recover-e1-w2sbja.html"
+E4_HTML_FILE = TEMPLATES_DIR / "cart-recover-e4-w2sbja.html"
 
 
 # ----------------------------------------------------------------------
@@ -163,12 +165,15 @@ def assert_tier_render(rendered_html, value, expected_phrases):
 
 
 def run_phase_a(key):
-    print("\n=== Phase A: build + render-test templates ===")
+    print("\n=== Phase A: POST templates + re-validate render ===")
+    print("    (build_y84ruv_templates.py should have already render-validated;")
+    print("     this is a defense-in-depth re-check against fresh template clones)")
 
     # Validate template files exist
     for f in (E1_HTML_FILE, E4_HTML_FILE):
         if not f.exists():
-            sys.exit(f"❌ template file missing: {f}")
+            sys.exit(f"❌ template file missing: {f}\n"
+                     f"   Run first: python .claude/bargain-chemist/scripts/build_y84ruv_templates.py")
 
     e1_html = E1_HTML_FILE.read_text(encoding="utf-8")
     e4_html = E4_HTML_FILE.read_text(encoding="utf-8")
