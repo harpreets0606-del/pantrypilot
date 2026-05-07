@@ -13,15 +13,32 @@
 
 ## Hard-won fixes
 
-### 1. `Invoke-WebRequest` hangs on POST — PS 5.1 progress-bar bug
-**Symptom:** Script prints a header line, then hangs forever (or 30+ seconds per call) on the actual POST.
-**Cause:** PowerShell 5.1 displays a hidden progress bar during web requests, which is implemented synchronously and dramatically slows the request — sometimes by 10-100x.
-**Fix:** At the top of every script that does HTTP calls, add:
+### 1. `Invoke-WebRequest` hangs on POST — PS 5.1 multi-cause issue
+**Symptom:** Script prints a header line, then hangs forever (or 30+ seconds per call) on the actual POST. `Ctrl+C` doesn't always stop it — must close the window.
+**Cause(s):** PS 5.1 has multiple compounding bugs around `Invoke-WebRequest`:
+1. Hidden progress bar that synchronously stalls large requests by 10-100x
+2. TLS 1.2 not always default — Klaviyo requires it
+3. `Invoke-WebRequest` itself has known hang issues with body POSTs even with `-UseBasicParsing`
+**Fix (all four required):**
 ```powershell
 $ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+$bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($body)
+$json = Invoke-RestMethod -Uri $url `
+                          -Headers $Headers `
+                          -Method Post `
+                          -Body $bodyBytes `
+                          -ContentType 'application/vnd.api+json' `
+                          -TimeoutSec 60 `
+                          -DisableKeepAlive
 ```
-Also always pass `-UseBasicParsing` (avoids the IE-COM parser which can prompt or hang) and `-TimeoutSec 60` (default is sometimes infinite).
-**Status:** Applied to `klaviyo-find-list-id.ps1`, `klaviyo-deploy-templates.ps1`, `klaviyo-create-welcome-flow.ps1` (2026-05-07).
+Key changes from `Invoke-WebRequest`:
+- **Use `Invoke-RestMethod`** — cleaner, no hidden parsing, returns the parsed object directly (no `.Content`)
+- **Send body as UTF-8 bytes** — string body can hang on large POSTs in PS 5.1
+- **`-DisableKeepAlive`** — forces fresh connection; keep-alive can hang with some endpoints
+- **`-TimeoutSec`** is essential; default can be effectively infinite
+**Status:** Applied to `klaviyo-find-list-id.ps1`, `klaviyo-deploy-templates.ps1`, `klaviyo-create-welcome-flow.ps1` (2026-05-07, second pass after first fix didn't fully resolve).
 
 ### 2. `Out-File` saves JSON as one-byte-per-line decimal codes
 **Symptom:** Output JSON files are unreadable; opening them shows numbers like `123\n34\n100...`

@@ -10,6 +10,8 @@
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'   # Fixes PS 5.1 slow upload bug
+# Force TLS 1.2 - PS 5.1 may default to TLS 1.0/1.1 which Klaviyo rejects
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Load .env.local
 if (-not (Test-Path .env.local)) {
@@ -77,14 +79,16 @@ foreach ($t in $Templates) {
     } | ConvertTo-Json -Depth 10 -Compress
 
     try {
-        $resp = Invoke-WebRequest -Uri 'https://a.klaviyo.com/api/templates/' `
+        # Use Invoke-RestMethod with UTF-8 byte body - avoids PS 5.1 hang on large JSON POSTs
+        $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($body)
+        $json = Invoke-RestMethod -Uri 'https://a.klaviyo.com/api/templates/' `
                                   -Headers $Headers `
                                   -Method Post `
-                                  -Body $body `
+                                  -Body $bodyBytes `
+                                  -ContentType 'application/vnd.api+json' `
                                   -ErrorAction Stop `
-                                  -UseBasicParsing `
-                                  -TimeoutSec 60
-        $json = $resp.Content | ConvertFrom-Json
+                                  -TimeoutSec 60 `
+                                  -DisableKeepAlive
         $tid  = $json.data.id
         $editUrl = "https://www.klaviyo.com/email-editor/$tid/edit"
         Write-Host "  OK    $($t.Name)" -ForegroundColor Green
