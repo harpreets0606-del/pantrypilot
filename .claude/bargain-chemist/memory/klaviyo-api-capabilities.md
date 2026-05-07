@@ -2,6 +2,23 @@
 
 *Replaces the incorrect assumption made in this session that flows are read-only via API. Verified against Klaviyo developer docs.*
 
+## Liquid filter chaining gotcha - VERIFIED 2026-05-07
+
+Klaviyo's Liquid parser **breaks** on `replace` (two-arg) chained inline with another filter:
+```
+{{ event|lookup:'URL'|replace:'a','b'|default:'fallback' }}   ❌ "Could not parse some characters"
+```
+The parser tokenises the comma between replace's two args as a filter-chain delimiter.
+
+**Workarounds:**
+1. Drop the replace and rely on Shopify primary-domain 301 redirect (preferred for our case — myshopify.com URLs auto-redirect to bargainchemist.co.nz):
+   ```
+   {{ event|lookup:'URL'|default:'https://www.bargainchemist.co.nz/cart' }}
+   ```
+2. If replace is essential, do it via `{% assign %}` first, then output the var separately. (Untested in Klaviyo — may also fail.)
+
+**Affected files:** cart-abandon-email-1/2/3.html line 57-66 (link href + button href). Fixed by removing replace 2026-05-07.
+
 ## "Added to Cart" event payload (Shopify integration) - VERIFIED via real event 2026-05-07
 
 Inspected via `klaviyo_get_events` filter `metric_id=S4jKYD`. Key fields available in `event_properties` for Shopify "Added to Cart" events:
