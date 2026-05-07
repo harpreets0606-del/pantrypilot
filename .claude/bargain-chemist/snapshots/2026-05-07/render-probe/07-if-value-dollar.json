@@ -1,0 +1,5 @@
+{
+  "status": 400,
+  "html": "<html><body>{% if event.$value < 79 %}low{% else %}high{% endif %}</body></html>",
+  "body": "{\"errors\":[{\"id\":\"4d3618c0-6a1b-4a78-af09-d02f17201120\",\"status\":400,\"code\":\"bad_request\",\"title\":\"Bad request\",\"detail\":\"Unable to render given template with provided context. Please check included django syntax and ensure it is compatible with provided context.\",\"source\":{\"pointer\":\"/data\"},\"links\":{},\"meta\":{}}]}"
+}
