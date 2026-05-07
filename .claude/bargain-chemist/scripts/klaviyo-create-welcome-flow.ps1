@@ -102,17 +102,19 @@ function New-EmailMessage([string]$Name, [string]$Subject, [string]$Preview, [st
 }
 
 function New-Delay([string]$TempId, [string]$Unit, [int]$Value, [string]$NextId) {
+    $data = [ordered]@{
+        unit            = $Unit
+        value           = $Value
+        secondary_value = $null
+        timezone        = 'profile'
+    }
+    # delay_until_weekdays only valid when unit is 'days'
+    if ($Unit -eq 'days') { $data['delay_until_weekdays'] = $WeekDays }
     return [ordered]@{
         temporary_id = $TempId
         type         = 'time-delay'
-        data         = [ordered]@{
-            unit                 = $Unit
-            value                = $Value
-            secondary_value      = $null
-            timezone             = 'profile'
-            delay_until_weekdays = $WeekDays
-        }
-        links = @{ next = $NextId }
+        data         = $data
+        links        = @{ next = $NextId }
     }
 }
 

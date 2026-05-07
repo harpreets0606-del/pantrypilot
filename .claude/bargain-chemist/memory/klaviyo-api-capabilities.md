@@ -65,11 +65,12 @@ Top-level `data.attributes.definition`:
     "value": <int>,
     "secondary_value": null,
     "timezone": "profile" | "utc" | "<account-tz>",
-    "delay_until_weekdays": ["monday","tuesday",...]
+    "delay_until_weekdays": ["monday","tuesday",...]   // ONLY if unit is "days"
   },
   "links": { "next": "<temporary_id>" }
 }
 ```
+**Constraint (verified by API error 2026-05-07):** `delay_until_weekdays` and `delay_until_time` are ONLY valid when `unit` is `"days"`. For minutes/hours/weeks, omit them entirely. Setting them on a non-day delay returns `400 invalid`.
 
 **send-email action:**
 ```json
