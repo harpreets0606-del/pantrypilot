@@ -41,16 +41,71 @@
 - **Constraint 2:** Once created, a flow's **structure cannot be updated** via API. To change steps, you must DELETE + re-CREATE (or edit in UI).
 - **Recommended workflow (from Klaviyo docs):** build a reference flow in UI → GET it with `?additional-fields[flow]=definition` → mutate the JSON → POST as a new flow.
 
-### Actions schema (high level)
+### Actions schema — VERIFIED from SehWRt-with-full-definition.json (2026-05-07)
 
-Each action in `data.attributes.definition.actions[]` has:
-- `temporary_id` (string, your choice)
-- `type` (`time-delay`, `send-email`, `conditional-split`, `update-profile-property`, `webhook`, etc.)
-- `links` to next actions (referenced by `temporary_id`)
-- `data` with type-specific settings:
-  - `time-delay` → `unit`, `value`, `secondary_value`, `timezone`, `delay_until_time`, `delay_until_weekdays`
-  - `send-email` → `template_id`, `subject`, `preview_text`, `from_email`, `from_label`, `reply_to_email`, `smart_sending`, `add_tracking_params`, etc.
-  - `conditional-split` → criteria (events / metrics / properties)
+Top-level `data.attributes.definition`:
+```json
+{
+  "triggers": [ { "type": "list", "id": "<list_id>" } ],
+  "profile_filter": null,
+  "entry_action_id": "<temporary_id of first action>",
+  "actions": [ ... ]
+}
+```
+
+**Trigger:** `{"type": "list", "id": "<list_id>"}` — uses `id`, NOT `list_id`.
+
+**time-delay action:**
+```json
+{
+  "temporary_id": "delay-1",
+  "type": "time-delay",
+  "data": {
+    "unit": "minutes" | "hours" | "days" | "weeks",
+    "value": <int>,
+    "secondary_value": null,
+    "timezone": "profile" | "utc" | "<account-tz>",
+    "delay_until_weekdays": ["monday","tuesday",...]
+  },
+  "links": { "next": "<temporary_id>" }
+}
+```
+
+**send-email action:**
+```json
+{
+  "temporary_id": "email-1",
+  "type": "send-email",
+  "data": {
+    "message": {
+      "name": "Welcome Email 1",
+      "from_email": "hello@bargainchemist.co.nz",
+      "from_label": "Bargain Chemist",
+      "reply_to_email": null,
+      "cc_email": null,
+      "bcc_email": null,
+      "subject_line": "...",            // ← NOT "subject"
+      "preview_text": "...",
+      "template_id": "<template_id>",
+      "smart_sending_enabled": true,    // ← NOT "smart_sending"
+      "transactional": false,
+      "add_tracking_params": true,
+      "custom_tracking_params": null,
+      "additional_filters": null
+    },
+    "status": "draft"
+  },
+  "links": { "next": "<temporary_id>" | null }
+}
+```
+
+**conditional-split action — schema NOT YET VERIFIED.** Errors confirmed:
+- `data.profile_filter` is required (object, not array)
+- `data.condition_groups` is INVALID (was the wrong guess)
+- `links.next_if_true` and `links.next_if_false` are required (NOT `true`/`false`)
+- Action type for splits is conditional-branch, distinct from boolean-branch
+
+**TODO when we need conditional splits via API:** create one in UI with the desired filter, dump it via `klaviyo-dump-flow-definition.ps1`, copy schema. Until then, build linear flow and add splits in UI manually.
 
 ### Practical implication for Bargain Chemist
 

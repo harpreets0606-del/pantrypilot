@@ -75,168 +75,88 @@ if (-not $WebsiteFormListId) {
 }
 
 # --- Build the flow definition ---
-# Action references use temporary_id; Klaviyo replaces with real IDs in response.
+# Schema mirrored from SehWRt-with-full-definition.json (canonical).
+# NOTE: linear flow (no conditional splits) for the API-creation pass. After the
+# flow lands in DRAFT, add the two "Placed Order? -> exit" splits in the Klaviyo UI
+# (we don't have a verified ConditionalBranchActionData schema).
+
+$WeekDays = @('monday','tuesday','wednesday','thursday','friday','saturday','sunday')
+
+function New-EmailMessage([string]$Name, [string]$Subject, [string]$Preview, [string]$TemplateId) {
+    return [ordered]@{
+        name                  = $Name
+        from_email            = 'hello@bargainchemist.co.nz'
+        from_label            = 'Bargain Chemist'
+        reply_to_email        = $null
+        cc_email              = $null
+        bcc_email             = $null
+        subject_line          = $Subject
+        preview_text          = $Preview
+        template_id           = $TemplateId
+        smart_sending_enabled = $true
+        transactional         = $false
+        add_tracking_params   = $true
+        custom_tracking_params = $null
+        additional_filters    = $null
+    }
+}
+
+function New-Delay([string]$TempId, [string]$Unit, [int]$Value, [string]$NextId) {
+    return [ordered]@{
+        temporary_id = $TempId
+        type         = 'time-delay'
+        data         = [ordered]@{
+            unit                 = $Unit
+            value                = $Value
+            secondary_value      = $null
+            timezone             = 'profile'
+            delay_until_weekdays = $WeekDays
+        }
+        links = @{ next = $NextId }
+    }
+}
+
+function New-EmailAction([string]$TempId, $Message, $NextId) {
+    return [ordered]@{
+        temporary_id = $TempId
+        type         = 'send-email'
+        data         = [ordered]@{
+            message = $Message
+            status  = 'draft'
+        }
+        links = @{ next = $NextId }
+    }
+}
+
+$Msg1 = New-EmailMessage `
+    'Welcome Email 1 - Welcome to the Family' `
+    "Welcome to Bargain Chemist, {{ first_name|default:'there' }}" `
+    "NZ's most trusted pharmacy - and your best price starts now." `
+    $Tpl1
+$Msg2 = New-EmailMessage `
+    'Welcome Email 2 - Best Sellers' `
+    "{{ first_name|default:'There' }}, here's what's flying off our shelves" `
+    "NZ's best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love." `
+    $Tpl2
+$Msg3 = New-EmailMessage `
+    'Welcome Email 3 - Last Nudge' `
+    "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist" `
+    "Price beat guarantee, free shipping, trusted pharmacists since 1984." `
+    $Tpl3
 
 $FlowDef = [ordered]@{
     triggers = @(
-        @{
-            type = 'list'
-            list_id = $WebsiteFormListId
-        }
+        [ordered]@{ type = 'list'; id = $WebsiteFormListId }
     )
-    profile_filter = @{
-        # Re-entry guard: skip if been in this flow in last 30 days
-        condition_groups = @(
-            @{
-                conditions = @(
-                    @{
-                        type = 'profile-property-condition'
-                        # Klaviyo evaluates "has not been in flow X in last N days" as a flow filter, not profile filter.
-                        # Leave this empty here — set the in-flow re-entry guard manually if Klaviyo's API exposes it.
-                    }
-                )
-            }
-        )
-    }
+    profile_filter  = $null
+    entry_action_id = 'delay-1'
     actions = @(
-        # Step 1: 5 minute delay
-        [ordered]@{
-            temporary_id = 'delay-1'
-            type = 'time-delay'
-            data = @{ unit = 'minutes'; value = 5 }
-            links = @{ next = 'email-1' }
-        },
-        # Step 2: Email 1
-        [ordered]@{
-            temporary_id = 'email-1'
-            type = 'send-email'
-            data = @{
-                template_id          = $Tpl1
-                subject              = "Welcome to Bargain Chemist, {{ first_name|default:'there' }}"
-                preview_text         = "NZ's most trusted pharmacy - and your best price starts now."
-                from_email           = 'hello@bargainchemist.co.nz'
-                from_label           = 'Bargain Chemist'
-                reply_to_email       = 'hello@bargainchemist.co.nz'
-                smart_sending        = $true
-                add_tracking_params  = $true
-                custom_tracking_params = @(
-                    @{ type = 'static'; value = 'klaviyo'; name = 'utm_source' },
-                    @{ type = 'static'; value = 'email';    name = 'utm_medium' },
-                    @{ type = 'static'; value = 'welcome_e1_2026'; name = 'utm_campaign' }
-                )
-            }
-            links = @{ next = 'delay-2' }
-        },
-        # Step 3: 1 day delay
-        [ordered]@{
-            temporary_id = 'delay-2'
-            type = 'time-delay'
-            data = @{ unit = 'days'; value = 1 }
-            links = @{ next = 'split-1' }
-        },
-        # Step 4: Conditional split - Placed Order since starting flow?
-        [ordered]@{
-            temporary_id = 'split-1'
-            type = 'conditional-split'
-            data = @{
-                condition_groups = @(
-                    @{
-                        conditions = @(
-                            @{
-                                type = 'metric-condition'
-                                metric_filter = @{
-                                    metric_name = 'Placed Order'
-                                    measurement = 'count'
-                                    operator = 'greater-than-or-equal'
-                                    value = 1
-                                    timeframe = 'since-flow-start'
-                                }
-                            }
-                        )
-                    }
-                )
-            }
-            links = @{
-                'true'  = $null      # YES -> exit (no further action)
-                'false' = 'email-2'  # NO -> continue
-            }
-        },
-        # Step 5: Email 2
-        [ordered]@{
-            temporary_id = 'email-2'
-            type = 'send-email'
-            data = @{
-                template_id          = $Tpl2
-                subject              = "{{ first_name|default:'There' }}, here's what's flying off our shelves"
-                preview_text         = "NZ's best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love."
-                from_email           = 'hello@bargainchemist.co.nz'
-                from_label           = 'Bargain Chemist'
-                reply_to_email       = 'hello@bargainchemist.co.nz'
-                smart_sending        = $true
-                add_tracking_params  = $true
-                custom_tracking_params = @(
-                    @{ type = 'static'; value = 'klaviyo'; name = 'utm_source' },
-                    @{ type = 'static'; value = 'email';    name = 'utm_medium' },
-                    @{ type = 'static'; value = 'welcome_e2_2026'; name = 'utm_campaign' }
-                )
-            }
-            links = @{ next = 'delay-3' }
-        },
-        # Step 6: 2 day delay
-        [ordered]@{
-            temporary_id = 'delay-3'
-            type = 'time-delay'
-            data = @{ unit = 'days'; value = 2 }
-            links = @{ next = 'split-2' }
-        },
-        # Step 7: Conditional split #2
-        [ordered]@{
-            temporary_id = 'split-2'
-            type = 'conditional-split'
-            data = @{
-                condition_groups = @(
-                    @{
-                        conditions = @(
-                            @{
-                                type = 'metric-condition'
-                                metric_filter = @{
-                                    metric_name = 'Placed Order'
-                                    measurement = 'count'
-                                    operator = 'greater-than-or-equal'
-                                    value = 1
-                                    timeframe = 'since-flow-start'
-                                }
-                            }
-                        )
-                    }
-                )
-            }
-            links = @{
-                'true'  = $null
-                'false' = 'email-3'
-            }
-        },
-        # Step 8: Email 3
-        [ordered]@{
-            temporary_id = 'email-3'
-            type = 'send-email'
-            data = @{
-                template_id          = $Tpl3
-                subject              = "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist"
-                preview_text         = "Price beat guarantee, free shipping, trusted pharmacists since 1984."
-                from_email           = 'hello@bargainchemist.co.nz'
-                from_label           = 'Bargain Chemist'
-                reply_to_email       = 'hello@bargainchemist.co.nz'
-                smart_sending        = $true
-                add_tracking_params  = $true
-                custom_tracking_params = @(
-                    @{ type = 'static'; value = 'klaviyo'; name = 'utm_source' },
-                    @{ type = 'static'; value = 'email';    name = 'utm_medium' },
-                    @{ type = 'static'; value = 'welcome_e3_2026'; name = 'utm_campaign' }
-                )
-            }
-            links = @{ next = $null }   # End of flow
-        }
+        New-Delay        'delay-1' 'minutes' 5 'email-1'
+        New-EmailAction  'email-1' $Msg1     'delay-2'
+        New-Delay        'delay-2' 'days'    1 'email-2'
+        New-EmailAction  'email-2' $Msg2     'delay-3'
+        New-Delay        'delay-3' 'days'    2 'email-3'
+        New-EmailAction  'email-3' $Msg3     $null
     )
 }
 
