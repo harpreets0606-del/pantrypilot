@@ -95,14 +95,21 @@ def main():
         if status == "live":
             patch_flow(fid, {"status": "manual"}, key, label=f"{fid} → manual")
 
+    # Klaviyo's PATCH /api/flows/{id} validator requires `status` in the body
+    # even when only flipping `archived`. We send status=manual unconditionally
+    # for archive ops: it's a no-op for already-manual flows (the 2 paused PROBEs)
+    # and a safe transition for draft flows (manual is valid + status becomes
+    # irrelevant once archived anyway).
+    archive_attrs = {"archived": True, "status": "manual"}
+
     print("\n=== Step 2: Archive all 5 PROBE flows ===")
     for fid in PROBE_FLOWS:
-        patch_flow(fid, {"archived": True}, key, label=f"{fid} → archived")
+        patch_flow(fid, archive_attrs, key, label=f"{fid} → archived")
 
     print("\n=== Step 3: Archive superseded draft flows ===")
     for fid, reason in EXTRA_ARCHIVE.items():
         print(f"  ({reason})")
-        patch_flow(fid, {"archived": True}, key, label=f"{fid} → archived")
+        patch_flow(fid, archive_attrs, key, label=f"{fid} → archived")
 
     print("\n=== Step 4: Verify — current non-archived flows ===")
     flows = get_flows(key)
