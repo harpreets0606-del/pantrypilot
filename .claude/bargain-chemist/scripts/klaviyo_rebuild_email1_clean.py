@@ -163,7 +163,7 @@ def render_test(html, event_value, key):
     Returns rendered HTML or None on error."""
     body = {
         "data": {
-            "type": "template-render",
+            "type": "template",
             "attributes": {
                 "html": html,
                 "context": {
