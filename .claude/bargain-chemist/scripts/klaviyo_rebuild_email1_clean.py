@@ -100,8 +100,8 @@ CLEAN_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "
   <a href="https://www.bargainchemist.co.nz/" target="_blank" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:20px;letter-spacing:1px;">BARGAIN CHEMIST</a>
 </td></tr>
 
-<!-- CART-AWARE NUDGE (Klaviyo Django; verified syntax — Klaviyo auto-strips $ on event.* property access) -->
-{% if event.value < 79 %}
+<!-- CART-AWARE NUDGE (Klaviyo Django; verified via render-probe with $-only context) -->
+{% if event|lookup:'$value' < 79 %}
 <tr><td class="nudge-low" style="padding:18px 28px;text-align:center;">
   <p style="margin:0;font-size:16px;line-height:1.5;color:#7A4F00;">
     Your cart is under $79 &mdash; add a few more items to unlock <strong>FREE shipping</strong> at NZ's lowest pharmacy prices.
