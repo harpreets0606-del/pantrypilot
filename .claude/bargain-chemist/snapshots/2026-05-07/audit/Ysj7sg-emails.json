@@ -26,7 +26,7 @@
     "name": "Email #2",
     "template_id": "RijuTw",
     "subject_line": "{{ event.ProductName }} is still available",
-    "preview_text": "Limited stock remaining. Don't miss your chance to grab one.",
+    "preview_text": "It's still here when you're ready. Same item, same Bargain Chemist price.",
     "from_email": "hello@bargainchemist.co.nz",
     "from_label": "Bargain Chemist",
     "smart_sending": true,

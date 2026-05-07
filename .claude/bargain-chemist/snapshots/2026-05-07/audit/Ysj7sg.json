@@ -116,7 +116,7 @@
               "cc_email": null,
               "bcc_email": null,
               "subject_line": "{{ event.ProductName }} is still available",
-              "preview_text": "Limited stock remaining. Don't miss your chance to grab one.",
+              "preview_text": "It's still here when you're ready. Same item, same Bargain Chemist price.",
               "template_id": "RijuTw",
               "smart_sending_enabled": true,
               "transactional": false,

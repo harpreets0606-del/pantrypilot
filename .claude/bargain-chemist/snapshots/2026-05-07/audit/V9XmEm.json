@@ -61,7 +61,7 @@
               "bcc_email": null,
               "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
               "preview_text": "Your guide to staying healthy and protected this flu season.",
-              "template_id": "SJwrxf",
+              "template_id": "SRspqe",
               "smart_sending_enabled": true,
               "transactional": false,
               "add_tracking_params": true,

@@ -44,7 +44,7 @@
     "name": "Welcome Email 3 - Last Nudge",
     "template_id": "UvF2qd",
     "subject_line": "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist",
-    "preview_text": "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+    "preview_text": "Price beat guarantee, free shipping, trusted Kiwi pharmacy.",
     "from_email": "hello@bargainchemist.co.nz",
     "from_label": "Bargain Chemist",
     "smart_sending": true,

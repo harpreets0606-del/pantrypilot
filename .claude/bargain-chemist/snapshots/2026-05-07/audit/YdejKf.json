@@ -184,7 +184,7 @@
               "cc_email": null,
               "bcc_email": null,
               "subject_line": "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist",
-              "preview_text": "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+              "preview_text": "Price beat guarantee, free shipping, trusted Kiwi pharmacy.",
               "template_id": "UvF2qd",
               "smart_sending_enabled": true,
               "transactional": false,

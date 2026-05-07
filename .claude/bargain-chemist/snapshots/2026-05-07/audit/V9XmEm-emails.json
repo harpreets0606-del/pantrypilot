@@ -6,7 +6,7 @@
     "action_id": "105627866",
     "msg_id": "QW6y2L",
     "name": "[Z] Flu Season Email 1",
-    "template_id": "SJwrxf",
+    "template_id": "SRspqe",
     "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
     "preview_text": "Your guide to staying healthy and protected this flu season.",
     "from_email": "hello@bargainchemist.co.nz",
