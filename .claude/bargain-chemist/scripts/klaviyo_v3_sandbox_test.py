@@ -750,17 +750,32 @@ def phase_reinject(key):
         return 1
 
     print(f"Phase REINJECT: firing fresh events for {target_vals}")
-    print(f"  (Profiles must be re-subscribed BEFORE running this)")
+    print(f"  (Profiles must be subscribed BEFORE running this)")
 
+    profiles = state.setdefault("profiles", {})
     for v in target_vals:
         email = f"{TEST_EMAIL_BASE}-{v}@{TEST_EMAIL_DOMAIN}"
+        # Upsert profile so verify can find it (handles both new and existing profiles)
+        try:
+            pid = upsert_profile(email, key)
+        except Exception as e:
+            pid = None
+            print(f"    v={v:>4}  upsert failed: {e}")
+        # Add to state if not already present
+        if pid and str(v) not in profiles:
+            profiles[str(v)] = {
+                "email": email,
+                "profile_id": pid,
+                "expected_tier": expected_tier(v)
+            }
+            print(f"    v={v:>4}  added to state  pid={pid}  tier={expected_tier(v)}")
         code, body = track_checkout_started(email, v, key)
         ok = "OK" if code in (200, 202) else f"FAIL: {body}"
         print(f"    v={v:>4}  HTTP {code}  {ok}")
         time.sleep(0.5)
 
     state["reinject_at"] = datetime.utcnow().isoformat() + "Z"
-    state["reinject_vals"] = target_vals
+    state["reinject_vals"] = state.get("reinject_vals", []) + target_vals
     write_state(state)
     print(f"\n  Done. Wait 8+ minutes then run --phase=verify")
     return 0
