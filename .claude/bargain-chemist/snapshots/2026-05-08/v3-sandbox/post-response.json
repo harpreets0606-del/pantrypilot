@@ -1,4 +1,265 @@
 {
-  "status": 400,
-  "body": "{\"errors\":[{\"id\":\"1ede0939-c53b-4c8f-8f6f-b08f9e74df84\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"All custom profile properties must be of the form: properties['property name']\",\"source\":{\"pointer\":\"/data/attributes/definition/profile_filter/condition_groups/0/conditions/0/property\"},\"links\":{},\"meta\":{}}]}"
+  "data": {
+    "type": "flow",
+    "id": "WFhERT",
+    "attributes": {
+      "name": "PROBE - Y84ruV-v3 sandbox conditional-split runtime test",
+      "status": "draft",
+      "archived": false,
+      "created": "2026-05-07T12:37:33.163969+00:00",
+      "updated": "2026-05-07T12:37:33.170019+00:00",
+      "trigger_type": "Metric",
+      "definition": {
+        "triggers": [
+          {
+            "type": "metric",
+            "id": "VvcTue",
+            "trigger_filter": null
+          }
+        ],
+        "profile_filter": {
+          "condition_groups": [
+            {
+              "conditions": [
+                {
+                  "type": "profile-property",
+                  "property": "properties['is_test_profile']",
+                  "filter": {
+                    "type": "string",
+                    "operator": "equals",
+                    "value": "true"
+                  }
+                }
+              ]
+            },
+            {
+              "conditions": [
+                {
+                  "type": "profile-marketing-consent",
+                  "consent": {
+                    "channel": "email",
+                    "can_receive_marketing": true,
+                    "consent_status": {
+                      "subscription": "any",
+                      "filters": null
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "actions": [
+          {
+            "id": "105960868",
+            "type": "time-delay",
+            "data": {
+              "unit": "minutes",
+              "value": 5,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105960870"
+            }
+          },
+          {
+            "id": "105960870",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "VvcTue",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "$value",
+                            "filter": {
+                              "type": "numeric",
+                              "operator": "less-than",
+                              "value": 30.0
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105960871",
+              "next_if_false": "105960872"
+            }
+          },
+          {
+            "id": "105960871",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "[PROBE-A] Tier A: cart < $30",
+                "preview_text": "tier A test",
+                "template_id": "TCPG8a",
+                "smart_sending_enabled": false,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "PROBE - Tier A",
+                "id": "RQpNBF"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          },
+          {
+            "id": "105960872",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "VvcTue",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "$value",
+                            "filter": {
+                              "type": "numeric",
+                              "operator": "less-than",
+                              "value": 79.0
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105960873",
+              "next_if_false": "105960876"
+            }
+          },
+          {
+            "id": "105960873",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "[PROBE-B] Tier B: cart $30-78",
+                "preview_text": "tier B test",
+                "template_id": "SZNDvx",
+                "smart_sending_enabled": false,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "PROBE - Tier B",
+                "id": "XdFt98"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          },
+          {
+            "id": "105960876",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "[PROBE-C] Tier C: cart >= $79",
+                "preview_text": "tier C test",
+                "template_id": "SnMASU",
+                "smart_sending_enabled": false,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "PROBE - Tier C",
+                "id": "Yp6i2Y"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        ],
+        "entry_action_id": "105960868"
+      }
+    },
+    "relationships": {
+      "flow-actions": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/WFhERT/relationships/flow-actions/",
+          "related": "https://a.klaviyo.com/api/flows/WFhERT/flow-actions/"
+        }
+      },
+      "tags": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/WFhERT/relationships/tags/",
+          "related": "https://a.klaviyo.com/api/flows/WFhERT/tags/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/WFhERT/"
+    }
+  },
+  "links": {
+    "self": "https://a.klaviyo.com/api/flows/"
+  }
 }

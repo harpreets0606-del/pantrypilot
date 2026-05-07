@@ -16,7 +16,7 @@
               "conditions": [
                 {
                   "type": "profile-property",
-                  "property": "is_test_profile",
+                  "property": "properties['is_test_profile']",
                   "filter": {
                     "type": "string",
                     "operator": "equals",
