@@ -15,7 +15,37 @@
 | Clone template | `/api/template-clone/` | POST | ✅ Stable |
 | Get template for flow message | `/api/flow-messages/{id}/template/` | GET | ✅ Stable |
 
-### The flow-cloned template bug (verified 2026-05-07, multiple Klaviyo community threads)
+### IMPORTANT — earlier session conclusion was incomplete
+
+I previously declared "flow-cloned template content cannot be updated via API." **That was wrong.** The Templates API PATCH on cloned IDs IS broken, but Klaviyo released a separate working endpoint:
+
+**`PATCH /api/flow-actions/{id}/`** — revision `2025-10-15` (GA, not beta!)
+
+This updates a flow action's full definition INCLUDING `data.message.{template_id, subject_line, preview_text, from_email, smart_sending_enabled, etc.}`. Verified via:
+- Klaviyo API changelog [21.0.0] revision 2025-10-15
+- Python SDK source `flow_action_update_query_resource_object_attributes.py` confirms shape
+- SDK method: `klaviyo.Flows.update_flow_action(id, body)`
+- Endpoint URL pattern in SDK: `/api/flow-actions/{id}` PATCH
+
+**Body shape (verified from SDK):**
+```json
+{
+  "data": {
+    "type": "flow-action",
+    "id": "<flow_action_id>",
+    "attributes": {
+      "definition": { ... opaque dict mirroring GET response ... }
+    }
+  }
+}
+```
+The `definition` is the full action structure (type, data, links). For send-email actions this includes the `data.message` object.
+
+**Lesson: stop concluding "impossible" without checking the latest revision.** Klaviyo ships new endpoints quarterly under new revision headers. Always check the changelog for the revision matching the current date before declaring something unsupported.
+
+---
+
+### The DEPRECATED workaround (PATCH /api/templates/{id} on flow-cloned IDs)
 
 When you assign a global template to a flow message, Klaviyo creates an internal cloned copy. That copy:
 - Returns a real-looking template ID (e.g. `VMMpC9`)
