@@ -68,7 +68,10 @@ def hdrs(key, revision, content=False):
 
 def save(name, data):
     p = SNAP_DIR / name
-    p.write_text(json.dumps(data, indent=2) if isinstance(data, dict) else str(data))
+    p.write_text(
+        json.dumps(data, indent=2) if isinstance(data, dict) else str(data),
+        encoding="utf-8",
+    )
 
 
 def get_template(tid, key):
