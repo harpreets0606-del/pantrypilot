@@ -2,6 +2,36 @@
 
 *Replaces the incorrect assumption made in this session that flows are read-only via API. Verified against Klaviyo developer docs.*
 
+## "Added to Cart" event payload (Shopify integration) - VERIFIED via real event 2026-05-07
+
+Inspected via `klaviyo_get_events` filter `metric_id=S4jKYD`. Key fields available in `event_properties` for Shopify "Added to Cart" events:
+
+| Field name (case-sensitive) | Liquid access | Example |
+|-----------------------------|---------------|---------|
+| `Product Name` | `{{ event\|lookup:'Product Name' }}` | UMBRO Action Deodorant Body Spray 150ml |
+| `Price` | `{{ event\|lookup:'Price' }}` | 3 (number) |
+| `Quantity` | `{{ event\|lookup:'Quantity' }}` | 1 |
+| `URL` | `{{ event\|lookup:'URL' }}` | bargain-chemist.myshopify.com/products/... |
+| **`ImageURL`** (one word, camelCase) | `{{ event\|lookup:'ImageURL' }}` | https://cdn.shopify.com/... |
+| `CompareAtPrice` | `{{ event\|lookup:'CompareAtPrice' }}` | 7.99 |
+| `Brand` | `{{ event\|lookup:'Brand' }}` | UMBRO |
+| `Categories` | array | [Personal Care, Deodorants, ...] |
+| `Variant SKU` | with space | 9009932 |
+| `ProductID` | one word | 7810292744329 |
+| `VariantID` | one word | 42842887389321 |
+| `Product Type` | with space | Personal Care |
+| `$value` | total cart value | 3 |
+| `$currency` | NZD | |
+
+**CRITICAL trap I fell into 2026-05-07:** field name is `ImageURL` (one word, camelCase) — NOT `Image URL` with space. I used the wrong key initially in the cart-abandon templates, image fell back to default. The flow's own trigger filter even uses `ImageURL` (visible in flow definition dump).
+
+**URL field returns the myshopify admin domain.** For customer-facing links, always wrap with replace filter:
+```liquid
+{{ event|lookup:'URL'|replace:'bargain-chemist.myshopify.com','www.bargainchemist.co.nz' }}
+```
+
+**Verification source:** snapshot at `.claude/bargain-chemist/snapshots/2026-05-07/` includes raw event payloads from MCP `klaviyo_get_events`.
+
 ## Universal Content API (deep-research finding 2026-05-07)
 
 | Operation | Endpoint | Verb | Status |
