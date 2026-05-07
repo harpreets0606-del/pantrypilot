@@ -86,7 +86,7 @@ foreach ($p in $Plan) {
     Write-Host "  current add_tracking_params:   $($msg.add_tracking_params)"
     if ($msg.custom_tracking_params) {
         Write-Host "  current custom_tracking_params:" -ForegroundColor DarkGray
-        $msg.custom_tracking_params | ForEach-Object { Write-Host "    - $($_.name) = $($_.value)" -ForegroundColor DarkGray }
+        $msg.custom_tracking_params | ForEach-Object { Write-Host "    - $($_.param) = $($_.value)" -ForegroundColor DarkGray }
     } else {
         Write-Host "  current custom_tracking_params: NONE (using Klaviyo defaults - bad for Shopify attribution)" -ForegroundColor Yellow
     }
@@ -123,7 +123,7 @@ foreach ($p in $Plan) {
         Write-Host "  -> data.status:                $($after.data.attributes.definition.data.status)"
         if ($am.custom_tracking_params) {
             Write-Host "  -> custom_tracking_params:" -ForegroundColor Green
-            $am.custom_tracking_params | ForEach-Object { Write-Host "    - $($_.name) = $($_.value)" -ForegroundColor Green }
+            $am.custom_tracking_params | ForEach-Object { Write-Host "    - $($_.param) = $($_.value)" -ForegroundColor Green }
         }
         Copy-Item $patchResp -Destination "$OutDir/cart-flow-action-$($p.ActionId)-after.json" -Force
     } else {
