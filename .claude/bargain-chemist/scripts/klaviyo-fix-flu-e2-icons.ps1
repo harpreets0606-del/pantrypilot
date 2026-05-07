@@ -59,6 +59,11 @@ foreach ($s in $swaps) {
     $html = $newHtml
 }
 
+# === Step 2.5: Save fixed HTML for copy-paste fallback ===
+$FixedHtmlFile = Join-Path (Get-Location).Path "$OutDir/$TemplateId-fixed.html"
+[System.IO.File]::WriteAllText($FixedHtmlFile, $html, [System.Text.UTF8Encoding]::new($false))
+Write-Host ("  Fixed HTML saved -> {0}" -f $FixedHtmlFile) -ForegroundColor DarkGray
+
 # === Step 3: PATCH template ===
 Write-Host ''
 Write-Host '=== Step 3: PATCH template ===' -ForegroundColor Cyan
@@ -87,8 +92,14 @@ $code = & curl.exe --silent --show-error --max-time 30 `
 if ($code -eq '200') {
     Write-Host ("  OK   HTTP 200") -ForegroundColor Green
 } else {
-    Write-Host ("  FAIL HTTP $code") -ForegroundColor Red
-    Get-Content $RespFile -Raw | Write-Host -ForegroundColor DarkYellow
+    Write-Host ("  FAIL HTTP $code (likely flow-attached template, not patchable)") -ForegroundColor Yellow
+    Write-Host ''
+    Write-Host '  FALLBACK: paste the fixed HTML into Klaviyo manually:' -ForegroundColor Cyan
+    Write-Host ('    1. Open ' + 'https://www.klaviyo.com/email-editor/' + $TemplateId + '/edit')
+    Write-Host '    2. Switch to Source / HTML view'
+    Write-Host ('    3. Replace ALL contents with the file:')
+    Write-Host ('       ' + $FixedHtmlFile) -ForegroundColor White
+    Write-Host '    4. Save'
 }
 Remove-Item $BodyFile -ErrorAction SilentlyContinue
 
