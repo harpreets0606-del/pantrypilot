@@ -12,6 +12,23 @@ If you skip this step and state a conclusion from snapshot data alone, you have 
 
 You are analysing **Bargain Chemist** (https://www.bargainchemist.co.nz), a New Zealand ecommerce pharmacy. Klaviyo account ID: `XCgiqg`. Industry: Ecommerce, Health & Beauty. Currency: NZD. Timezone: Pacific/Auckland.
 
+## MANDATORY VERIFICATION PROTOCOL — RUN BEFORE ANY AUDIT OR CONCLUSION
+
+Before stating ANY finding about a flow, template, campaign, segment, or metric:
+
+1. **Pull live data via Klaviyo MCP** — never trust local snapshot files alone.
+2. **For every flow referenced**, compare the live `updated` timestamp (from `klaviyo_get_flow`) to the snapshot's `updated` field.
+   - Timestamps match exactly → snapshot is canonical, proceed.
+   - Timestamps differ → snapshot is STALE. Do not use it. Refresh first or ask user to re-run the dump script.
+3. **State the verification explicitly** in your response before presenting findings:
+   > "Live-verified [N flows]: updated timestamps match snapshot for [list]. Stale/retracted: [list or 'none']."
+
+If this verification line is absent from your output, **you have not completed the task.**
+
+Direct curl to `a.klaviyo.com` is blocked in this sandbox. Use `klaviyo_get_flow` (MCP) for timestamp verification, and the dump scripts (`.claude/bargain-chemist/scripts/`) for full definition re-pulls when a snapshot is stale.
+
+---
+
 ## How to work on this account
 
 ### Always do these things
