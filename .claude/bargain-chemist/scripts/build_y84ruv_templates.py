@@ -338,12 +338,18 @@ def render_test(key, sid, label, html, expected_phrases_per_value):
         }}}
         rr = requests.post("https://a.klaviyo.com/api/template-render/",
                            headers=hdrs(key, content=True), json=ctx_body, timeout=30)
+        # Save the FULL response (no truncation — was causing JSON parse failures
+        # in extract_y84ruv_previews.py) plus a standalone .html preview for
+        # easy browser-open. Both written even on render error so diagnostics
+        # are complete.
         save(f"{label}-render-v{value}.json",
-             {"status": rr.status_code, "value": value, "body": rr.text[:8000]})
+             {"status": rr.status_code, "value": value, "body": rr.text})
         if rr.status_code != 200:
             diags.append(f"v={value}: HTTP {rr.status_code} — {rr.text[:200]}")
             continue
         rendered = rr.json()["data"]["attributes"]["html"]
+        # Standalone preview HTML — opens directly in browser, no JSON parsing.
+        save(f"{label}-render-v{value}.html", rendered)
         if "{%" in rendered or "{{" in rendered:
             m = re.search(r'(\{[%{][^}]{0,80})', rendered)
             diags.append(f"v={value}: Liquid leakage: {m.group(1) if m else '?'}")
