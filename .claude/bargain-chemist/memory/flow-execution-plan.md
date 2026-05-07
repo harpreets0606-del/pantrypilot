@@ -75,10 +75,10 @@
 ### Desired state
 - Status: **LIVE**
 - Length: **3–4 emails** (best practice; reduces fatigue, lifts per-email RPR)
-- Sequence:
-  - Email 1 (immediate): Welcome + brand intro (100% Kiwi-owned, Price Beat 10%, free ship $79+) + incentive
-  - Email 2 (+24h): Best-sellers / trust + reviews + soft urgency on incentive
-  - Email 3 (+3d): Last-chance on incentive + brand story
+- Sequence (NO COUPONS — see `no-coupon-strategy.md`):
+  - Email 1 (immediate): Welcome + brand intro (100% Kiwi-owned, Price Beat 10%, free ship $79+)
+  - Email 2 (+24h): Best-sellers (product feed) + reviews + Price Beat reassurance
+  - Email 3 (+3d): "3 reasons NZ shops with us" + find-a-store + free-shipping reminder
 - Filter: hasn't purchased in last 90d
 - Exit: Placed Order
 - Sender: `hello@bargainchemist.co.nz` (consistent)
@@ -160,16 +160,16 @@
 - Length: 2 emails
 - Performance: 8,743 recipients, $20,144 revenue, $2.31 RPR
 
-### Desired state
+### Desired state (NO COUPONS — see `no-coupon-strategy.md`)
 - Length: **3 emails**
-- Email 1: 1h after add-to-cart, no incentive (currently working — keep)
-- Email 2: 24h after, small incentive (5–10%) (currently exists — content review)
-- Email 3 (NEW): 72h after, last-chance + larger incentive (10–15%) OR free shipping if order is close to $79
+- Email 1: 1h after add-to-cart — cart reminder + Price Beat (currently working — keep)
+- Email 2: 24h after — social proof + reviews + free-shipping threshold reminder (content review)
+- Email 3 (NEW): 72h after — last-chance scarcity + free-shipping nudge ("Your cart is $X away from free shipping")
 - Per-benchmark: 3-email = 6.5× revenue of 1-email; even adding email 3 to existing 2-email = +50% revenue
 - **Free-shipping nudge**: AOV $58 vs $79 threshold = $21 to free ship. Email 3 hook: "Your cart is $X away from free shipping — complete your order"
 
 ### Gap & execution
-- Add Email 3 with two variant designs: (a) escalated coupon, (b) free-ship nudge with progress bar
+- Add Email 3 (template `BC — Cart Abandonment Email 3 — Last Chance (72h)`); two subject variants: (a) urgency framing, (b) free-shipping framing
 - A/B test the variants for 4 weeks
 - **Falsifiable prediction**: $20k → $30k/quarter = +$10k
 
@@ -269,7 +269,7 @@ For H&B replenishment, the standard pattern:
 
 ### Desired state
 - Trigger: hasn't placed order in 90d AND was previously a customer
-- Length: 3–4 emails escalating incentive (10% → 15% → 20% → "what would bring you back?")
+- Length: 3–4 emails escalating value (NO COUPONS): "we've missed you" + new arrivals → Price Beat reminder → free-shipping reminder + pharmacist concierge → "what would bring you back?" survey
 - For Bargain Chemist: 51.7% return rate means 48.3% don't return — that's the addressable population
 
 ### Execution

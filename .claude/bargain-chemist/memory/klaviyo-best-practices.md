@@ -40,12 +40,12 @@
 - **Exit**: Placed Order
 - **Length**: 3–4 emails over ~7 days
 - **Cadence**: Email 1 immediate, Email 2 +24h, Email 3 +3d, Email 4 +6d
-- **Content**:
-  - Email 1: Welcome + brand story + incentive (10–15% off)
-  - Email 2: Best-sellers / category education
-  - Email 3: Social proof + reviews
-  - Email 4: Reminder + urgency on expiring incentive
-- **A/B test priority**: Subject line on Email 1 (curiosity vs incentive)
+- **Content** (NO COUPONS — see `no-coupon-strategy.md`):
+  - Email 1: Welcome + brand story + Price Beat Guarantee + free shipping over $79
+  - Email 2: Best-sellers (product feed) + category education
+  - Email 3: Social proof + reviews + find-a-store
+  - Email 4: Soft reminder + seasonal/category hook (never expiring code)
+- **A/B test priority**: Subject line on Email 1 (curiosity vs price-beat callout)
 
 ### Welcome Series (new customer, post-first-purchase)
 - **Trigger**: Placed Order × first time
@@ -60,13 +60,13 @@
 - **Abandoned Cart**: triggered by Added to Cart (fires more often, lower intent)
 - **Abandoned Checkout**: triggered by Checkout Started (fewer fires, higher intent — 3.5× conversion)
 - **Length**: 3 emails (single email captures only ~15% of 3-email revenue per Klaviyo)
-- **Cadence**:
-  - Email 1: 1h after trigger (no incentive)
-  - Email 2: 24h after (small incentive 5–10%)
-  - Email 3: 72h after (last-chance + larger incentive 10–15%)
+- **Cadence** (NO COUPONS — see `no-coupon-strategy.md`):
+  - Email 1: 1–2h after trigger — reminder of cart contents + Price Beat
+  - Email 2: 24h after — social proof + free shipping threshold nudge ("$X away from free shipping")
+  - Email 3: 72h after — last-chance scarcity + free shipping nudge (no escalating code)
 - **Filter**: hasn't placed order in last 30d to avoid double-touch
 - **Exit**: Placed Order
-- **A/B test priority**: Timing of incentive introduction (Email 1 vs Email 2)
+- **A/B test priority**: Subject angle (urgency vs reassurance), free-ship progress bar vs static threshold
 
 ### Browse Abandonment
 - **Trigger**: Viewed Product (or Klaviyo's "Active on Site")
@@ -74,7 +74,7 @@
 - **Length**: 1–3 emails
 - **Cadence**: Email 1 +2–4h, Email 2 +24h, Email 3 +5–7d
 - **Lower expected conversion** (0.59% benchmark) — volume compensates
-- **Don't introduce incentive too early** — risk training people to abandon
+- **No coupons** — replace with reminder + product detail / reviews / Price Beat reassurance (see `no-coupon-strategy.md`)
 
 ### Post-Purchase / Order Confirmation
 - **Trigger**: Placed Order
@@ -85,13 +85,13 @@
 - **Trigger**: Placed Order with replenishment-eligible products (custom property)
 - **Timing**: based on product cycle (vitamins ~30d, skincare ~60d, fragrance ~90d)
 - **Send 5–7 days BEFORE expected runout**
-- **Content**: re-order CTA + maybe slight discount or subscribe-and-save
+- **Content** (NO COUPONS): re-order CTA + Price Beat reassurance + auto-replenish/subscribe option (no discount code)
 - **Conversion benchmark**: 8–15% (5.7–15× higher than promotional)
 
 ### Winback / Lapsed
 - **Trigger**: hasn't placed order in 60–90d (custom by category cycle)
 - **Length**: 3–4 emails over 14–21 days
-- **Escalate incentive**: 10% → 15% → 20% → "what would bring you back?" survey
+- **Reactivation levers (NO COUPONS)**: "we've missed you" + new arrivals → Price Beat reminder → free-shipping reminder + pharmacist concierge → "what would bring you back?" survey (see `no-coupon-strategy.md`)
 - **Reactivation rate**: 20–40% best-in-class
 
 ### Sunset
@@ -199,11 +199,11 @@
   - Time on page ≥10–15s
   - Scroll % ≥50%
   - Exit intent (mouse leaving viewport)
-- **Two-step pattern**: incentive teaser → email field → optional SMS
+- **Two-step pattern (NO COUPONS)**: value teaser ("Beat any NZ pharmacy price by 10%") → email field → optional SMS
 - **Fields — minimum viable**: just email. Phone optional. Never ask for first name + last name + DOB on first form.
 - **Consent**: explicit checkbox for marketing (NZ Privacy Act 2020 + Privacy Amendment Act 2025 compliance)
 - **Post-submit**:
-  - Show discount code on screen + email it
+  - Show confirmation message + first-email preview ("watch for our welcome email")
   - Set expectation ("watch for 'Bargain Chemist' in your inbox in 5 min")
   - Tag profile with form source (custom property)
 
@@ -241,11 +241,11 @@
 - **Sample size minimum**: ~1,000 recipients per variant for 80% power on small effects
 - **Document**: date, variables, winner, lift % — log to `hypotheses.md`
 
-### High-ROI tests to run first
-1. Welcome Email 1 subject line: curiosity vs incentive (~10–15% lift)
+### High-ROI tests to run first (NO COUPONS — see `no-coupon-strategy.md`)
+1. Welcome Email 1 subject line: curiosity vs Price Beat callout (~10–15% lift)
 2. Abandoned cart Email 1 timing: 1h vs 3h (~15–25% conv lift)
-3. Winback incentive: 10% vs 15% vs 20% (~10–20% lift)
-4. Cart Email 2 incentive: introduce now vs later (budget efficiency)
+3. Winback levers: free-shipping threshold drop vs new-arrivals vs pharmacist concierge (~10–20% lift)
+4. Cart Email 3: free-shipping progress bar vs static threshold reminder
 5. Browse abandonment: single product vs multiple options (~5–15% CTR)
 
 ---

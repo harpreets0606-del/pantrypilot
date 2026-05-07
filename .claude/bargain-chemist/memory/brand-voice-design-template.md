@@ -1,236 +1,260 @@
-# Bargain Chemist — Brand Voice & Design Template (DRAFT)
+# Bargain Chemist — Brand Voice & Design Template (v1.0 LOCKED)
 
-> **Status: DRAFT — needs user confirmation.**
-> Inferred from 12 campaign subject + preview samples (Aug 2025 – May 2026). Email template HTML was inaccessible via API (Klaviyo MCP returned 401 for `klaviyo_get_email_template`), so visual design language is unobserved. **Do not treat this as locked-in until user confirms.**
-
----
-
-## EVIDENCE BASE
-
-### Sample subject lines + preview text (12 campaigns)
-
-| # | Campaign | Subject | Preview |
-|---|----------|---------|---------|
-| 1 | Fragrance Clearance May 2026 | Fragrance finds. Clearance prices. 🚨 | Lots online. Limited in-store. |
-| 2 | Trilogy Solus April 2026 | Meet the new Trilogy Booster Serums | Targeted serums for your skin goals |
-| 3 | Christmas Gifting 1 Dec 2025 | Nice gifts. Nicer prices. | Gift ideas perfect for stockings, Secret Santas, and everything in between. |
-| 4 | Black Friday First Day Nov 2025 | 🚨 Huge Black Friday Sale Starts Today! 🚨 | 8 days only! Shop now! |
-| 5 | Black Friday Last Day Nov 2025 | Last Chance to Shop our Black Friday Bargains! ⏳ | Don't miss out! Sale ends midnight. |
-| 6 | Codral Solus Aug 2025 | Kiwis have an ally in fighting cold & flu symptoms with Codral & Sudafed | Buy it in-store now! |
-| 7 | Mums & Bubs Sept 2025 | Shop our wide range of Mums & Bubs deals before they go! | Save up to 35% off EDLP! |
-| 8 | New Year Deals 1 Jan 2026 | Cheers to your good health (and good prices)! | January catalogue out now |
-| 9 | Father's Day EDM Sept 2025 | Haven't got a gift for Father's Day yet? 👨 | We've got you covered! |
-| 10 | Bonus Box Oct 2025 | FREE Bonus Box When You Spend $99 In Store! | Limited time only don't miss out! |
-| 11 | Price Smash Sports Aug 2025 | Performance fuel with up to 30% Off EDLP! | Shop your favourite fitness brands now! |
-| 12 | Nicorette Solus Jan 2026 | Get ready to quit smoking with Nicorette | (empty) |
-
-### Sender configuration observed
-- **Sender label**: "Bargain Chemist" — consistent across all 12 ✓
-- **Sender email**: split between `hello@bargainchemist.co.nz` AND `orders@bargainchemist.co.nz` — **inconsistent**
-- **Reply-to**: never set
-- **Smart Sending**: enabled on all sampled campaigns ✓
+**Date**: 2026-05-07
+**Status**: v1.0 LOCKED — based on actual flow templates pulled via API. Visual + voice now confirmed from real artefacts, not inference.
 
 ---
 
-## INFERRED BRAND VOICE (DRAFT — confirm with user)
+## CANONICAL BRAND VOICE (gold standard)
 
-### Personality
-- **Friendly value-led NZ pharmacy**
-- Practical, accessible, anti-pretentious
-- Strong on price/savings narrative
-- Health-first but not clinical
-- Lighthearted humour acceptable ("Cheers to your good health (and good prices)!")
-- Uses NZ vernacular ("Kiwis", "in-store", "Mums & Bubs", "EDM")
+The strongest brand voice example in the account is **Welcome No Coupon Email 1** (UC2XAR). Treat it as the template every other email should aspire to:
 
-### Tone (varies by context)
-| Context | Tone |
-|---------|------|
-| Promotional / sale | Urgent, punchy, exclamation-led |
-| Brand product launch (Solus) | Informative + benefit-led |
-| Seasonal (Christmas, Father's Day) | Warm, conversational |
-| Health / cold + flu | Reassuring, kiwi-vernacular |
+> "Welcome to Bargain Chemist, {{ first_name|default:'there' }}!"
+> 
+> "You've just joined NZ's most trusted pharmacy family."
+> 
+> "Hi {{ first_name|default:'there' }}, Thanks for signing up to Bargain Chemist. Whether you're after vitamins, skincare, haircare, baby products, or everyday essentials — we've got you covered with NZ's lowest prices."
+> 
+> "And our promise is simple: we'll beat any pharmacy price in New Zealand by 10%. So you always get the best deal, every time."
+> 
+> "🏆 Price Beat Guarantee · Beat any NZ pharmacy price by 10%
+> 🚚 Free Shipping · On all orders over $79
+> 💊 Expert..."
 
-### Recurring rhetorical devices
-1. **Parallel structure** — short paired clauses
-   - "Nice gifts. Nicer prices."
-   - "Fragrance finds. Clearance prices."
-   - "Lots online. Limited in-store."
-   - → **This is the strongest brand pattern.** Use it more.
-2. **Question hooks** — "Haven't got a gift for Father's Day yet?"
-3. **Urgency phrases** — "Last Chance", "before they go", "Limited time", "Today only", "8 days only"
-4. **Value anchors** — "Bargain", "deals", "Save up to X%", "FREE", "Off"
-5. **NZ vernacular** — "Kiwis", "EDM" (electronic direct mail), "Mums & Bubs"
+### Why this works
+- Personalised greeting (uses Liquid)
+- "NZ's most trusted pharmacy family" — community-led, not transactional
+- Plain-spoken value props (vitamins, skincare, haircare — not "wellness solutions")
+- Promise format: "And our promise is simple..."
+- Three icons: Price Beat / Free Ship / Expert. Consistent triad.
+- Tone: confident, friendly, NZ-pride, no corporate fluff
 
-### Words to use
-- Bargain, deal, save, prices, finds, picks
-- Shop, grab, snag, score
-- Kiwi, NZ, in-store, online
-- Welcome, cheers, fancy
+### Voice attributes (locked)
 
-### Words to avoid (inferred + compliance)
-- Clinical: "diagnose", "cure", "treat", "proven to..."
-- Boastful: "best in NZ", "guaranteed", "world-class"
-- Spam triggers: ALL CAPS subject lines, multiple !!!, "100% free"
-- Pharmacy-jargon leaks: **"EDLP"** (everyday low price — internal jargon, customers don't know this)
+| Attribute | Description | Don't |
+|-----------|-------------|-------|
+| **Tone** | Friendly, plain-spoken NZ pharmacy. Confident not boastful. | Corporate, clinical, salesy |
+| **Pace** | Short sentences. Active verbs. | Long compound sentences |
+| **POV** | "We" + "you". Personalised first names. | Third-person ("the company"), "customers should" |
+| **Vocabulary** | Kiwi vernacular (Kiwis, locals, family, pharmacy). Plain English. | Medical jargon, internal acronyms (EDLP) |
+| **Numbers** | Specific ($79, 10%). | Vague ("great savings") |
+| **Humour** | Light, occasional. | Forced cleverness |
+| **Authority** | "Pharmacy team is friendly, knowledgeable" | Doctor-claim, prescription-comparison |
+
+### Required value props (use one + per email)
+1. **NZ's cheapest chemist** OR **NZ's most trusted pharmacy family**
+2. **100% Kiwi-owned**
+3. **Price Beat Guarantee — Beat any NZ pharmacy price by 10%**
+4. **Free Shipping on orders $79+** (NZ urban)
+5. **Click & Collect** at Bargain Chemist locations NZ-wide
+6. **Expert advice** from in-store pharmacists
+
+### Subject line patterns that work (from actual flow data)
+
+| Pattern | Example (real, from Bargain Chemist) |
+|---------|---------------------------------------|
+| Personalised welcome | "Welcome to Bargain Chemist, {{ first_name\|default:'there' }}!" |
+| Personalised confirmation | "{{ person.first_name\|default:'friend' }}, order confirmed!" |
+| Curiosity hook | "This one's popular for a reason" |
+| Direct + helpful | "Your cart's still saved" |
+| Social proof | "See What Others Are Raving About 👇" |
+| Local-leaning | "Your Local Bargain Chemist is Ready to Help 👋" |
+
+> **Use Klaviyo Liquid for personalisation in subject lines**: `{{ first_name|default:'there' }}` (default fallback when name unknown).
+
+### Subject line patterns to fix
+
+| Pattern | Real example | Why it's weak | Replace with |
+|---------|--------------|----------------|--------------|
+| Generic "thanks for signing up" | "Thanks for signing up to Bargain Chemist!" | Doesn't lead with positioning | "Welcome to Bargain Chemist, {{ first_name\|default:'there' }}!" |
+| Internal jargon | "...up to 30% Off EDLP!" | EDLP = Everyday Low Price (internal) | "...up to 30% Off everyday prices!" |
+| Empty preview | (Nicorette Solus had empty preview) | Wasted real estate | Always fill — extend the subject |
 
 ---
 
-## DESIGN TEMPLATE (TO BUILD — visual unverified)
+## VISUAL DESIGN — LOCKED FROM TEMPLATES
 
-> **API didn't allow template HTML read.** This template structure is recommended best practice for Bargain Chemist's positioning, NOT observed from existing templates. User to confirm whether existing templates already follow this structure.
+### Brand colours (from actual flow templates)
 
-### Universal email blocks Bargain Chemist should standardise
+| Role | Hex | Used in |
+|------|-----|---------|
+| **Primary CTA / hero** | `#FF0031` | Almost every template — vivid red |
+| **Deep brand accent** | `#7B1523` | Order Confirmation header bar |
+| **Brand red mid** | `#CC1B2A` | Order Confirmation buttons |
+| **Older brand burgundy** | `#861628` | Older Welcome + Cart templates (legacy) |
+| **Body text dark** | `#222222` | Every template |
+| **Body text mid** | `#333333` | Newer templates |
+| **Body text muted** | `#666666` | Newer templates |
+| **Border / divider** | `#eeeeee` | Newer templates |
+| **Page background** | `#f7f7f7` / `#f9f9f9` | Most templates |
+| **Promo accent (light)** | `#FDDDD9` (older), `#fef6f7` (newer) | Welcome 1, Order Confirmation |
+
+> **Recommendation**: lock primary brand red to **`#FF0031`** (vivid) for CTAs and **`#7B1523`** (deep) for header bars. Phase out `#861628` from older templates as part of the rebuild.
+
+### Fonts
+
+- Older templates: heavy mix — `'Arial Black'`, `'Arial Bold'`, `Helvetica`, `Ubuntu`, multiple variants
+- **Newer templates** (Welcome No Coupon, Order Confirmation): consolidated to `Helvetica, Arial, sans-serif` — cleaner
+
+> **Recommendation**: standardise all flows + campaigns on `Helvetica, Arial, sans-serif` (already in newer templates).
+
+### Logo
+
+- Older templates: cloudfront-hosted Klaviyo image — generic
+- Newer Order Confirmation: `https://cdn.shopify.com/s/files/1/0317/1926/0297/files/logo-2025.png?v=1747706218` — branded "logo-2025"
+
+> **Recommendation**: use the Shopify-hosted `logo-2025.png` everywhere. Update older templates.
+
+### Header navigation (consistent in every template)
+
+```
+Free Shipping on Orders over $79*
+Shop Products | Clearance | Find a Pharmacy | Contact Us
+```
+
+### Social links (consistent — confirmed)
+
+- Instagram: `https://instagram.com/bargainchemistnz`
+- LinkedIn: `https://nz.linkedin.com/company/bargain-chemist`
+- Facebook: `https://www.facebook.com/BargainChemist/`
+- TikTok: `https://tiktok.com/@bargainchemistnz` *(only in newer templates)*
+
+### Common collection links used in flows
+
+```
+/collections/clearance-deals      ← clearance
+/collections/best-selling-collection ← best sellers
+/collections/cold-flu             ← seasonal (winter)
+/collections/allergies-hay-fever-sinus ← seasonal (spring)
+/collections/fragrances           ← gift / beauty
+/collections/home-household       ← household
+/collections/all                  ← shop all
+/pages/best-price-guarantee-our-policy-new-zealands-cheapest-chemist  ← price beat page
+/pages/find-a-store               ← store locator
+```
+
+---
+
+## TWO TEMPLATE FAMILIES — IMPORTANT
+
+The pulled flow messages reveal **two distinct template generations**:
+
+### Family A — "Older" (legacy, 2026-03 era)
+- Files: Welcome Email 1 (87KB), Welcome Email 2 (93KB), Welcome Email 6 (52KB), Cart Email 1 (66KB), Cart Email 2 (67KB)
+- Heavy HTML (50-100KB each)
+- Mixed fonts (`Arial Black`, `Arial Bold`, `Ubuntu`, etc.)
+- Dual-red palette: `#FF0031` + `#861628` (legacy burgundy)
+- Cloudfront-hosted images
+- Created early-mid 2026
+
+### Family B — "Newer" (rebuild, 2026-05 era)
+- Files: Welcome No Coupon Email 1 (9KB), Order Confirmation Email 1 (12KB)
+- Lean HTML (~10KB each — **5–10× smaller**)
+- Single font stack (`Helvetica, Arial, sans-serif`)
+- Cleaner red palette: `#FF0031` + `#7B1523`/`#CC1B2A`
+- Shopify-hosted `logo-2025.png`
+- Created 2026-05-05
+
+### Implication
+
+The newer templates are objectively better:
+- Lean HTML = faster loading on mobile
+- Single font stack = consistent rendering across email clients
+- Updated logo + cleaner palette = on-brand for 2026
+- **Welcome Series Website is in DRAFT because it still uses Family A** while the team has been migrating to Family B (Welcome No Coupon + Order Confirmation are Family B)
+
+> **Recommendation**: complete the rebuild — port all flow templates to Family B style. The current draft state of Welcome Series Website is actually a transition-in-progress.
+
+---
+
+## COMPLIANCE — WHAT'S IN, WHAT'S MISSING
+
+### Currently in EVERY flow template ✓
+- Medicine disclaimer language ("always read the label / symptoms persist / consult your pharmacist or doctor")
+- Free shipping $79+ messaging
+- Price Beat Guarantee mention
+- Klaviyo `{% unsubscribe %}` link
+
+### Missing from EVERY flow template 🚨
+- **Pharmacy registration number** — Medsafe requirement for medicine-promoting emails
+- **Pharmacist name** disclosed — required when promoting medicines
+
+### Inconsistent across templates ⚠️
+- "100% Kiwi-owned" mention — only 1 of 7 templates says it explicitly (Welcome Email 1)
+- Footer full address ("1 Radcliffe Road, Christchurch") — only 3 of 7 templates display it (relying on Klaviyo's `{{ organization.full_address }}` macro which may not render in all contexts)
+
+### Confirmed clean ✓
+- No POM brand names (Wegovy, Mounjaro, Ozempic, etc.) anywhere in flow body content
+- No pharmacy-only brand names (Codral, Sudafed) in flow content
+- No therapeutic claims (treats/cures/prevents)
+
+> **Action**: build a "compliance footer block" with pharmacy registration # + pharmacist name + full address + medicine disclaimer. Insert as Klaviyo Universal Content block in every template.
+
+---
+
+## TEMPLATE STRUCTURE (recommended, derived from newer templates)
+
+Match the Family B structure:
 
 ```
 ┌─────────────────────────────────────┐
-│ HEADER                              │
-│ - Logo (left, 120-180px wide)      │
-│ - Nav: Shop / Vitamins / Skincare / │
-│   Account (max 4 links)            │
-│ - "Find a store" link               │
+│ TOP STRIP                           │
+│ "Free Shipping on Orders over $79*"│
 └─────────────────────────────────────┘
-│ HERO BLOCK                          │
-│ - 1 image (600×400px max)          │
-│ - 1 headline (parallel structure)  │
-│ - 1 sub-headline                    │
-│ - 1 primary CTA button              │
+│ HEADER                              │
+│ Logo (Shopify logo-2025.png)        │
+│ Nav: Shop / Clearance / Find a      │
+│      Pharmacy / Contact Us          │
+└─────────────────────────────────────┘
+│ HERO                                │
+│ One image OR coloured panel         │
+│ Headline (24-28px, brand red)       │
+│ Sub-headline (16-18px, dark grey)   │
+│ Primary CTA button (#FF0031, white) │
 └─────────────────────────────────────┘
 │ BODY                                │
-│ - Up to 3 product blocks OR        │
-│   1 content section                │
+│ Greeting with {{ first_name }}     │
+│ Short personal copy                 │
+│ Optional: 3 product blocks OR      │
+│           1 content section         │
+│ Single secondary CTA                │
 └─────────────────────────────────────┘
-│ SOCIAL PROOF                        │
-│ - Review snippet OR                │
-│ - "Trusted by NZ since [year]"     │
+│ VALUE PROPS STRIP (3 icons)        │
+│ 🏆 Price Beat 10% │ 🚚 Free $79+ │ │
+│ 💊 Expert Advice                    │
 └─────────────────────────────────────┘
-│ SECONDARY CTA                       │
-│ - "Find your local store" OR       │
-│ - "Shop by category"                │
-└─────────────────────────────────────┘
-│ FOOTER (compliance — mandatory)    │
+│ FOOTER (compliance + social)       │
 │ - Bargain Chemist                  │
-│ - 1 Radcliffe Road, Belfast,       │
-│   Christchurch 8051                │
-│ - Pharmacy registration number     │
-│ - Pharmacist name (medicine emails)│
+│ - 1 Radcliffe Road, Christchurch   │
+│ - Pharmacy Registration #: <TBD>   │
+│ - Lead Pharmacist: <Name TBD>      │
+│ - Always read the label disclaimer │
 │ - Unsubscribe (one-click)          │
 │ - Manage preferences               │
-│ - Privacy policy                   │
-│ - Social links                     │
+│ - Social: IG / FB / LinkedIn / TikTok │
 └─────────────────────────────────────┘
 ```
 
-### Design specs (recommended)
+### Specs
 
 | Element | Spec |
 |---------|------|
 | Email width | 600px desktop / responsive ≤480px mobile |
-| Body font | 14–16px, line height 1.4–1.6 |
-| Headline font | 22–28px |
-| Button | 44×44px tap target min, ≥12px padding, brand colour |
-| Image-to-text ratio | 60% text / 40% image (avoid all-image emails) |
+| Body font | 14-16px Helvetica/Arial/sans-serif, line height 1.5 |
+| Headline | 22-28px, `#FF0031` or `#7B1523` |
+| Body text | `#222222` heading, `#333333` body, `#666666` muted |
+| CTA button | Background `#FF0031`, text `#FFFFFF`, padding ≥12px, min 44×44px tap target, border-radius 4-6px |
+| Image:text ratio | 60% text / 40% image (avoid all-image emails) |
 | Alt text | every image, descriptive |
-| Dark mode | logos + transparent PNGs tested |
-
-### Colour palette (TO BE CONFIRMED)
-- Primary brand colour: ?
-- Accent colour: ?
-- Sale / urgency colour: ?
-- Body text: dark grey (#222) — never pure black (jarring on dark mode)
-
-> **Action**: pull current website CSS / brand guide to lock these.
+| Logo | `https://cdn.shopify.com/s/files/1/0317/1926/0297/files/logo-2025.png?v=1747706218` (Shopify-hosted) |
 
 ---
 
-## SUBJECT LINE & PREVIEW TEXT TEMPLATE
+## STILL UNKNOWN (need user)
 
-### Subject line formulas to use
+- **Pharmacy registration number** (for footer compliance)
+- **Lead pharmacist name** (for medicine email footer)
+- Exact form-factor of value-props icon strip (text icons 🏆🚚💊 vs custom images)
+- Whether Family B template structure was AI-generated or designer-created (parallel agent's work?)
 
-1. **Parallel two-clause** (Bargain Chemist's strongest pattern):
-   - "[Noun phrase]. [Noun phrase]."
-   - e.g. "Skin saviours. Sale prices." / "Winter must-haves. Mid-season prices."
-2. **Question hook** (use sparingly, only when warm/seasonal):
-   - "Need [X] for [occasion]?"
-3. **Urgency + value**:
-   - "[Last Chance / Today only]: [Value statement]"
-4. **NZ-led brand-product reveal** (Solus campaigns):
-   - "Meet the new [brand] [product]"
-   - "Kiwis love [product] — here's why"
-
-### Subject line rules
-- 30–50 chars target (current range 17–72 — too variable)
-- 1 emoji max if used; place at start OR end consistently (don't bracket)
-- Never ALL CAPS in subject (one-time emphasis word OK: "FREE")
-- No more than 1 exclamation mark
-
-### Preview text rules
-- ALWAYS fill it (Nicorette had empty — wasted real estate)
-- 40–130 chars
-- **Don't repeat the subject** — extend or reinforce
-- Include CTA-relevant detail: timeframe, value, exclusivity
-- Bad: "Buy it in-store now!" (Codral) — generic
-- Good: "Free NZ-wide shipping over $50 ends midnight Sunday."
-
-### Sender address policy
-- **All marketing emails**: from `hello@bargainchemist.co.nz` (or a new `marketing@`)
-- **All transactional emails (order confirmations, shipping)**: from `orders@bargainchemist.co.nz`
-- **Never mix** — currently mixed in marketing campaigns. Fix this.
-
----
-
-## CONTENT FRAMEWORKS (for body copy)
-
-### When to use which framework
-| Scenario | Framework | Example |
-|----------|-----------|---------|
-| Promo / sale | **PAS** (Problem-Agitate-Solution) | "Cold + flu hitting your house? It only gets worse if untreated. Codral + Sudafed deliver fast relief — at bargain prices." |
-| Education / info | **AIDA** (Attention-Interest-Desire-Action) | New product launches |
-| Repeat / value reinforcement | **Before-After-Bridge** | Replenishment flows |
-| Lifestyle / brand-led | **Story-led** | Welcome series Email 2 |
-
-### Always-include checklist for body copy
-- [ ] One primary message (not 3)
-- [ ] One primary CTA
-- [ ] Mobile-readable (no walls of text)
-- [ ] Brand voice (parallel structure where possible)
-- [ ] Compliance disclaimer (if medicine promo)
-- [ ] Pharmacist name + registration in footer
-- [ ] Social proof somewhere
-
----
-
-## CONFIRMED POSITIONING (user, 2026-05-06)
-
-These are the **explicit value props** Bargain Chemist owns. They should appear in every campaign + flow either as headline, sub-headline, footer strip, or banner:
-
-| Value prop | Use where |
-|------------|-----------|
-| **100% Kiwi owned** | Footer strip, About/welcome, brand storytelling |
-| **We beat any price by 10%** | Promotional headers, value-led campaigns, Welcome Series Email 1 |
-| **Free shipping on orders $79+** | Cart abandonment Email 1, hero strip, post-purchase upsell threshold ($X to free ship) |
-
-> User: "look at the website for exact advantage" — couldn't fetch (403 bot protection). User to provide tagline + any extra USPs in next round.
-
-### How this updates the brand voice template
-
-- **Brand positioning**: User clarification supports **balanced — value AND quality of care** lane (not all-in price). "100% Kiwi owned" anchors trust + quality; "beat by 10%" anchors value. Brand voice should hold both.
-- **Welcome Series hook**: lead with "100% Kiwi owned" + "10% price beat" + free shipping threshold. These three together = strong subscribe incentive (don't necessarily need a coupon).
-- **Subject line update**: subject lines that mention only "bargains/clearance/deals" should occasionally lead instead with Kiwi ownership or price-beat (differentiated positioning vs Chemist Warehouse / Countdown / Healthpost).
-- **Compliance note from user**: subject lines must NOT mention pharmacy-only or prescription-only products. Some flows already paused for this. Auditing flow content needed.
-
-### Known compliance issue (flagged)
-
-- **"Codral Solus - August 2025"** subject line: *"Kiwis have an ally in fighting cold & flu symptoms with Codral & Sudafed"* — Codral and Sudafed are pharmacy-only medicines (pseudoephedrine-containing, sold behind the counter). Subject line promotes them by name + therapeutic effect. Per Medsafe Marketing Guidelines, this could be non-compliant. **Flag for compliance review** — confirm with pharmacy lead.
-
----
-
-## OUTSTANDING UNKNOWNS (still need user)
-
-1. **Visual design language** — colours, typography, logo treatment, image style. Klaviyo MCP blocked from reading template HTML; website blocked WebFetch (403). User to provide brand guide PDF or screenshots.
-2. **Compliance baseline of existing templates** — does footer have pharmacy registration #, pharmacist name, medicine disclaimers? Couldn't verify.
-3. **Sender domain decision** — fix the `hello@` vs `orders@` mix. Recommend: `hello@` for marketing, `orders@` for transactional.
-4. **List of flows the user knows are paused for compliance** — to cross-reference with my findings.
-
----
-
-**Status: Draft v0.2.** Updated 2026-05-06 with confirmed positioning. Will lock to v1.0 once visual design + compliance baseline confirmed.
+> Update those above as known and this v1.0 graduates to v1.1 with full compliance baseline.

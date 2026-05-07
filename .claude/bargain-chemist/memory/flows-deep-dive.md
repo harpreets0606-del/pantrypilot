@@ -1,11 +1,77 @@
 # Flows Deep-Dive — Bargain Chemist Klaviyo
 
-**Date**: 2026-05-06
-**Constraint**: Klaviyo MCP currently does NOT expose flow message HTML, message-level conditions, profile filters, conditional splits, delays, or template content. `klaviyo_get_email_template` returns 401. So this deep-dive is built from API metadata + message-level performance + flow_report data.
+**Date**: 2026-05-06 (initial), 2026-05-07 (updated with content audit from snapshot)
+**Status**: now informed by actual flow JSON + message HTML pulled via direct Klaviyo API (snapshot at `.claude/bargain-chemist/snapshots/2026-05-07/`).
 
-> What I CAN see: flow ID, name, status, trigger type, created/updated dates, message-level (per email step) performance, flow message names.
-> 
-> What I CANNOT see (without user help): full flow structure (delays, splits, filters), email subject lines, email body HTML/copy, sender configuration per message, exit criteria, A/B variants within messages.
+## Update 2026-05-07 — content audit findings
+
+**Welcome Series Website (SehWRt)** has **13 actions**: 6 SEND_EMAIL + 4 BOOLEAN_BRANCH + 3 TIME_DELAY:
+- TIME_DELAY 120s (2 minutes — likely a wait-for-event delay)
+- TIME_DELAY 86,400s (24 hours)
+- TIME_DELAY 259,200s (3 days)
+- 4 conditional splits (Boolean Branch — likely "did/didn't engage with previous email")
+
+Cadence approx: Email 1 (immediate) → 2-min wait → Email 2 → 1-day wait → Email 3 → 3-day wait → Email 4-6 with branches.
+
+**Cart Abandonment (RPQXaa)** structure:
+- TIME_DELAY 5,400s (1.5 hours) before Email 1
+- TIME_DELAY 86,400s (24 hours) before Email 2
+- 1 BOOLEAN_BRANCH (likely "did purchase?")
+- 2 SEND_EMAIL
+
+**Order Confirmation (VJui9n)** flow JSON returned ONLY metadata, no included flow-actions. **The flow appears to be a stub** — barely configured. Explains 0% conversion.
+
+## Subject lines + sender (now confirmed from actual data)
+
+| Flow / Message | Subject | From | Notes |
+|----------------|---------|------|-------|
+| Welcome Series Website Email 1 | "Thanks for signing up to Bargain Chemist!" | hello@ | Generic, doesn't lead with positioning |
+| Welcome Series Website Email 2 | "See What Others Are Raving About 👇" | hello@ | Social proof — good |
+| Welcome Series Website Email 6 | "Your Local Bargain Chemist is Ready to Help 👋" | hello@ | Chain-leveraging — good |
+| Welcome No Coupon Email 1 | "Welcome to Bargain Chemist, {{ first_name\|default:'there' }}!" | hello@ | Personalised — strongest |
+| Cart Abandonment Email 1 | "This one's popular for a reason" | hello@ | Curiosity hook |
+| Cart Abandonment Email 2 | "Your cart's still saved" | hello@ | Direct, helpful |
+| Order Confirmation Email 1 | "{{ person.first_name\|default:'friend' }}, order confirmed!" | hello@ | Personalised, friendly |
+
+**Important refinement to earlier finding**: ALL flow emails use `hello@bargainchemist.co.nz`. The sender inconsistency (hello@ vs orders@) is **CAMPAIGN-LEVEL only**, NOT in flows.
+
+## Compliance scan on flow body HTML
+
+| Marker | Result |
+|--------|--------|
+| Medicine disclaimer ("always read the label") | ✓ ALL 7 templates |
+| Free shipping $79+ | ✓ ALL 7 |
+| Price Beat Guarantee | ✓ ALL 7 |
+| **Pharmacy registration number** | 🚨 **0 of 7 — MISSING** |
+| **Pharmacist name disclosure** | 🚨 **0 of 7 — MISSING** |
+| Footer full address | ⚠️ Only 3 of 7 |
+| 100% Kiwi-owned mention | ⚠️ Only 1 of 7 (just Welcome Email 1) |
+| POM brand names in body (Wegovy, Mounjaro, etc) | ✓ 0 — clean |
+| Pharmacy-only brand names in body (Codral, Sudafed) | ✓ 0 — clean |
+| Therapeutic claims | ✓ 0 — clean |
+
+**Body content is compliant on the offence side** (no banned content). But missing required disclosures (registration #, pharmacist).
+
+## UTM tagging on flows (refinement of earlier finding)
+
+Flows DO have `add_utm: true` per email-action. But values vary:
+- Most emails: `utm_source = {flow_name}`, `utm_medium = email`, `utm_campaign = {message_name} ({message_id})`
+- One email (100893589): `utm_source = Klaviyo`, `utm_medium = flow`, plus Triple Whale `tw_*` params
+
+Inconsistency. And `utm_source = {flow_name}` evaluates to `[Z] Welcome Series - Website` which Shopify won't classify as "email" or "klaviyo" in standard reports.
+
+## Two template families discovered
+
+- **Family A (older, ~50-100KB HTML)**: Welcome Email 1/2/6 + Cart 1/2 — heavy fonts, dual-red palette, cloudfront images
+- **Family B (newer, ~10KB HTML)**: Welcome No Coupon + Order Confirmation — lean, single font, Shopify logo-2025
+
+**The rebuild is in progress.** Welcome Series Website is in DRAFT because it still uses Family A while the team has migrated to Family B.
+
+---
+
+## Original notes preserved
+
+**Constraint** (now resolved by 2026-05-07 snapshot): MCP couldn't read template HTML; we worked around by direct Klaviyo API.
 
 ---
 
