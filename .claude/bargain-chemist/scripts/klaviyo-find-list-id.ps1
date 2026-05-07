@@ -8,6 +8,7 @@ param(
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 if (-not (Test-Path .env.local)) { Write-Error "ERROR: .env.local not found"; exit 1 }
 Get-Content .env.local | ForEach-Object {

@@ -28,6 +28,7 @@
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'   # Fixes PS 5.1 slow upload bug
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # --- Load env ---
 if (-not (Test-Path .env.local)) { Write-Error "ERROR: .env.local not found"; exit 1 }
@@ -266,22 +267,24 @@ Write-Host ""
 Write-Host "POST https://a.klaviyo.com/api/flows/ ..." -ForegroundColor Cyan
 
 try {
-    $resp = Invoke-WebRequest -Uri 'https://a.klaviyo.com/api/flows/' `
+    $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
+    $json = Invoke-RestMethod -Uri 'https://a.klaviyo.com/api/flows/' `
                               -Headers $Headers `
                               -Method Post `
-                              -Body $Body `
+                              -Body $bodyBytes `
+                              -ContentType 'application/vnd.api+json' `
                               -ErrorAction Stop `
-                              -UseBasicParsing `
-                              -TimeoutSec 90
-    $json = $resp.Content | ConvertFrom-Json
+                              -TimeoutSec 90 `
+                              -DisableKeepAlive
     $flowId = $json.data.id
+    Write-Host ""
     Write-Host ""
     Write-Host "  SUCCESS - flow created" -ForegroundColor Green
     Write-Host "  Flow ID:  $flowId" -ForegroundColor Green
     Write-Host "  Edit URL: https://www.klaviyo.com/flow/$flowId/edit" -ForegroundColor Green
     Write-Host ""
     Write-Host "Saving response to: .claude/bargain-chemist/snapshots/$Date/created-flow-response.json"
-    $resp.Content | Out-File -FilePath ".claude/bargain-chemist/snapshots/$Date/created-flow-response.json" -Encoding utf8
+    $json | ConvertTo-Json -Depth 20 | Out-File -FilePath ".claude/bargain-chemist/snapshots/$Date/created-flow-response.json" -Encoding utf8
 
     Write-Host ""
     Write-Host "Next: open the flow in Klaviyo, preview each email, then turn ON when ready."
