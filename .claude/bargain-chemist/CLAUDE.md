@@ -19,6 +19,20 @@ Note: direct curl to `a.klaviyo.com` is blocked in this sandbox. Use `klaviyo_ge
 
 ---
 
+## REFERENCE LEARNINGS FIRST — MANDATORY BEFORE PLANNING ANY KLAVIYO TASK
+
+Before designing any Klaviyo-touching task (new flow, template, campaign, segment, audit, deploy):
+
+1. **Read `memory/klaviyo-mastery-index.md` FIRST.** This is the canonical inventory of every Klaviyo capability we know of with verification status (✅ verified / 🟡 documented / ❌ broken / ❓ unknown).
+2. **For every capability the task touches**, locate it in the index and read the linked deep-dive or probe result.
+3. **Cite the verification status in your task plan.** If you're relying on a 🟡 capability, flag the assumption to the user before depending on it. If 🟡 or ❓ blocks the task, **run the relevant probe in `.claude/bargain-chemist/scripts/probes/` BEFORE designing the solution.** Do not guess.
+4. **At task end, update the mastery index.** Bump `Last verified` dates, escalate 🟡 → ✅ when a probe resolves it, add new gotchas. Append findings to the relevant deep-dive file.
+5. **If a capability you need isn't in the index at all**, add an entry as ❓ before continuing, then probe it.
+
+The mastery index exists so we never repeat the "claim → user pushback → verify" loop. If your task uses a capability and you didn't cite the index entry, **you skipped step 1.**
+
+---
+
 ## NO UNVERIFIED FACTS RULE — ABSOLUTE
 
 **Never put any factual claim into a template, campaign, flow, popup, subject line, footer, memory file, or guide unless the user has personally verified and approved it.**
