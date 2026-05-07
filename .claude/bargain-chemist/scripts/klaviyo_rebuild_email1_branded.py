@@ -195,38 +195,36 @@ REPLACEMENT_BODY = """
 
 def surgical_rewrite(html):
     """Find the broken cart-iteration body and replace with REPLACEMENT_BODY.
-    Strategy: locate the greeting <h1> or paragraph containing 'Hi {{ first_name'
-    and the closing <a class="btn"...>Return To Your Cart</a> — replace the slice
-    in between with REPLACEMENT_BODY."""
-    # Strategy: find the OUTER table wrapping the greeting + cart-items + button
-    # Anchor 1: 'Hi {{ first_name'
-    start_match = re.search(r"<table[^>]*>(?=[^<]*?<tr[^>]*>[^<]*?<td[^>]*>[^<]*?<h\d[^>]*>\s*Hi\s*\{\{ first_name)", html)
-    if not start_match:
-        # Try simpler anchor
-        start_match = re.search(r"<h\d[^>]*>\s*Hi\s*\{\{ first_name", html)
-    if not start_match:
-        raise RuntimeError("Could not locate greeting anchor in source HTML")
-    # Anchor 2: closing <a class="btn">Return To Your Cart</a> + closing of outer cell/row
-    btn_match = re.search(r"Return\s+To\s+Your\s+Cart", html, re.IGNORECASE)
-    if not btn_match:
-        raise RuntimeError("Could not locate Return-To-Cart button")
 
-    # Find the enclosing <tr>...</tr> that holds the greeting + cart + button.
-    # Walk backward from start_match to find the most recent <tr>
-    pre = html[: start_match.start()]
-    open_tr = pre.rfind("<tr")
-    if open_tr == -1:
-        raise RuntimeError("Could not find opening <tr> before greeting")
+    Strategy: locate `Hi {{ first_name` (greeting) and `Return To Your Cart`
+    (button). Walk back from greeting to the most recent <table; walk forward
+    from button to the next </table>. Replace that whole table with our clean
+    branded body. The header (above) and footer (below) stay intact.
+    """
+    greeting_pos = html.find("Hi {{ first_name")
+    if greeting_pos == -1:
+        raise RuntimeError("Could not locate 'Hi {{ first_name' anchor in source HTML")
+    btn_pos = re.search(r"Return\s+To\s+Your\s+Cart", html, re.IGNORECASE)
+    if not btn_pos:
+        raise RuntimeError("Could not locate 'Return To Your Cart' anchor")
 
-    # Walk forward from btn_match to find the closing </tr> after it
-    post_btn = html[btn_match.end():]
-    close_tr_rel = post_btn.find("</tr>")
-    if close_tr_rel == -1:
-        raise RuntimeError("Could not find closing </tr> after button")
-    close_tr_abs = btn_match.end() + close_tr_rel + len("</tr>")
+    # Walk back from greeting to find enclosing <table
+    open_table = html.rfind("<table", 0, greeting_pos)
+    if open_table == -1:
+        raise RuntimeError("No <table> tag found before greeting")
 
-    new_html = html[:open_tr] + "<tr><td>" + REPLACEMENT_BODY + "</td></tr>" + html[close_tr_abs:]
-    return new_html
+    # Walk forward from button to find closing </table>
+    close_table_rel = html[btn_pos.end():].find("</table>")
+    if close_table_rel == -1:
+        raise RuntimeError("No </table> tag found after button")
+    close_table_abs = btn_pos.end() + close_table_rel + len("</table>")
+
+    block_to_replace = html[open_table:close_table_abs]
+    print(f"  identified block to replace: {len(block_to_replace)} chars")
+    print(f"  starts: {block_to_replace[:80]!r}")
+    print(f"  ends:   {block_to_replace[-80:]!r}")
+
+    return html[:open_table] + REPLACEMENT_BODY + html[close_table_abs:]
 
 
 def main():
