@@ -236,7 +236,7 @@ def build_sandbox_flow_definition():
                                     "custom_tracking_params": None,
                                     "additional_filters": None
                                 },
-                                "status": "draft"
+                                "status": "live"
                             },
                             "links": {"next": None}
                         },
@@ -257,7 +257,7 @@ def build_sandbox_flow_definition():
                                     "custom_tracking_params": None,
                                     "additional_filters": None
                                 },
-                                "status": "draft"
+                                "status": "live"
                             },
                             "links": {"next": None}
                         },
@@ -278,7 +278,7 @@ def build_sandbox_flow_definition():
                                     "custom_tracking_params": None,
                                     "additional_filters": None
                                 },
-                                "status": "draft"
+                                "status": "live"
                             },
                             "links": {"next": None}
                         }
@@ -289,44 +289,47 @@ def build_sandbox_flow_definition():
     }
 
 
+def get_flow_action_definition(action_id, key):
+    """GET a flow action's current definition so we can PATCH with the full object."""
+    r = requests.get(
+        f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
+        headers=hdrs(key, REVISION_GET),
+        timeout=20
+    )
+    return r.status_code, r.json() if r.status_code == 200 else {}
+
+
 def patch_flow_action_live(action_id, key):
-    """PATCH a send-email flow action to status=live so emails actually send.
-    Tries 2024-10-15.pre first (no definition required), falls back to
-    2025-10-15 with definition wrapper if needed."""
+    """PATCH a send-email flow action to status=live.
+    GET the current definition first, then PATCH with status=live injected
+    so the full required definition is present."""
+    get_code, get_resp = get_flow_action_definition(action_id, key)
+    if get_code != 200:
+        return get_code, f"GET failed: {get_resp}"
+
+    attrs = get_resp.get("data", {}).get("attributes", {})
+    definition = attrs.get("definition", attrs.get("data", {}))
+
+    # Inject live status into the definition
+    if isinstance(definition, dict):
+        definition["status"] = "live"
+    else:
+        definition = {"status": "live"}
+
     body = {
         "data": {
             "type": "flow-action",
             "id": action_id,
-            "attributes": {"status": "live"}
+            "attributes": {"definition": definition}
         }
     }
-    # Try pre-revision first — it accepts simple status-only PATCH
     r = requests.patch(
         f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
-        headers=hdrs(key, REVISION_CREATE, content=True),
+        headers=hdrs(key, REVISION_GET, content=True),
         json=body,
         timeout=20
     )
-    if r.status_code == 200:
-        return r.status_code, r.text[:200]
-
-    # If pre-revision fails, try 2025-10-15 with definition wrapper
-    body_with_def = {
-        "data": {
-            "type": "flow-action",
-            "id": action_id,
-            "attributes": {
-                "definition": {"status": "live"}
-            }
-        }
-    }
-    r2 = requests.patch(
-        f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
-        headers=hdrs(key, REVISION_GET, content=True),
-        json=body_with_def,
-        timeout=20
-    )
-    return r2.status_code, r2.text[:300]
+    return r.status_code, r.text[:300]
 
 
 def phase_build(key):
@@ -370,17 +373,8 @@ def phase_build(key):
     print(f"  flow_id: {flow_id}")
     print(f"  tier_actions: {json.dumps(tier_actions, indent=4)}")
 
-    # PATCH all send-email actions to status=live (fix BUG 3)
-    print(f"\n  PATCHing send-email actions to status=live (so emails actually send)...")
-    all_live = True
-    for tier, info in tier_actions.items():
-        code, body_txt = patch_flow_action_live(info["action_id"], key)
-        ok = code == 200
-        print(f"    Tier {tier} action {info['action_id']}: HTTP {code} {'OK' if ok else 'FAIL: ' + body_txt}")
-        all_live = all_live and ok
-
-    if not all_live:
-        print("  WARNING: some actions failed to go live — emails may not send")
+    # Send-email actions are created with status=live in the POST body — no PATCH needed.
+    print(f"\n  Send-email actions created with status=live in POST body.")
 
     state = {
         "flow_id": flow_id,
