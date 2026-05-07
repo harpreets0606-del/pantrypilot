@@ -59,6 +59,17 @@ foreach ($s in $swaps) {
     $html = $newHtml
 }
 
+# === Step 2.4: Fix Jinja-style default() filter to Django syntax ===
+# Klaviyo uses Django templates: {{ x|default:'foo' }}, not {{ x|default('foo') }}
+$djangoPattern = '\|\s*default\(\s*([''"])([^''"]*)\1\s*\)'
+$matches = [regex]::Matches($html, $djangoPattern)
+if ($matches.Count -gt 0) {
+    Write-Host ''
+    Write-Host '=== Step 2.4: Fix default() filter syntax ===' -ForegroundColor Cyan
+    Write-Host ("  Found {0} bad default() calls -> rewriting to default:'value'" -f $matches.Count)
+    $html = [regex]::Replace($html, $djangoPattern, "|default:'`$2'")
+}
+
 # === Step 2.5: Save fixed HTML for copy-paste fallback ===
 $FixedHtmlFile = Join-Path (Get-Location).Path "$OutDir/$TemplateId-fixed.html"
 [System.IO.File]::WriteAllText($FixedHtmlFile, $html, [System.Text.UTF8Encoding]::new($false))
