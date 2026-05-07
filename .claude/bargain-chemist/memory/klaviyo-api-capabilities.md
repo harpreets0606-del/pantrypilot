@@ -15,7 +15,21 @@
 | Clone template | `/api/template-clone/` | POST | ✅ Stable |
 | Get template for flow message | `/api/flow-messages/{id}/template/` | GET | ✅ Stable |
 
-### IMPORTANT — earlier session conclusion was incomplete
+### CONFIRMED WORKING WORKFLOW (verified 2026-05-07)
+
+For updating flow message HTML content via API:
+
+1. **Phase 1**: `PATCH /api/templates/{owned_id}/` — update our owned global template with new HTML. The "owned" templates are the ones we created via `POST /api/templates/` and stored their IDs (e.g. `RjiNUy`, `SuHDNq`, `UPxjA8` for welcome series). PATCH on these works fine.
+2. **Phase 2**: `PATCH /api/flow-actions/{action_id}/` (revision `2025-10-15`) — re-assign the same global template to force Klaviyo to clone it again, picking up the just-updated HTML.
+
+The clone-on-assign is fixed Klaviyo behaviour — every assignment creates a fresh internal copy. **You cannot update those internal copies directly.** But you can force a re-clone by re-assigning, which picks up your latest global template HTML.
+
+Script: `scripts/klaviyo-deploy-content.ps1` — runs both phases end-to-end. Workflow is now:
+```
+Edit local HTML file → Run klaviyo-deploy-content.ps1 → Live in flow.
+```
+
+### Earlier session conclusion was incomplete
 
 I previously declared "flow-cloned template content cannot be updated via API." **That was wrong.** The Templates API PATCH on cloned IDs IS broken, but Klaviyo released a separate working endpoint:
 
