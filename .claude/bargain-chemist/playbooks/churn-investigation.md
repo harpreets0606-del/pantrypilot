@@ -41,7 +41,7 @@ Tiered response:
 - Review and unpause any paused flows that target lapsed customers
 
 **Short term (next 4 weeks)**:
-- Test winback offer (e.g. 15% off + free shipping) on the High-CLV-High-Churn segment
+- Test winback levers (NO COUPONS — see `memory/no-coupon-strategy.md`): free-shipping threshold drop ($79 → $49), early access to new arrivals, pharmacist concierge consultation, or "what would bring you back?" survey on the High-CLV-High-Churn segment
 - Review acquisition source quality — are we acquiring customers who churn fast? Update CAC payback assumptions in `kpi-baselines.md`
 
 **Strategic**:

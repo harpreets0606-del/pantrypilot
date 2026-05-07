@@ -33,5 +33,5 @@ _None yet._
 - Subject line — question vs. statement, on welcome flow message 1
 - Send time — Tuesday 10am vs. Sunday 7pm (NZ time) for promotional broadcasts
 - Free shipping threshold — $50 vs. $75 NZD on cart abandonment recovery
-- VIP segment offer — 10% off vs. free gift with order
+- VIP segment recognition — early-access launches vs. free-shipping threshold drop ($79 → $49) vs. pharmacist concierge intro (NO COUPONS — see `no-coupon-strategy.md`)
 - Browse abandonment — 1 message vs. 3-message sequence

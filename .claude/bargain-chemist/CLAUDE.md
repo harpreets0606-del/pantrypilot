@@ -61,6 +61,7 @@ For single-platform questions, just use the relevant MCP tools directly.
 
 ### Things to never do
 
+- **NEVER recommend, draft, or build any flow/campaign/template/popup that uses coupons, promo codes, discount codes, vouchers, or "% off" offers.** Bargain Chemist runs an EDLP (everyday low price) strategy with a Price Beat Guarantee — coupons are explicitly out of scope. See `memory/no-coupon-strategy.md` for permitted levers (Price Beat, free shipping over $79, trust/longevity, product feed, urgency, find-a-store, pharmacist concierge). If the user requests a coupon-based campaign, stop and confirm before drafting.
 - Send a campaign or modify a flow without explicit user approval.
 - Update a profile or add to a list in bulk without dry-run + approval.
 - Recommend an action without stating the prediction and confidence.
