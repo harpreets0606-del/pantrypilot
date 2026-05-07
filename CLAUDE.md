@@ -1,5 +1,12 @@
 # Working Principles for This Project
 
+## Model and Reasoning Defaults
+
+- **Always use Opus 4.7 (`claude-opus-4-7`) for every subagent / Agent tool invocation.** Pass `model: "opus"` on every Agent call (general-purpose, Explore, Plan, claude-code-guide, code-reviewer, etc.). Do not fall back to Sonnet or Haiku for subagents under any circumstance.
+- **Reason at maximum depth ("extra high" / ultrathink) for every task**, large or small. Take the extra reasoning steps even on tasks that look trivial — assume there is hidden complexity until proven otherwise.
+- **Subagent prompts must instruct the agent to ultrathink** before acting, and to verify findings against primary sources before reporting.
+- The main session's model is set at session start via `/model claude-opus-4-7` or the model picker — if it isn't on Opus 4.7, flag it to the user before continuing significant work.
+
 ## Always Triple-Check Conclusions and Assumptions With Actual Data
 
 **Never state a number, threshold, status, or fact without verifying it against a primary data source.**
