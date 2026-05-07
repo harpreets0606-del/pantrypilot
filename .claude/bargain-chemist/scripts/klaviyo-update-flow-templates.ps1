@@ -55,12 +55,17 @@ New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $TempDir = Join-Path $env:TEMP "klaviyo-update-$([guid]::NewGuid().ToString('N').Substring(0,8))"
 New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 
-# Templates currently in flow YdejKf -> local HTML files
-$Updates = @(
-    @{ TemplateId = 'VMMpC9'; File = '.claude/bargain-chemist/templates/welcome-email-1.html'; Label = 'E1 - Welcome to the Family' },
-    @{ TemplateId = 'Tnktv3'; File = '.claude/bargain-chemist/templates/welcome-email-2.html'; Label = 'E2 - Best Sellers' },
-    @{ TemplateId = 'QWTxmV'; File = '.claude/bargain-chemist/templates/welcome-email-3.html'; Label = 'E3 - Last Nudge' }
-)
+# Read template mapping (run klaviyo-discover-flow-template-ids.ps1 first to generate this)
+$mapFile = ".claude/bargain-chemist/snapshots/$Date/flow-template-mapping.json"
+if (-not (Test-Path $mapFile)) {
+    Write-Host "ERROR: $mapFile not found." -ForegroundColor Red
+    Write-Host "Run klaviyo-discover-flow-template-ids.ps1 first to fetch the real template IDs." -ForegroundColor Yellow
+    exit 1
+}
+$Mapping = Get-Content $mapFile -Raw | ConvertFrom-Json
+$Updates = $Mapping | ForEach-Object {
+    @{ TemplateId = $_.template_id; File = $_.local_file; Label = $_.label }
+}
 
 Write-Host ""
 Write-Host "=== Updating live flow templates for YdejKf ===" -ForegroundColor Cyan
