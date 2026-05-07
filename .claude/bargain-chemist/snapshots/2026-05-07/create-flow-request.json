@@ -1,0 +1,155 @@
+﻿{
+    "data":  {
+                 "type":  "flow",
+                 "attributes":  {
+                                    "name":  "Welcome Series 2026 - No Coupon",
+                                    "definition":  {
+                                                       "triggers":  [
+                                                                        {
+                                                                            "type":  "list",
+                                                                            "id":  "SxBenU"
+                                                                        }
+                                                                    ],
+                                                       "profile_filter":  null,
+                                                       "entry_action_id":  "delay-1",
+                                                       "actions":  [
+                                                                       {
+                                                                           "temporary_id":  "delay-1",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "minutes",
+                                                                                        "value":  5,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "email-1"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "temporary_id":  "email-1",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "name":  "Welcome Email 1 - Welcome to the Family",
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  null,
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "Welcome to Bargain Chemist, {{ first_name|default:\u0027there\u0027 }}",
+                                                                                                        "preview_text":  "NZ\u0027s most trusted pharmacy - and your best price starts now.",
+                                                                                                        "template_id":  "RjiNUy",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "delay-2"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "temporary_id":  "delay-2",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "days",
+                                                                                        "value":  1,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile",
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ]
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "email-2"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "temporary_id":  "email-2",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "name":  "Welcome Email 2 - Best Sellers",
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  null,
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027There\u0027 }}, here\u0027s what\u0027s flying off our shelves",
+                                                                                                        "preview_text":  "NZ\u0027s best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love.",
+                                                                                                        "template_id":  "SuHDNq",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "delay-3"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "temporary_id":  "delay-3",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "days",
+                                                                                        "value":  2,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile",
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ]
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "email-3"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "temporary_id":  "email-3",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "name":  "Welcome Email 3 - Last Nudge",
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  null,
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027Still here\u0027 }} - 3 reasons NZ shops at Bargain Chemist",
+                                                                                                        "preview_text":  "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+                                                                                                        "template_id":  "UPxjA8",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     }
+                                                                       }
+                                                                   ]
+                                                   }
+                                }
+             }
+}
