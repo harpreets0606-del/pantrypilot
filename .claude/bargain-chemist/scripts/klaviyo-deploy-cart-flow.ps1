@@ -80,15 +80,16 @@ function Invoke-KlaviyoCurl {
 }
 
 # Plan: action -> (file, owned global template ID or NULL if needs create, name for new template, subject, preview, utm campaign)
+# Use single quotes for any string containing $XX to prevent PS variable interpolation
 $Plan = @(
     [pscustomobject]@{
         ActionId      = '98627502'
         Label         = 'E1 - Cart Abandon Email 1'
         File          = '.claude/bargain-chemist/templates/cart-abandon-email-1.html'
-        OwnedTemplate = $null   # to be created
+        OwnedTemplate = $null
         TemplateName  = 'BC - Cart Abandonment Email 1 - You Forgot Something'
-        Subject       = "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist"
-        Preview       = "Your cart's saved at NZ's lowest pharmacy prices - Price Beat 10% included."
+        Subject       = '{{ first_name|default:''Hey'' }}, you forgot something at Bargain Chemist'
+        Preview       = 'Your cart''s saved at NZ''s lowest pharmacy prices - Price Beat 10% included.'
         UtmCampaign   = 'cart_abandon_e1_2026'
     }
     [pscustomobject]@{
@@ -96,9 +97,9 @@ $Plan = @(
         Label         = 'E2 - Cart Abandon Email 2'
         File          = '.claude/bargain-chemist/templates/cart-abandon-email-2.html'
         OwnedTemplate = $null
-        TemplateName  = "BC - Cart Abandonment Email 2 - Don't Miss Out"
-        Subject       = "{{ first_name|default:'Still here' }}? Your cart's waiting at NZ's lowest prices"
-        Preview       = "Items selling fast - protected by Price Beat Guarantee. Free shipping over $79."
+        TemplateName  = 'BC - Cart Abandonment Email 2 - Don''t Miss Out'
+        Subject       = '{{ first_name|default:''Still here'' }}? Your cart''s waiting at NZ''s lowest prices'
+        Preview       = 'Items selling fast - protected by Price Beat Guarantee. Free shipping over $79.'
         UtmCampaign   = 'cart_abandon_e2_2026'
     }
 )
@@ -110,11 +111,21 @@ $E3 = [pscustomobject]@{
     Label         = 'E3 - Last Chance (global, awaiting UI flow add)'
 }
 
+# Load previously-deployed template IDs (idempotency: reuse existing globals, PATCH instead of POST)
+$DeployedFile = "$OutDir/cart-flow-deployed-templates.json"
+if (Test-Path $DeployedFile) {
+    $prior = Get-Content $DeployedFile -Raw | ConvertFrom-Json
+    foreach ($p in $Plan) {
+        $hit = $prior | Where-Object { $_.ActionId -eq $p.ActionId -and $_.OwnedTemplate }
+        if ($hit) { $p.OwnedTemplate = $hit.OwnedTemplate }
+    }
+}
+
 # ============================================================
-# PHASE 1: Create / update global templates
+# PHASE 1: Create or PATCH global templates
 # ============================================================
 Write-Host ""
-Write-Host "=== PHASE 1: Create / update global cart-abandon templates ===" -ForegroundColor Cyan
+Write-Host "=== PHASE 1: Deploy global cart-abandon templates ===" -ForegroundColor Cyan
 
 foreach ($p in $Plan) {
     Write-Host ""
@@ -129,19 +140,29 @@ foreach ($p in $Plan) {
     $htmlJson = ConvertTo-JsonString $html
     $nameJson = ConvertTo-JsonString $p.TemplateName
 
-    # Always create a NEW global template (idempotent in the sense that we just track the latest ID)
-    $body = '{"data":{"type":"template","attributes":{"name":' + $nameJson + ',"editor_type":"CODE","html":' + $htmlJson + '}}}'
-
-    $respFile = Join-Path $TempDir "tpl-create-$($p.ActionId).json"
-    $code = Invoke-KlaviyoCurl -Method 'POST' -Url 'https://a.klaviyo.com/api/templates/' -BodyJson $body -RespFile $respFile
-    if ($code -in '200','201') {
-        $resp = Get-Content $respFile -Raw | ConvertFrom-Json
-        $tplId = $resp.data.id
-        $p.OwnedTemplate = $tplId
-        Write-Host "  Created global template: $tplId" -ForegroundColor Green
+    if ($p.OwnedTemplate) {
+        # PATCH existing (idempotent re-runs)
+        $body = '{"data":{"type":"template","id":"' + $p.OwnedTemplate + '","attributes":{"html":' + $htmlJson + '}}}'
+        $respFile = Join-Path $TempDir "tpl-patch-$($p.ActionId).json"
+        $code = Invoke-KlaviyoCurl -Method 'PATCH' -Url "https://a.klaviyo.com/api/templates/$($p.OwnedTemplate)/" -BodyJson $body -RespFile $respFile
+        if ($code -eq '200') { Write-Host "  PATCHed existing global template: $($p.OwnedTemplate)" -ForegroundColor Green }
+        else {
+            Write-Host "  PATCH FAIL HTTP $code" -ForegroundColor Red
+            if (Test-Path $respFile) { Get-Content $respFile -Raw | Write-Host -ForegroundColor DarkYellow }
+        }
     } else {
-        Write-Host "  Create FAIL HTTP $code" -ForegroundColor Red
-        if (Test-Path $respFile) { Get-Content $respFile -Raw | Write-Host -ForegroundColor DarkYellow }
+        # First-time POST
+        $body = '{"data":{"type":"template","attributes":{"name":' + $nameJson + ',"editor_type":"CODE","html":' + $htmlJson + '}}}'
+        $respFile = Join-Path $TempDir "tpl-create-$($p.ActionId).json"
+        $code = Invoke-KlaviyoCurl -Method 'POST' -Url 'https://a.klaviyo.com/api/templates/' -BodyJson $body -RespFile $respFile
+        if ($code -in '200','201') {
+            $resp = Get-Content $respFile -Raw | ConvertFrom-Json
+            $p.OwnedTemplate = $resp.data.id
+            Write-Host "  Created global template: $($p.OwnedTemplate)" -ForegroundColor Green
+        } else {
+            Write-Host "  Create FAIL HTTP $code" -ForegroundColor Red
+            if (Test-Path $respFile) { Get-Content $respFile -Raw | Write-Host -ForegroundColor DarkYellow }
+        }
     }
 }
 
@@ -163,8 +184,7 @@ if (Test-Path $E3.File) {
     Write-Host "  SKIP - $($E3.File) not found" -ForegroundColor Yellow
 }
 
-# Save the deployed template IDs for E1 and E2
-$DeployedFile = "$OutDir/cart-flow-deployed-templates.json"
+# Save / update the deployed template IDs for E1 and E2
 $Plan | Select-Object ActionId,Label,OwnedTemplate,TemplateName | ConvertTo-Json -Depth 5 | Out-File -FilePath $DeployedFile -Encoding utf8
 Write-Host ""
 Write-Host "Deployed template IDs saved to $DeployedFile" -ForegroundColor DarkGray
@@ -240,7 +260,7 @@ Write-Host "Email 3 setup (when you're ready):"
 Write-Host "  1. UI: drag in Time Delay (2 days) + Send Email after Email 2"
 Write-Host "  2. Assign template: BC - Cart Abandonment Email 3 - Last Chance (Sq6pt2)"
 Write-Host "  3. Set subject:    Last chance, {{ first_name|default:'there' }} - your cart is expiring"
-Write-Host "  4. Set preview:    Don't let NZ's best pharmacy prices slip away. Free shipping over $79."
+Write-Host '  4. Set preview:    Don''t let NZ''s best pharmacy prices slip away. Free shipping over $79.'
 
 Remove-Item $TempDir -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item env:KLAVIYO_PRIVATE_KEY

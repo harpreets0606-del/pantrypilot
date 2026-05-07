@@ -13,6 +13,28 @@
 
 ## Hard-won fixes
 
+### -2. NEVER use `$NN` (digit literals like `$79`) inside double-quoted PowerShell strings
+
+**Symptom:** Output text loses chunks like `$79`, leaving garbled phrases like `Free shipping over .`
+**Cause:** PowerShell parses `$<digits>` in double quotes as automatic positional variables (`$1` ... `$9` ... `$79`). They're undefined in normal scripts → expand to empty string. The trailing period eats whatever's left.
+**Example:**
+```powershell
+"Free shipping over $79."   # becomes: "Free shipping over ."  (BROKEN)
+```
+**Fix:** Use single-quoted strings for any literal containing `$<digits>`:
+```powershell
+'Free shipping over $79.'   # correct
+```
+Or backtick-escape:
+```powershell
+"Free shipping over `$79."  # correct
+```
+**Caught in:** `klaviyo-deploy-cart-flow.ps1` Plan hashtable (Preview text) — broke E2 preview deployment 2026-05-07. Fixed by switching the Plan strings to single-quote, doubling internal apostrophes (`it''s`), and escaping the printout at the end.
+
+**Rule for future scripts:** when a script has user-facing copy strings, default to single quotes. Use double quotes only when you genuinely need PS variable interpolation (e.g. `"$($p.ActionId)"`).
+
+---
+
 ### -1. NEVER write non-ASCII characters in `.ps1` files (without UTF-8 BOM)
 
 **Symptom:** Script fails to parse with errors like "Missing closing '}'", "Unexpected token", or weird `â€"` strings appearing in error messages.
