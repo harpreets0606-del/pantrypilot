@@ -60,6 +60,9 @@ TESTS = [
     ("09-organization-full", "<html><body>{{ organization.full_address }}</body></html>"),
     ("10-unsubscribe-tag", "<html><body>{% unsubscribe 'Click' %}</body></html>"),
     ("11-no-context-event-properties", "<html><body>val={{ event.extra.line_items }}</body></html>"),
+    ("12-if-lookup-dollar", "<html><body>{% if event|lookup:'$value' < 79 %}low{% else %}high{% endif %}</body></html>"),
+    ("13-with-lookup-dollar", "<html><body>{% with v=event|lookup:'$value' %}{% if v < 79 %}low{% else %}high{% endif %}{% endwith %}</body></html>"),
+    ("14-if-only-dollar-context", "<html><body>{% if event.value < 79 %}low{% else %}high{% endif %}</body></html>"),
 ]
 
 
@@ -70,17 +73,18 @@ def patch_html(html, key):
     r.raise_for_status()
 
 
-def render(event_value, key):
+def render(event_value, key, dollar_only=False):
+    """If dollar_only=True, context has only '$value' — simulates production where
+    only the $-prefixed field exists. Tests if Klaviyo auto-maps it."""
+    event = {"$value": event_value, "extra": {"checkout_url": "https://x.test/cart"}}
+    if not dollar_only:
+        event["value"] = event_value
     body = {"data": {"type": "template", "attributes": {
         "id": TID,
         "context": {
             "first_name": "Sam",
             "organization": {"full_address": "1 Test St, Auckland NZ"},
-            "event": {
-                "$value": event_value,
-                "value": event_value,
-                "extra": {"checkout_url": "https://x.test/cart"},
-            },
+            "event": event,
         }
     }}}
     return requests.post("https://a.klaviyo.com/api/template-render/",
@@ -102,7 +106,9 @@ def main():
         try:
             patch_html(html, key)
             time.sleep(0.2)
-            resp = render(50, key)
+            # Simulate production-like context (only $value, no plain value)
+            dollar_only = name.startswith(("04-", "06-", "07-", "12-", "13-"))
+            resp = render(50, key, dollar_only=dollar_only)
             ok = resp.status_code == 200
             (OUT_DIR / f"{name}.json").write_text(
                 json.dumps({"status": resp.status_code, "html": html, "body": resp.text[:1500]}, indent=2),
