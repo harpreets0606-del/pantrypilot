@@ -158,22 +158,20 @@ CLEAN_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "
 """
 
 
-def render_test(html, event_value, key):
-    """POST /api/template-render to validate Klaviyo can parse the template.
+def render_test(template_id, event_value, key):
+    """POST /api/template-render against an existing template id.
     Returns rendered HTML or None on error."""
     body = {
         "data": {
             "type": "template",
             "attributes": {
-                "html": html,
+                "id": template_id,
                 "context": {
                     "first_name": "Sam",
-                    "organization": {
-                        "full_address": "Bargain Chemist, NZ"
-                    },
+                    "organization": {"full_address": "Bargain Chemist, NZ"},
                     "event": {
                         "$value": event_value,
-                        "extra": {"checkout_url": "https://www.bargainchemist.co.nz/cart"}
+                        "extra": {"checkout_url": "https://www.bargainchemist.co.nz/cart"},
                     },
                 },
             }
@@ -183,15 +181,25 @@ def render_test(html, event_value, key):
         "https://a.klaviyo.com/api/template-render/",
         headers=hdrs(key, content=True), json=body, timeout=30,
     )
-    save(f"render-test-value{event_value}.json", {"status": r.status_code, "body": r.text[:5000]})
+    save(f"render-test-value{event_value}.json",
+         {"status": r.status_code, "body": r.text[:5000]})
     if r.status_code not in (200, 201):
         print(f"  Render HTTP {r.status_code}: {r.text[:300]}")
         return None
     try:
         return r.json()["data"]["attributes"]["html"]
     except Exception:
-        print(f"  Could not extract html from response: {r.text[:300]}")
+        print(f"  Could not extract html: {r.text[:300]}")
         return None
+
+
+def get_template_html(template_id, key):
+    r = requests.get(
+        f"https://a.klaviyo.com/api/templates/{template_id}/",
+        headers=hdrs(key), timeout=30,
+    )
+    r.raise_for_status()
+    return r.json()["data"]["attributes"]["html"]
 
 
 def check_rendered(html, expected_phrase, label):
@@ -267,42 +275,51 @@ def main():
     save("email1-clean.html", CLEAN_HTML)
     print(f"Phase 1: HTML saved -> {OUT_DIR}/email1-clean.html ({len(CLEAN_HTML)} chars)")
 
-    print("\nPhase 2: render-test via /api/template-render")
-    rendered_low = render_test(CLEAN_HTML, 50, key)
-    if rendered_low:
-        save("rendered-value50.html", rendered_low)
-        ok_low = check_rendered(rendered_low,
-                                "Your cart is under $79", "value=50 (under-79 path)")
-    else:
-        ok_low = False
+    # Snapshot the current owned template HTML so we can rollback if render fails
+    print(f"\nPhase 2: snapshot current {OWNED_TEMPLATE_ID} HTML for rollback")
+    rollback_html = get_template_html(OWNED_TEMPLATE_ID, key)
+    save(f"rollback-{OWNED_TEMPLATE_ID}.html", rollback_html)
+    print(f"  saved {len(rollback_html)} bytes")
 
-    rendered_high = render_test(CLEAN_HTML, 120, key)
-    if rendered_high:
-        save("rendered-value120.html", rendered_high)
-        ok_high = check_rendered(rendered_high,
-                                 "Free shipping is yours", "value=120 (over-79 path)")
-    else:
-        ok_high = False
-
-    if not (ok_low and ok_high):
-        print("\nRender tests FAILED — DO NOT deploy. Inspect saved files.")
-        return 1
-
-    print("\nBoth render tests PASSED. HTML is Klaviyo-Django-safe.")
-
-    if not args.apply:
-        print("\nDry-run complete. Re-run with --apply to PATCH the owned template + re-clone.")
-        return 0
-
-    print(f"\nPhase 3: PATCH owned template {OWNED_TEMPLATE_ID}")
+    # PATCH the owned template (no live impact: live flow uses the CLONE, not this owned template)
+    print(f"\nPhase 3: PATCH owned template {OWNED_TEMPLATE_ID} with new HTML")
     patch_template(OWNED_TEMPLATE_ID, CLEAN_HTML, key)
     print(f"  OK")
 
-    print(f"\nPhase 4: Re-assign flow-action {FLOW_ACTION_ID} (forces re-clone)")
+    # Render-test the now-updated owned template
+    print(f"\nPhase 4: render-test {OWNED_TEMPLATE_ID} with two contexts")
+    rendered_low = render_test(OWNED_TEMPLATE_ID, 50, key)
+    ok_low = False
+    if rendered_low:
+        save("rendered-value50.html", rendered_low)
+        ok_low = check_rendered(rendered_low,
+                                "Your cart is under $79", "value=50 (under-79)")
+    rendered_high = render_test(OWNED_TEMPLATE_ID, 120, key)
+    ok_high = False
+    if rendered_high:
+        save("rendered-value120.html", rendered_high)
+        ok_high = check_rendered(rendered_high,
+                                 "Free shipping is yours", "value=120 (over-79)")
+
+    if not (ok_low and ok_high):
+        print("\n  Render FAILED — rolling back owned template")
+        patch_template(OWNED_TEMPLATE_ID, rollback_html, key)
+        print("  rollback complete. Live flow unaffected (still uses old clone).")
+        return 1
+
+    print("\n  Both render tests PASSED. HTML is Klaviyo-Django-safe.")
+
+    if not args.apply:
+        print("\n  DRY-RUN: rolling back owned template (no flow re-clone).")
+        patch_template(OWNED_TEMPLATE_ID, rollback_html, key)
+        print("  rolled back. Re-run with --apply to keep the new HTML and re-clone.")
+        return 0
+
+    print(f"\nPhase 5: re-assign flow-action {FLOW_ACTION_ID} (forces re-clone with new HTML)")
     new_clone_id = reassign_flow_action(FLOW_ACTION_ID, OWNED_TEMPLATE_ID, key)
     print(f"  OK. New cloned template_id: {new_clone_id}")
 
-    print(f"\nPhase 5: verify new clone has clean HTML")
+    print(f"\nPhase 6: verify new clone")
     time.sleep(1.0)
     r = requests.get(
         f"https://a.klaviyo.com/api/templates/{new_clone_id}/",
@@ -313,11 +330,11 @@ def main():
         return 1
     new_html = r.json()["data"]["attributes"]["html"]
     save(f"new-clone-{new_clone_id}.html", new_html)
-    leftover = re.findall(r'\{%\s*for\s+item\b', new_html)
-    has_jinja2 = re.findall(r'\|float|\|round\(', new_html)
+    has_for_item = bool(re.findall(r'\{%\s*for\s+item\b', new_html))
+    has_jinja2_filters = bool(re.findall(r'\|float|\|round\(', new_html))
     print(f"  new clone: {len(new_html)} chars")
-    print(f"  has broken {{% for item %}}: {bool(leftover)}")
-    print(f"  has Jinja2 |float / |round(): {bool(has_jinja2)}")
+    print(f"  has broken for-item loop: {has_for_item}")
+    print(f"  has Jinja2 |float/|round filters: {has_jinja2_filters}")
     print(f"  has event.$value conditional: {'event.$value' in new_html}")
 
     print(f"\nDone. Re-preview at: https://www.klaviyo.com/flow/VaRyRc/edit")
