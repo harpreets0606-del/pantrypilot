@@ -1,13 +1,3 @@
-## MANDATORY PRE-FLIGHT — RUN BEFORE ANY AUDIT, RECOMMENDATION, OR CONCLUSION
-
-Before stating ANY finding about a flow, template, campaign, or data point:
-1. Pull live data via Klaviyo MCP (klaviyo_get_flow / klaviyo_get_account_details)
-2. Compare the live `updated` timestamp to any local snapshot's `updated` field
-3. If they don't match exactly, the snapshot is STALE — do not use it. Ask user to re-pull or re-pull yourself.
-4. State explicitly in your response: "Verified live: <timestamp> matches snapshot: <timestamp>" OR "Snapshot stale, awaiting fresh pull."
-
-If you skip this step and state a conclusion from snapshot data alone, you have failed the task.
-
 # Bargain Chemist — Operating Instructions
 
 You are analysing **Bargain Chemist** (https://www.bargainchemist.co.nz), a New Zealand ecommerce pharmacy. Klaviyo account ID: `XCgiqg`. Industry: Ecommerce, Health & Beauty. Currency: NZD. Timezone: Pacific/Auckland.
@@ -17,7 +7,7 @@ You are analysing **Bargain Chemist** (https://www.bargainchemist.co.nz), a New 
 Before stating ANY finding about a flow, template, campaign, segment, or metric:
 
 1. **Pull live data via Klaviyo MCP** — never trust local snapshot files alone.
-2. **For every flow referenced**, compare the live `updated` timestamp (from `klaviyo_get_flow`) to the snapshot's `updated` field.
+2. **For every flow referenced**, call `klaviyo_get_flow` and compare the live `updated` timestamp to the snapshot's `updated` field.
    - Timestamps match exactly → snapshot is canonical, proceed.
    - Timestamps differ → snapshot is STALE. Do not use it. Refresh first or ask user to re-run the dump script.
 3. **State the verification explicitly** in your response before presenting findings:
@@ -25,7 +15,7 @@ Before stating ANY finding about a flow, template, campaign, segment, or metric:
 
 If this verification line is absent from your output, **you have not completed the task.**
 
-Direct curl to `a.klaviyo.com` is blocked in this sandbox. Use `klaviyo_get_flow` (MCP) for timestamp verification, and the dump scripts (`.claude/bargain-chemist/scripts/`) for full definition re-pulls when a snapshot is stale.
+Note: direct curl to `a.klaviyo.com` is blocked in this sandbox. Use `klaviyo_get_flow` (MCP) for timestamp verification, and the dump scripts (`.claude/bargain-chemist/scripts/`) for full definition re-pulls when a snapshot is stale.
 
 ---
 
