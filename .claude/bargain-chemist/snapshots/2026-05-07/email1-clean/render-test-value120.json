@@ -1,4 +1,4 @@
 {
   "status": 400,
-  "body": "{\"errors\":[{\"id\":\"dacd882f-fce5-4686-a300-8da5b8f790aa\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'id' is a required field for the resource 'template'.\",\"source\":{\"pointer\":\"/data/attributes/id\"},\"links\":{},\"meta\":{}},{\"id\":\"dacd882f-fce5-4686-a300-8da5b8f790aa\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'html' is not a valid field for the resource 'template'.\",\"source\":{\"pointer\":\"/data/attributes/html\"},\"links\":{},\"meta\":{}}]}"
+  "body": "{\"errors\":[{\"id\":\"364d0a5d-d760-42b7-b7f5-d01a20ea6a7c\",\"status\":400,\"code\":\"bad_request\",\"title\":\"Bad request\",\"detail\":\"Unable to render given template with provided context. Please check included django syntax and ensure it is compatible with provided context.\",\"source\":{\"pointer\":\"/data\"},\"links\":{},\"meta\":{}}]}"
 }
