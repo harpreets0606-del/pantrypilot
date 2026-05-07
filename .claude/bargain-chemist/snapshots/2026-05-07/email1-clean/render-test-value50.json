@@ -1,0 +1,4 @@
+{
+  "status": 400,
+  "body": "{\"errors\":[{\"id\":\"bd739bca-c10f-4b97-8a69-136f5b35ab7c\",\"status\":400,\"code\":\"invalid\",\"title\":\"Invalid input.\",\"detail\":\"'template-render' is not the resource type expected at this endpoint. 'template' is the expected resource type.\",\"source\":{\"pointer\":\"/data/type\"},\"links\":{},\"meta\":{}}]}"
+}
