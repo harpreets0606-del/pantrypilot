@@ -1,4 +1,4 @@
-# Klaviyo: conservative updates to RPQXaa cart-abandonment flow (Phase 1).
+﻿# Klaviyo: conservative updates to RPQXaa cart-abandonment flow (Phase 1).
 #
 # Changes (low risk, terminal-only):
 #   1. Verify Email 2 status is now live (post user-toggle)
@@ -6,10 +6,10 @@
 #      (utm_source=klaviyo, utm_medium=email, utm_campaign=cart_abandon_eN_2026)
 #      - Fixes Shopify attribution (currently uses Klaviyo's default {flow_name})
 #
-# NOT in this script (intentionally) — these need separate decisions:
+# NOT in this script (intentionally) - these need separate decisions:
 #   - Subject line / preview-text changes (recommend A/B test first, not a blind swap)
 #   - CheckoutURL button injection (requires new Family B global templates first)
-#   - Email 3 addition (requires UI work — Klaviyo API can't add new actions)
+#   - Email 3 addition (requires UI work - Klaviyo API can't add new actions)
 #
 # Usage:
 #   .\.claude\bargain-chemist\scripts\klaviyo-update-cart-flow.ps1 -Mode verify
@@ -88,7 +88,7 @@ foreach ($p in $Plan) {
         Write-Host "  current custom_tracking_params:" -ForegroundColor DarkGray
         $msg.custom_tracking_params | ForEach-Object { Write-Host "    - $($_.name) = $($_.value)" -ForegroundColor DarkGray }
     } else {
-        Write-Host "  current custom_tracking_params: NONE (using Klaviyo defaults — bad for Shopify attribution)" -ForegroundColor Yellow
+        Write-Host "  current custom_tracking_params: NONE (using Klaviyo defaults - bad for Shopify attribution)" -ForegroundColor Yellow
     }
 
     if ($Mode -eq 'verify') { continue }

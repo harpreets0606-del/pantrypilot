@@ -13,7 +13,19 @@
 
 ## Hard-won fixes
 
-### 0. WHEN PS 5.1 HTTP HANGS — JUST USE curl.exe
+### -1. NEVER write non-ASCII characters in `.ps1` files (without UTF-8 BOM)
+
+**Symptom:** Script fails to parse with errors like "Missing closing '}'", "Unexpected token", or weird `â€"` strings appearing in error messages.
+**Cause:** PowerShell 5.1 reads `.ps1` files as Windows-1252 by default. Any UTF-8 multi-byte char (em-dash, en-dash, smart quotes) gets mojibake'd into garbage that breaks string parsing.
+**Fix (mandatory for any .ps1 we write):**
+1. Stick to ASCII-only in script content. Use `-` instead of em/en-dash. Use straight quotes only.
+2. If non-ASCII is unavoidable, save the file with a UTF-8 BOM (bytes `0xEF 0xBB 0xBF` at start).
+
+**Status:** Applied 2026-05-07. All 10 PS scripts audited; 3 had em-dashes — fixed via BOM + ASCII replacement. Going forward: write ASCII-only by default.
+
+---
+
+### 0. WHEN PS 5.1 HTTP HANGS - JUST USE curl.exe
 
 **This is the lesson of the session.** Don't waste time trying to fix PS 5.1's HTTP cmdlets when they hang. Windows 10 1803+ ships `curl.exe` (real curl, not the PS alias) at `C:\Windows\System32\curl.exe`. It uses a completely different HTTP stack and doesn't have any of these issues.
 

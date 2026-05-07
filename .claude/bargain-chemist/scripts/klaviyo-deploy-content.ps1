@@ -1,4 +1,4 @@
-# Klaviyo end-to-end content deploy — updates flow YdejKf email HTML via API.
+﻿# Klaviyo end-to-end content deploy - updates flow YdejKf email HTML via API.
 #
 # Workflow:
 #   1. PATCH each owned global template (RjiNUy/SuHDNq/UPxjA8) with the latest local HTML
@@ -35,7 +35,7 @@ New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $TempDir = Join-Path $env:TEMP "klaviyo-deploy-$([guid]::NewGuid().ToString('N').Substring(0,8))"
 New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 
-# Manual JSON string escaper — avoids PS 5.1 ConvertTo-Json hang
+# Manual JSON string escaper - avoids PS 5.1 ConvertTo-Json hang
 function ConvertTo-JsonString([string]$s) {
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.Append('"')

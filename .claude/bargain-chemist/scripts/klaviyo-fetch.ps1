@@ -1,4 +1,4 @@
-# Klaviyo deep-fetch — PowerShell version
+﻿# Klaviyo deep-fetch - PowerShell version
 # Pulls flow structures, flow messages, and templates the MCP cannot access.
 # Output saved as JSON files in .claude/bargain-chemist/snapshots/<date>/
 #
