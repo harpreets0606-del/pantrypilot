@@ -1,0 +1,38 @@
+[
+  {
+    "flow_id": "V9XmEm",
+    "flow_name": "[Z] Flu Season - Winter Wellness",
+    "flow_status": "live",
+    "action_id": "105627866",
+    "msg_id": "QW6y2L",
+    "name": "[Z] Flu Season Email 1",
+    "template_id": "SJwrxf",
+    "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
+    "preview_text": "Your guide to staying healthy and protected this flu season.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": "105627867",
+    "definition_type": "send-email"
+  },
+  {
+    "flow_id": "V9XmEm",
+    "flow_name": "[Z] Flu Season - Winter Wellness",
+    "flow_status": "live",
+    "action_id": "105627868",
+    "msg_id": "S7vnUC",
+    "name": "Email #2",
+    "template_id": "XmsJkZ",
+    "subject_line": "Already under the weather, {{ first_name|default:'there' }}?",
+    "preview_text": "Pharmacist-backed picks to support your recovery, NZ's best prices.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": null,
+    "definition_type": "send-email"
+  }
+]

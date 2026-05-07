@@ -1,0 +1,38 @@
+[
+  {
+    "flow_id": "T7pmf6",
+    "flow_name": "[Z] Win-back - Lapsed Customers",
+    "flow_status": "live",
+    "action_id": "105721759",
+    "msg_id": "W5e5Dr",
+    "name": "[Z] Win-back - Email 1 - We Miss You",
+    "template_id": "XRDX9U",
+    "subject_line": "We've missed you, {{ first_name|default:'there' }}",
+    "preview_text": "We've kept your prices, your favourites and your free shipping threshold right where you left them.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": "105721760",
+    "definition_type": "send-email"
+  },
+  {
+    "flow_id": "T7pmf6",
+    "flow_name": "[Z] Win-back - Lapsed Customers",
+    "flow_status": "live",
+    "action_id": "105721762",
+    "msg_id": "Vsd32N",
+    "name": "Email #2",
+    "template_id": "RJhLMj",
+    "subject_line": "We're still here for you, {{ first_name|default:'there' }}",
+    "preview_text": "Still here. Still the same great prices. Your Bargain Chemist account is waiting whenever you're ready.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": null,
+    "definition_type": "send-email"
+  }
+]
