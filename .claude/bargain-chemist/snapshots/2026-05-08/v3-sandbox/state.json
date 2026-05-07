@@ -1,0 +1,69 @@
+{
+  "flow_id": "WFhERT",
+  "tier_actions": {
+    "A": {
+      "action_id": "105960871",
+      "message_id": "RQpNBF",
+      "template_id": "TCPG8a"
+    },
+    "B": {
+      "action_id": "105960873",
+      "message_id": "XdFt98",
+      "template_id": "SZNDvx"
+    },
+    "C": {
+      "action_id": "105960876",
+      "message_id": "Yp6i2Y",
+      "template_id": "SnMASU"
+    }
+  },
+  "status": "live",
+  "profiles": {
+    "5": {
+      "email": "harpreetsingh+cart-tier-5@bargainchemist.co.nz",
+      "profile_id": "01KR173TFXSX4148BC9TA7C88W",
+      "expected_tier": "A"
+    },
+    "20": {
+      "email": "harpreetsingh+cart-tier-20@bargainchemist.co.nz",
+      "profile_id": "01KR173Y4QKWEQ0W7XBWHGRS0D",
+      "expected_tier": "A"
+    },
+    "29": {
+      "email": "harpreetsingh+cart-tier-29@bargainchemist.co.nz",
+      "profile_id": "01KR17419R3CHZYRFK4Y2AKPHZ",
+      "expected_tier": "A"
+    },
+    "30": {
+      "email": "harpreetsingh+cart-tier-30@bargainchemist.co.nz",
+      "profile_id": "01KR17445VME7BV7GH61VHZGMW",
+      "expected_tier": "B"
+    },
+    "50": {
+      "email": "harpreetsingh+cart-tier-50@bargainchemist.co.nz",
+      "profile_id": "01KR17471MP9Q9VN1RPHSSHT9P",
+      "expected_tier": "B"
+    },
+    "78": {
+      "email": "harpreetsingh+cart-tier-78@bargainchemist.co.nz",
+      "profile_id": "01KR1749V3TKWXC8JN0RD7P3S2",
+      "expected_tier": "B"
+    },
+    "79": {
+      "email": "harpreetsingh+cart-tier-79@bargainchemist.co.nz",
+      "profile_id": "01KR174CNEJJHM6SJNFDMK2WJC",
+      "expected_tier": "C"
+    },
+    "80": {
+      "email": "harpreetsingh+cart-tier-80@bargainchemist.co.nz",
+      "profile_id": "01KR174FKHST00T06VARWSQXHK",
+      "expected_tier": "C"
+    },
+    "120": {
+      "email": "harpreetsingh+cart-tier-120@bargainchemist.co.nz",
+      "profile_id": "01KR174JC6BA3F11CX2QAFCMDE",
+      "expected_tier": "C"
+    }
+  },
+  "injected_at": "2026-05-07T12:38:27.382469Z"
+}

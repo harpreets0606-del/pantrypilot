@@ -1,0 +1,719 @@
+{
+    "data":  {
+                 "type":  "flow",
+                 "attributes":  {
+                                    "name":  "[Z] Replenishment - Category Based",
+                                    "definition":  {
+                                                       "profile_filter":  null,
+                                                       "triggers":  [
+                                                                        {
+                                                                            "trigger_filter":  null,
+                                                                            "id":  "UWP7cZ",
+                                                                            "type":  "metric"
+                                                                        }
+                                                                    ],
+                                                       "actions":  [
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "split-vitamins",
+                                                                                         "next_if_true":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "_pharmacy-only",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        },
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "_pharmacist-only",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        },
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "_prescription",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-restricted"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "split-skincare",
+                                                                                         "next_if_true":  "delay-vitamins"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "CAT=Vitamins",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-vitamins"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-vitamins"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  60,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-vitamins"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "ULRiRz",
+                                                                                                        "preview_text":  "Daily wellness works best when you don\u0027t run out. Free shipping over $79.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E1 Vitamins",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "Time to top up your vitamins, {{ first_name|default:\u0027there\u0027 }}",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e1-vitamins"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-vitamins"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "split-haircare",
+                                                                                         "next_if_true":  "delay-skincare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "CAT=Skin Care",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-skincare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-skincare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  45,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-skincare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "TwPdCj",
+                                                                                                        "preview_text":  "Consistency is what skin loves most - top up before you run dry.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E2 Skincare",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "Your skincare routine misses you, {{ first_name|default:\u0027you\u0027 }}",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e2-skincare"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-skincare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "split-oralcare",
+                                                                                         "next_if_true":  "delay-haircare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "CAT=Hair Care",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-haircare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-haircare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  60,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-haircare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "SgM8p5",
+                                                                                                        "preview_text":  "Shampoo, conditioner, styling - everything you need from NZ\u0027s best prices.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E3 Hair Care",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027Hey\u0027 }}, ready for a hair care top-up?",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e3-haircare"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-haircare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "split-babycare",
+                                                                                         "next_if_true":  "delay-oralcare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "CAT=Oral Hygiene \u0026 Care",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-oralcare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-oralcare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  30,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-oralcare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "XE4LUw",
+                                                                                                        "preview_text":  "Toothpaste, mouthwash, floss - the daily basics, ready when you are.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E4 Oral Care",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "Your oral care kit needs a refresh, {{ first_name|default:\u0027there\u0027 }}",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e4-oralcare"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-oralcare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next_if_false":  "delay-fallback",
+                                                                                         "next_if_true":  "delay-babycare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "profile_filter":  {
+                                                                                                               "condition_groups":  [
+                                                                                                                                        {
+                                                                                                                                            "conditions":  [
+                                                                                                                                                               {
+                                                                                                                                                                   "timeframe_filter":  {
+                                                                                                                                                                                            "type":  "date",
+                                                                                                                                                                                            "operator":  "flow-start"
+                                                                                                                                                                                        },
+                                                                                                                                                                   "measurement_filter":  {
+                                                                                                                                                                                              "operator":  "greater-than",
+                                                                                                                                                                                              "value":  0,
+                                                                                                                                                                                              "type":  "numeric"
+                                                                                                                                                                                          },
+                                                                                                                                                                   "metric_id":  "UWP7cZ",
+                                                                                                                                                                   "measurement":  "count",
+                                                                                                                                                                   "type":  "profile-metric",
+                                                                                                                                                                   "metric_filters":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "filter":  {
+                                                                                                                                                                                                             "operator":  "contains",
+                                                                                                                                                                                                             "value":  "CAT=Baby Care",
+                                                                                                                                                                                                             "type":  "string"
+                                                                                                                                                                                                         },
+                                                                                                                                                                                              "property":  "Categories"
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                               }
+                                                                                                                                                           ]
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                           }
+                                                                                    },
+                                                                           "type":  "conditional-split",
+                                                                           "temporary_id":  "split-babycare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-babycare"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  30,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-babycare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "SPaUEi",
+                                                                                                        "preview_text":  "Nappy creams, wipes and the everyday basics - all at NZ\u0027s lowest prices.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E5 Baby \u0026 Family",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "Time to restock the baby essentials, {{ first_name|default:\u0027there\u0027 }}",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e5-babycare"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-babycare"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  "email-fallback"
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ],
+                                                                                        "timezone":  "profile",
+                                                                                        "value":  45,
+                                                                                        "unit":  "days",
+                                                                                        "secondary_value":  null
+                                                                                    },
+                                                                           "type":  "time-delay",
+                                                                           "temporary_id":  "delay-fallback"
+                                                                       },
+                                                                       {
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     },
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "cc_email":  null,
+                                                                                                        "template_id":  "Wq2FFg",
+                                                                                                        "preview_text":  "Whatever you ordered last time - restock it at the same great Bargain Chemist price.",
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "name":  "[Z] Replenishment - E6 Fallback",
+                                                                                                        "reply_to_email":  "orders@bargainchemist.co.nz",
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027There\u0027 }}, time to restock your favourites?",
+                                                                                                        "bcc_email":  null,
+                                                                                                        "transactional":  false,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "custom_tracking_params":  [
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_source",
+                                                                                                                                           "value":  "klaviyo"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_medium",
+                                                                                                                                           "value":  "email"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_campaign",
+                                                                                                                                           "value":  "replenishment-v2"
+                                                                                                                                       },
+                                                                                                                                       {
+                                                                                                                                           "param":  "utm_content",
+                                                                                                                                           "value":  "e6-fallback"
+                                                                                                                                       }
+                                                                                                                                   ]
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "type":  "send-email",
+                                                                           "temporary_id":  "email-fallback"
+                                                                       }
+                                                                   ],
+                                                       "entry_action_id":  "split-restricted"
+                                                   }
+                                }
+             }
+}

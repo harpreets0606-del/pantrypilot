@@ -1,0 +1,38 @@
+[
+  {
+    "flow_id": "RPQXaa",
+    "flow_name": "[Z] Added to Cart Abandonment",
+    "flow_status": "live",
+    "action_id": "98628345",
+    "msg_id": "TpkzDd",
+    "name": "Email #2",
+    "template_id": "UCUwWu",
+    "subject_line": "{{ first_name|default:'Still here' }}? Your cart's waiting at NZ's lowest prices",
+    "preview_text": "Pick up where you left off - Price Beat 10% and free shipping over $79",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": null,
+    "definition_type": "send-email"
+  },
+  {
+    "flow_id": "RPQXaa",
+    "flow_name": "[Z] Added to Cart Abandonment",
+    "flow_status": "live",
+    "action_id": "98627502",
+    "msg_id": "TCgQED",
+    "name": "[Z] Added to Cart Abandonment Email #1",
+    "template_id": "USNhYE",
+    "subject_line": "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist",
+    "preview_text": "Your cart's saved at NZ's lowest pharmacy prices - Price Beat 10% included.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": "98627503",
+    "definition_type": "send-email"
+  }
+]

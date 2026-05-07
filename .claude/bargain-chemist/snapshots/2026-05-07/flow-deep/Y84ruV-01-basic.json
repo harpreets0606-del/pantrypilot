@@ -1,0 +1,34 @@
+{
+  "data": {
+    "type": "flow",
+    "id": "Y84ruV",
+    "attributes": {
+      "name": "[Z] Abandoned Checkout",
+      "status": "live",
+      "archived": false,
+      "created": "2026-01-30T01:16:02+00:00",
+      "updated": "2026-05-07T01:46:51+00:00",
+      "trigger_type": "Metric"
+    },
+    "relationships": {
+      "flow-actions": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/Y84ruV/relationships/flow-actions/",
+          "related": "https://a.klaviyo.com/api/flows/Y84ruV/flow-actions/"
+        }
+      },
+      "tags": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/Y84ruV/relationships/tags/",
+          "related": "https://a.klaviyo.com/api/flows/Y84ruV/tags/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/Y84ruV/"
+    }
+  },
+  "links": {
+    "self": "https://a.klaviyo.com/api/flows/Y84ruV/"
+  }
+}

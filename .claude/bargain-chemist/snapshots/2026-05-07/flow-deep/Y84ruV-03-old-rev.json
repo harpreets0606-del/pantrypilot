@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "id": "b6a33a8c-987c-477d-97a3-ec018b1ef795",
+      "status": 400,
+      "code": "invalid",
+      "title": "Invalid input.",
+      "detail": "additional-fields must be in []: (got definition)",
+      "source": {
+        "parameter": "additional-fields"
+      },
+      "links": {},
+      "meta": {}
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>You forgot something at Bargain Chemist</title>
+<style>body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    font-family: Helvetica, Arial, sans-serif;
+    color: #222
+    }
+table {
+    border-collapse: collapse
+    }
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff
+    }
+.pad {
+    padding: 32px 28px
+    }
+.btn {
+    display: inline-block;
+    background: #FF0031;
+    color: #fff !important;
+    text-decoration: none;
+    padding: 16px 36px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase
+    }
+.nudge-low {
+    background: #FFF7E6;
+    color: #7A4F00
+    }
+.nudge-ok {
+    background: #E8F5E9;
+    color: #1B5E20
+    }
+.footer {
+    background: #1a1a1a;
+    color: #888;
+    padding: 20px 28px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.6
+    }
+.footer a {
+    color: #ccc
+    }</style></head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td align="center">
+<table border="0" cellpadding="0" cellspacing="0" class="container" width="600">
+<!-- HEADER -->
+<tr><td style="background:#CC1B2A;text-align:center;padding:18px;">
+<a href="https://www.bargainchemist.co.nz/" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:20px;letter-spacing:1px;" target="_blank">BARGAIN CHEMIST</a>
+</td></tr>
+<!-- CART-AWARE NUDGE (Klaviyo Django; verified via render-probe with $-only context) -->
+{% if event|lookup:'$value' < 79 %}
+<tr><td class="nudge-low" style="padding:18px 28px;text-align:center;">
+<p style="margin:0;font-size:16px;line-height:1.5;color:#7A4F00;">
+    Your cart is under $79 — add a few more items to unlock <strong>FREE shipping</strong> at NZ's lowest pharmacy prices.
+  </p>
+</td></tr>
+{% else %}
+<tr><td class="nudge-ok" style="padding:18px 28px;text-align:center;">
+<p style="margin:0;font-size:16px;line-height:1.5;color:#1B5E20;">
+<strong>Free shipping is yours</strong> — finish checkout in just a few clicks.
+  </p>
+</td></tr>
+{% endif %}
+
+<!-- BODY -->
+<tr><td class="pad" style="padding:32px 28px;">
+<p style="font-size:18px;margin:0 0 16px 0;line-height:1.4;">Hi {{ first_name|default:'there' }},</p>
+<p style="font-size:16px;margin:0 0 24px 0;line-height:1.6;color:#444;">
+    Your cart is saved at NZ's lowest pharmacy prices. Pick up where you left off — everything's ready when you are.
+  </p>
+<p style="text-align:center;margin:0 0 24px 0;">
+<a class="btn" href="https://www.bargainchemist.co.nz/cart" target="_blank">Return To Your Cart</a>
+</p>
+<p style="font-size:14px;color:#666;text-align:center;margin:0;line-height:1.6;">
+    Free shipping over $79  ·  Price Beat 10% Guarantee  ·  30+ stores nationwide
+  </p>
+</td></tr>
+<!-- TRUST -->
+<tr><td style="background:#f9f9f9;padding:18px 28px;text-align:center;border-top:1px solid #eee;">
+<p style="font-size:13px;color:#666;margin:0;line-height:1.6;">
+    Trusted NZ pharmacists. Safe &amp; secure checkout. Trusted by thousands of Kiwis.
+  </p>
+</td></tr>
+<!-- ASA DISCLAIMER -->
+<tr><td style="padding:18px 28px;text-align:center;background:#ffffff;">
+<p style="font-size:12px;color:#888;margin:0;line-height:1.6;">
+    Always read the label and use as directed. If symptoms persist, see your healthcare professional.
+  </p>
+</td></tr>
+<!-- FOOTER -->
+<tr><td class="footer">
+<p style="margin:0 0 6px 0;">{{ organization.full_address }}</p>
+<p style="margin:0 0 6px 0;">© 2026 Bargain Chemist. All rights reserved.</p>
+<p style="margin:0;">{% unsubscribe 'Unsubscribe' %}  ·  <a href="https://bargainchemist.co.nz/pages/privacy-policy" style="color:#cccccc;">Privacy Policy</a></p>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,193 @@
+﻿{
+    "data":  {
+                 "type":  "flow",
+                 "id":  "YdejKf",
+                 "attributes":  {
+                                    "name":  "Welcome Series 2026 - No Coupon",
+                                    "status":  "draft",
+                                    "archived":  false,
+                                    "created":  "2026-05-07T01:33:59.240113+00:00",
+                                    "updated":  "2026-05-07T01:33:59.246734+00:00",
+                                    "trigger_type":  "Added to List",
+                                    "definition":  {
+                                                       "triggers":  [
+                                                                        {
+                                                                            "type":  "list",
+                                                                            "id":  "SxBenU"
+                                                                        }
+                                                                    ],
+                                                       "profile_filter":  null,
+                                                       "actions":  [
+                                                                       {
+                                                                           "id":  "105917206",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "minutes",
+                                                                                        "value":  5,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile",
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ]
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "105917207"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "id":  "105917207",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "Welcome to Bargain Chemist, {{ first_name|default:\u0027there\u0027 }}",
+                                                                                                        "preview_text":  "NZ\u0027s most trusted pharmacy - and your best price starts now.",
+                                                                                                        "template_id":  "VMMpC9",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "name":  "Welcome Email 1 - Welcome to the Family",
+                                                                                                        "id":  "TZmw7E"
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "105917208"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "id":  "105917208",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "days",
+                                                                                        "value":  1,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile",
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ]
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "105917209"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "id":  "105917209",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027There\u0027 }}, here\u0027s what\u0027s flying off our shelves",
+                                                                                                        "preview_text":  "NZ\u0027s best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love.",
+                                                                                                        "template_id":  "Tnktv3",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "name":  "Welcome Email 2 - Best Sellers",
+                                                                                                        "id":  "RzUzYy"
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "105917210"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "id":  "105917210",
+                                                                           "type":  "time-delay",
+                                                                           "data":  {
+                                                                                        "unit":  "days",
+                                                                                        "value":  2,
+                                                                                        "secondary_value":  null,
+                                                                                        "timezone":  "profile",
+                                                                                        "delay_until_weekdays":  [
+                                                                                                                     "monday",
+                                                                                                                     "tuesday",
+                                                                                                                     "wednesday",
+                                                                                                                     "thursday",
+                                                                                                                     "friday",
+                                                                                                                     "saturday",
+                                                                                                                     "sunday"
+                                                                                                                 ]
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  "105917211"
+                                                                                     }
+                                                                       },
+                                                                       {
+                                                                           "id":  "105917211",
+                                                                           "type":  "send-email",
+                                                                           "data":  {
+                                                                                        "message":  {
+                                                                                                        "from_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "from_label":  "Bargain Chemist",
+                                                                                                        "reply_to_email":  "hello@bargainchemist.co.nz",
+                                                                                                        "cc_email":  null,
+                                                                                                        "bcc_email":  null,
+                                                                                                        "subject_line":  "{{ first_name|default:\u0027Still here\u0027 }} - 3 reasons NZ shops at Bargain Chemist",
+                                                                                                        "preview_text":  "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+                                                                                                        "template_id":  "QWTxmV",
+                                                                                                        "smart_sending_enabled":  true,
+                                                                                                        "transactional":  false,
+                                                                                                        "add_tracking_params":  true,
+                                                                                                        "custom_tracking_params":  null,
+                                                                                                        "additional_filters":  null,
+                                                                                                        "name":  "Welcome Email 3 - Last Nudge",
+                                                                                                        "id":  "WXcevZ"
+                                                                                                    },
+                                                                                        "status":  "draft"
+                                                                                    },
+                                                                           "links":  {
+                                                                                         "next":  null
+                                                                                     }
+                                                                       }
+                                                                   ],
+                                                       "entry_action_id":  "105917206"
+                                                   }
+                                },
+                 "relationships":  {
+                                       "flow-actions":  {
+                                                            "links":  {
+                                                                          "self":  "https://a.klaviyo.com/api/flows/YdejKf/relationships/flow-actions/",
+                                                                          "related":  "https://a.klaviyo.com/api/flows/YdejKf/flow-actions/"
+                                                                      }
+                                                        },
+                                       "tags":  {
+                                                    "links":  {
+                                                                  "self":  "https://a.klaviyo.com/api/flows/YdejKf/relationships/tags/",
+                                                                  "related":  "https://a.klaviyo.com/api/flows/YdejKf/tags/"
+                                                              }
+                                                }
+                                   },
+                 "links":  {
+                               "self":  "https://a.klaviyo.com/api/flows/YdejKf/"
+                           }
+             },
+    "links":  {
+                  "self":  "https://a.klaviyo.com/api/flows/"
+              }
+}

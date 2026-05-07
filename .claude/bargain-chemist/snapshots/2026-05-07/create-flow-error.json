@@ -1,0 +1,1 @@
+﻿{"errors":[{"id":"167723f4-7dc8-4284-94db-b929e38f0a19","status":400,"code":"invalid","title":"Invalid input.","detail":"Not allowed to set delay_until_time or delay_until_weekdays unless unit is 'days'","source":{"pointer":"/data/attributes/definition/actions/0/data"},"links":{},"meta":{}}]}

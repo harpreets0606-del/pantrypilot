@@ -1,0 +1,161 @@
+{
+  "data": {
+    "type": "flow",
+    "id": "WCMUGZ",
+    "attributes": {
+      "name": "PROBE - conditional-split metric_filters on $value",
+      "status": "draft",
+      "archived": false,
+      "created": "2026-05-07T12:31:59+00:00",
+      "updated": "2026-05-07T12:31:59+00:00",
+      "trigger_type": "Metric",
+      "definition": {
+        "triggers": [
+          {
+            "type": "metric",
+            "id": "VvcTue",
+            "trigger_filter": null
+          }
+        ],
+        "profile_filter": {
+          "condition_groups": [
+            {
+              "conditions": [
+                {
+                  "type": "profile-marketing-consent",
+                  "consent": {
+                    "channel": "email",
+                    "can_receive_marketing": true,
+                    "consent_status": {
+                      "subscription": "any",
+                      "filters": null
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "actions": [
+          {
+            "id": "105960329",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "VvcTue",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "$value",
+                            "filter": {
+                              "type": "numeric",
+                              "operator": "less-than",
+                              "value": 30.0
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105960330",
+              "next_if_false": "105960331"
+            }
+          },
+          {
+            "id": "105960330",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "[PROBE A] Cart under $30",
+                "preview_text": "probe",
+                "template_id": "XNcKAR",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "PROBE - Tier A (under $30)",
+                "id": "UdkYzT"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          },
+          {
+            "id": "105960331",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "[PROBE B] Cart $30+",
+                "preview_text": "probe",
+                "template_id": "SXiTkD",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "PROBE - Tier B+C ($30+)",
+                "id": "XbbGYe"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        ],
+        "entry_action_id": "105960329"
+      }
+    },
+    "relationships": {
+      "flow-actions": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/WCMUGZ/relationships/flow-actions/",
+          "related": "https://a.klaviyo.com/api/flows/WCMUGZ/flow-actions/"
+        }
+      },
+      "tags": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/WCMUGZ/relationships/tags/",
+          "related": "https://a.klaviyo.com/api/flows/WCMUGZ/tags/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/WCMUGZ/"
+    }
+  },
+  "links": {
+    "self": "https://a.klaviyo.com/api/flows/WCMUGZ/?additional-fields%5Bflow%5D=definition"
+  }
+}

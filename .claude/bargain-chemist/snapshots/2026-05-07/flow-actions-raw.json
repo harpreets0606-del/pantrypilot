@@ -1,0 +1,2553 @@
+{
+  "YdejKf": {
+    "data": {
+      "type": "flow",
+      "id": "YdejKf",
+      "attributes": {
+        "name": "Welcome Series 2026 - No Coupon",
+        "status": "live",
+        "archived": false,
+        "created": "2026-05-07T01:33:59+00:00",
+        "updated": "2026-05-07T01:40:42+00:00",
+        "trigger_type": "Added to List"
+      },
+      "relationships": {
+        "flow-actions": {
+          "data": [
+            {
+              "type": "flow-action",
+              "id": "105917207"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917209"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917211"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917268"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917298"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917206"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917208"
+            },
+            {
+              "type": "flow-action",
+              "id": "105917210"
+            }
+          ],
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/YdejKf/relationships/flow-actions/",
+            "related": "https://a.klaviyo.com/api/flows/YdejKf/flow-actions/"
+          }
+        },
+        "tags": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/YdejKf/relationships/tags/",
+            "related": "https://a.klaviyo.com/api/flows/YdejKf/tags/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flows/YdejKf/"
+      }
+    },
+    "included": [
+      {
+        "type": "flow-action",
+        "id": "105917207",
+        "attributes": {
+          "created": "2026-05-07T01:34:00+00:00",
+          "updated": "2026-05-07T01:40:23+00:00",
+          "definition": {
+            "id": "105917207",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Welcome to Bargain Chemist, {{ first_name|default:'there' }}",
+                "preview_text": "NZ's most trusted pharmacy - and your best price starts now.",
+                "template_id": "UpdhCT",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Welcome Email 1 - Welcome to the Family",
+                "id": "TZmw7E"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": "105917208"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917207/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917207/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917207/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917207/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917207/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917209",
+        "attributes": {
+          "created": "2026-05-07T01:34:00+00:00",
+          "updated": "2026-05-07T01:40:23+00:00",
+          "definition": {
+            "id": "105917209",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'There' }}, here's what's flying off our shelves",
+                "preview_text": "NZ's best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love.",
+                "template_id": "UVB5U8",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Welcome Email 2 - Best Sellers",
+                "id": "RzUzYy"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": "105917210"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917209/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917209/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917209/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917209/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917209/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917211",
+        "attributes": {
+          "created": "2026-05-07T01:34:01+00:00",
+          "updated": "2026-05-07T01:40:23+00:00",
+          "definition": {
+            "id": "105917211",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist",
+                "preview_text": "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+                "template_id": "XgqKFQ",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Welcome Email 3 - Last Nudge",
+                "id": "WXcevZ"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917211/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917211/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917211/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917211/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917211/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917268",
+        "attributes": {
+          "created": "2026-05-07T01:35:59+00:00",
+          "updated": "2026-05-07T01:36:33+00:00",
+          "definition": {
+            "id": "105917268",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "Sxnb5T",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": null,
+              "next_if_false": "105917209"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917268/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917268/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917268/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917268/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917268/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917298",
+        "attributes": {
+          "created": "2026-05-07T01:36:53+00:00",
+          "updated": "2026-05-07T01:37:29+00:00",
+          "definition": {
+            "id": "105917298",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "Sxnb5T",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": null,
+              "next_if_false": "105917211"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917298/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917298/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917298/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917298/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917298/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917206",
+        "attributes": {
+          "created": "2026-05-07T01:33:59+00:00",
+          "updated": "2026-05-07T01:34:00+00:00",
+          "definition": {
+            "id": "105917206",
+            "type": "time-delay",
+            "data": {
+              "unit": "minutes",
+              "value": 5,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105917207"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917206/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917206/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917206/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917206/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917206/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917208",
+        "attributes": {
+          "created": "2026-05-07T01:34:00+00:00",
+          "updated": "2026-05-07T01:34:00+00:00",
+          "definition": {
+            "id": "105917208",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 1,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105917268"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917208/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917208/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917208/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917208/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917208/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105917210",
+        "attributes": {
+          "created": "2026-05-07T01:34:01+00:00",
+          "updated": "2026-05-07T01:35:59+00:00",
+          "definition": {
+            "id": "105917210",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 2,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105917298"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917210/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917210/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105917210/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105917210/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105917210/"
+        }
+      }
+    ],
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/YdejKf/?include=flow-actions"
+    }
+  },
+  "RPQXaa": {
+    "data": {
+      "type": "flow",
+      "id": "RPQXaa",
+      "attributes": {
+        "name": "[Z] Added to Cart Abandonment",
+        "status": "live",
+        "archived": false,
+        "created": "2026-01-30T01:16:36+00:00",
+        "updated": "2026-05-07T02:43:58+00:00",
+        "trigger_type": "Metric"
+      },
+      "relationships": {
+        "flow-actions": {
+          "data": [
+            {
+              "type": "flow-action",
+              "id": "98628345"
+            },
+            {
+              "type": "flow-action",
+              "id": "98627502"
+            },
+            {
+              "type": "flow-action",
+              "id": "100277610"
+            },
+            {
+              "type": "flow-action",
+              "id": "98627501"
+            },
+            {
+              "type": "flow-action",
+              "id": "98627503"
+            }
+          ],
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/RPQXaa/relationships/flow-actions/",
+            "related": "https://a.klaviyo.com/api/flows/RPQXaa/flow-actions/"
+          }
+        },
+        "tags": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/RPQXaa/relationships/tags/",
+            "related": "https://a.klaviyo.com/api/flows/RPQXaa/tags/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flows/RPQXaa/"
+      }
+    },
+    "included": [
+      {
+        "type": "flow-action",
+        "id": "98628345",
+        "attributes": {
+          "created": "2026-01-30T01:45:59+00:00",
+          "updated": "2026-05-07T02:33:21+00:00",
+          "definition": {
+            "id": "98628345",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Still here' }}? Your cart's waiting at NZ's lowest prices",
+                "preview_text": "Pick up where you left off - Price Beat 10% and free shipping over $79",
+                "template_id": "QRewz9",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "cart_abandon_e2_2026"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "Email #2",
+                "id": "TpkzDd"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98628345/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98628345/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98628345/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98628345/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/98628345/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "98627502",
+        "attributes": {
+          "created": "2026-01-30T01:16:36+00:00",
+          "updated": "2026-02-02T23:27:27+00:00",
+          "definition": {
+            "id": "98627502",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist",
+                "preview_text": "Your cart's saved at NZ's lowest pharmacy prices - Price Beat 10% included.",
+                "template_id": "TgFsGf",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "cart_abandon_e1_2026"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Added to Cart Abandonment Email #1",
+                "id": "TCgQED"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": "98627503"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627502/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627502/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627502/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627502/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/98627502/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "100277610",
+        "attributes": {
+          "created": "2026-02-24T00:59:54+00:00",
+          "updated": "2026-02-24T01:00:15+00:00",
+          "definition": {
+            "id": "100277610",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "Sxnb5T",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "equals",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "98628345",
+              "next_if_false": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/100277610/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/100277610/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/100277610/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/100277610/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/100277610/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "98627501",
+        "attributes": {
+          "created": "2026-01-30T01:16:36+00:00",
+          "updated": "2026-01-30T01:46:10+00:00",
+          "definition": {
+            "id": "98627501",
+            "type": "time-delay",
+            "data": {
+              "unit": "hours",
+              "value": 1,
+              "secondary_value": 30,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "98627502"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627501/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627501/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627501/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627501/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/98627501/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "98627503",
+        "attributes": {
+          "created": "2026-01-30T01:16:38+00:00",
+          "updated": "2026-01-30T01:46:10+00:00",
+          "definition": {
+            "id": "98627503",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 1,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "100277610"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627503/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627503/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/98627503/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/98627503/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/98627503/"
+        }
+      }
+    ],
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/RPQXaa/?include=flow-actions"
+    }
+  },
+  "Ua5LdS": {
+    "data": {
+      "type": "flow",
+      "id": "Ua5LdS",
+      "attributes": {
+        "name": "[Z] Replenishment - Category Based",
+        "status": "live",
+        "archived": false,
+        "created": "2026-05-07T05:15:51+00:00",
+        "updated": "2026-05-07T05:15:51+00:00",
+        "trigger_type": "Metric"
+      },
+      "relationships": {
+        "flow-actions": {
+          "data": [
+            {
+              "type": "flow-action",
+              "id": "105926055"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926062"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926061"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926058"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926052"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926049"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926048"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926051"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926045"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926054"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926057"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926046"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926056"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926059"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926050"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926060"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926053"
+            },
+            {
+              "type": "flow-action",
+              "id": "105926047"
+            }
+          ],
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/Ua5LdS/relationships/flow-actions/",
+            "related": "https://a.klaviyo.com/api/flows/Ua5LdS/flow-actions/"
+          }
+        },
+        "tags": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/Ua5LdS/relationships/tags/",
+            "related": "https://a.klaviyo.com/api/flows/Ua5LdS/tags/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flows/Ua5LdS/"
+      }
+    },
+    "included": [
+      {
+        "type": "flow-action",
+        "id": "105926055",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:20:19+00:00",
+          "definition": {
+            "id": "105926055",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Hey' }}, ready for a hair care top-up?",
+                "preview_text": "Shampoo, conditioner, styling - everything you need from NZ's best prices.",
+                "template_id": "U5svSu",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e3-haircare"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E3 Hair Care",
+                "id": "Yhjjw5"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926055/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926055/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926055/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926055/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926055/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926062",
+        "attributes": {
+          "created": "2026-05-07T05:15:54+00:00",
+          "updated": "2026-05-07T05:20:30+00:00",
+          "definition": {
+            "id": "105926062",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'There' }}, time to restock your favourites?",
+                "preview_text": "Whatever you ordered last time - restock it at the same great Bargain Chemist price.",
+                "template_id": "SPqqDe",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e6-fallback"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E6 Fallback",
+                "id": "R2Yx8K"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926062/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926062/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926062/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926062/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926062/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926061",
+        "attributes": {
+          "created": "2026-05-07T05:15:54+00:00",
+          "updated": "2026-05-07T05:20:25+00:00",
+          "definition": {
+            "id": "105926061",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Time to restock the baby essentials, {{ first_name|default:'there' }}",
+                "preview_text": "Nappy creams, wipes and the everyday basics - all at NZ's lowest prices.",
+                "template_id": "X3hegP",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e5-babycare"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E5 Baby & Family",
+                "id": "VeRkLk"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926061/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926061/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926061/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926061/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926061/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926058",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:20:22+00:00",
+          "definition": {
+            "id": "105926058",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Your oral care kit needs a refresh, {{ first_name|default:'there' }}",
+                "preview_text": "Toothpaste, mouthwash, floss - the daily basics, ready when you are.",
+                "template_id": "RDZzKn",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e4-oralcare"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E4 Oral Care",
+                "id": "XEigTs"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926058/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926058/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926058/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926058/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926058/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926052",
+        "attributes": {
+          "created": "2026-05-07T05:15:52+00:00",
+          "updated": "2026-05-07T05:20:15+00:00",
+          "definition": {
+            "id": "105926052",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Your skincare routine misses you, {{ first_name|default:'you' }}",
+                "preview_text": "Consistency is what skin loves most - top up before you run dry.",
+                "template_id": "WuTrZA",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e2-skincare"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E2 Skincare",
+                "id": "SU3EYC"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926052/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926052/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926052/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926052/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926052/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926049",
+        "attributes": {
+          "created": "2026-05-07T05:15:52+00:00",
+          "updated": "2026-05-07T05:20:12+00:00",
+          "definition": {
+            "id": "105926049",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Time to top up your vitamins, {{ first_name|default:'there' }}",
+                "preview_text": "Daily wellness works best when you don't run out. Free shipping over $79.",
+                "template_id": "VjuB7J",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": [
+                  {
+                    "param": "utm_source",
+                    "value": "klaviyo"
+                  },
+                  {
+                    "param": "utm_medium",
+                    "value": "email"
+                  },
+                  {
+                    "param": "utm_campaign",
+                    "value": "replenishment-v2"
+                  },
+                  {
+                    "param": "utm_content",
+                    "value": "e1-vitamins"
+                  }
+                ],
+                "additional_filters": null,
+                "name": "[Z] Replenishment - E1 Vitamins",
+                "id": "Tx4HBf"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926049/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926049/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926049/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926049/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926049/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926048",
+        "attributes": {
+          "created": "2026-05-07T05:15:51+00:00",
+          "updated": "2026-05-07T05:15:51+00:00",
+          "definition": {
+            "id": "105926048",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "CAT=Skin Care"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105926050",
+              "next_if_false": "105926051"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926048/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926048/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926048/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926048/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926048/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926051",
+        "attributes": {
+          "created": "2026-05-07T05:15:52+00:00",
+          "updated": "2026-05-07T05:15:52+00:00",
+          "definition": {
+            "id": "105926051",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "CAT=Hair Care"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105926053",
+              "next_if_false": "105926054"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926051/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926051/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926051/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926051/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926051/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926045",
+        "attributes": {
+          "created": "2026-05-07T05:15:51+00:00",
+          "updated": "2026-05-07T05:15:51+00:00",
+          "definition": {
+            "id": "105926045",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "_pharmacy-only"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "_pharmacist-only"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "_prescription"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": null,
+              "next_if_false": "105926046"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926045/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926045/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926045/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926045/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926045/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926054",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:15:53+00:00",
+          "definition": {
+            "id": "105926054",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "CAT=Oral Hygiene & Care"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105926056",
+              "next_if_false": "105926057"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926054/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926054/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926054/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926054/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926054/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926057",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:15:53+00:00",
+          "definition": {
+            "id": "105926057",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "CAT=Baby Care"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105926059",
+              "next_if_false": "105926060"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926057/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926057/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926057/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926057/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926057/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926046",
+        "attributes": {
+          "created": "2026-05-07T05:15:51+00:00",
+          "updated": "2026-05-07T05:15:51+00:00",
+          "definition": {
+            "id": "105926046",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "UWP7cZ",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "Categories",
+                            "filter": {
+                              "type": "string",
+                              "operator": "contains",
+                              "value": "CAT=Vitamins"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "105926047",
+              "next_if_false": "105926048"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926046/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926046/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926046/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926046/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926046/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926056",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:15:53+00:00",
+          "definition": {
+            "id": "105926056",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 30,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926058"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926056/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926056/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926056/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926056/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926056/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926059",
+        "attributes": {
+          "created": "2026-05-07T05:15:54+00:00",
+          "updated": "2026-05-07T05:15:54+00:00",
+          "definition": {
+            "id": "105926059",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 30,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926061"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926059/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926059/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926059/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926059/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926059/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926050",
+        "attributes": {
+          "created": "2026-05-07T05:15:52+00:00",
+          "updated": "2026-05-07T05:15:52+00:00",
+          "definition": {
+            "id": "105926050",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 45,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926052"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926050/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926050/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926050/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926050/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926050/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926060",
+        "attributes": {
+          "created": "2026-05-07T05:15:54+00:00",
+          "updated": "2026-05-07T05:15:54+00:00",
+          "definition": {
+            "id": "105926060",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 45,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926062"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926060/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926060/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926060/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926060/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926060/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926053",
+        "attributes": {
+          "created": "2026-05-07T05:15:53+00:00",
+          "updated": "2026-05-07T05:15:53+00:00",
+          "definition": {
+            "id": "105926053",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 60,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926055"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926053/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926053/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926053/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926053/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926053/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105926047",
+        "attributes": {
+          "created": "2026-05-07T05:15:51+00:00",
+          "updated": "2026-05-07T05:15:51+00:00",
+          "definition": {
+            "id": "105926047",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 60,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105926049"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926047/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926047/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105926047/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105926047/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105926047/"
+        }
+      }
+    ],
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/Ua5LdS/?include=flow-actions"
+    }
+  },
+  "V9XmEm": {
+    "data": {
+      "type": "flow",
+      "id": "V9XmEm",
+      "attributes": {
+        "name": "[Z] Flu Season - Winter Wellness",
+        "status": "live",
+        "archived": false,
+        "created": "2026-05-04T05:24:20+00:00",
+        "updated": "2026-05-04T05:24:20+00:00",
+        "trigger_type": "Added to List"
+      },
+      "relationships": {
+        "flow-actions": {
+          "data": [
+            {
+              "type": "flow-action",
+              "id": "105627866"
+            },
+            {
+              "type": "flow-action",
+              "id": "105627868"
+            },
+            {
+              "type": "flow-action",
+              "id": "105627867"
+            }
+          ],
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/V9XmEm/relationships/flow-actions/",
+            "related": "https://a.klaviyo.com/api/flows/V9XmEm/flow-actions/"
+          }
+        },
+        "tags": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/V9XmEm/relationships/tags/",
+            "related": "https://a.klaviyo.com/api/flows/V9XmEm/tags/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flows/V9XmEm/"
+      }
+    },
+    "included": [
+      {
+        "type": "flow-action",
+        "id": "105627866",
+        "attributes": {
+          "created": "2026-05-04T05:24:21+00:00",
+          "updated": "2026-05-04T20:39:46+00:00",
+          "definition": {
+            "id": "105627866",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
+                "preview_text": "Your guide to staying healthy and protected this flu season.",
+                "template_id": "SJwrxf",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "[Z] Flu Season Email 1",
+                "id": "QW6y2L"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": "105627867"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627866/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627866/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627866/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627866/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627866/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105627868",
+        "attributes": {
+          "created": "2026-05-04T05:24:21+00:00",
+          "updated": "2026-05-07T07:15:40+00:00",
+          "definition": {
+            "id": "105627868",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "Already under the weather, {{ first_name|default:'there' }}?",
+                "preview_text": "Pharmacist-backed picks to support your recovery, NZ's best prices.",
+                "template_id": "YtcgUa",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Email #2",
+                "id": "S7vnUC"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627868/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627868/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627868/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627868/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627868/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105627867",
+        "attributes": {
+          "created": "2026-05-04T05:24:21+00:00",
+          "updated": "2026-05-04T05:24:21+00:00",
+          "definition": {
+            "id": "105627867",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 7,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105627868"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627867/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627867/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627867/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627867/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627867/"
+        }
+      }
+    ],
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/V9XmEm/?include=flow-actions"
+    }
+  },
+  "Ysj7sg": {
+    "data": {
+      "type": "flow",
+      "id": "Ysj7sg",
+      "attributes": {
+        "name": "[Z] Back in Stock",
+        "status": "live",
+        "archived": false,
+        "created": "2026-05-04T05:24:12+00:00",
+        "updated": "2026-05-04T05:24:12+00:00",
+        "trigger_type": "Metric"
+      },
+      "relationships": {
+        "flow-actions": {
+          "data": [
+            {
+              "type": "flow-action",
+              "id": "105627854"
+            },
+            {
+              "type": "flow-action",
+              "id": "105627857"
+            },
+            {
+              "type": "flow-action",
+              "id": "105627856"
+            },
+            {
+              "type": "flow-action",
+              "id": "105627855"
+            }
+          ],
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/Ysj7sg/relationships/flow-actions/",
+            "related": "https://a.klaviyo.com/api/flows/Ysj7sg/flow-actions/"
+          }
+        },
+        "tags": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flows/Ysj7sg/relationships/tags/",
+            "related": "https://a.klaviyo.com/api/flows/Ysj7sg/tags/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flows/Ysj7sg/"
+      }
+    },
+    "included": [
+      {
+        "type": "flow-action",
+        "id": "105627854",
+        "attributes": {
+          "created": "2026-05-04T05:24:12+00:00",
+          "updated": "2026-05-04T20:39:07+00:00",
+          "definition": {
+            "id": "105627854",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ event.ProductName }} is back!",
+                "preview_text": "It's back in stock at NZ's lowest price. Free shipping over $79.",
+                "template_id": "W2Sbja",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "[Z] Back in Stock Email 1",
+                "id": "UeshNF"
+              },
+              "status": "live"
+            },
+            "links": {
+              "next": "105627855"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627854/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627854/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627854/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627854/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627854/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105627857",
+        "attributes": {
+          "created": "2026-05-04T05:24:13+00:00",
+          "updated": "2026-05-06T09:56:17+00:00",
+          "definition": {
+            "id": "105627857",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "orders@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ event.ProductName }} is still available",
+                "preview_text": "Limited stock remaining. Don't miss your chance to grab one.",
+                "template_id": "RijuTw",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Email #2",
+                "id": "VpR8Gx"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627857/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627857/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627857/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627857/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627857/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105627856",
+        "attributes": {
+          "created": "2026-05-04T05:24:13+00:00",
+          "updated": "2026-05-04T05:24:13+00:00",
+          "definition": {
+            "id": "105627856",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "Sxnb5T",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": null,
+              "next_if_false": "105627857"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627856/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627856/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627856/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627856/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627856/"
+        }
+      },
+      {
+        "type": "flow-action",
+        "id": "105627855",
+        "attributes": {
+          "created": "2026-05-04T05:24:12+00:00",
+          "updated": "2026-05-04T05:24:12+00:00",
+          "definition": {
+            "id": "105627855",
+            "type": "time-delay",
+            "data": {
+              "unit": "days",
+              "value": 1,
+              "secondary_value": null,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105627856"
+            }
+          }
+        },
+        "relationships": {
+          "flow": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627855/relationships/flow/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627855/flow/"
+            }
+          },
+          "flow-messages": {
+            "links": {
+              "self": "https://a.klaviyo.com/api/flow-actions/105627855/relationships/flow-messages/",
+              "related": "https://a.klaviyo.com/api/flow-actions/105627855/flow-messages/"
+            }
+          }
+        },
+        "links": {
+          "self": "https://a.klaviyo.com/api/flow-actions/105627855/"
+        }
+      }
+    ],
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/Ysj7sg/?include=flow-actions"
+    }
+  }
+}

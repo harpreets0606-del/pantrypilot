@@ -1,0 +1,38 @@
+[
+  {
+    "flow_id": "Ysj7sg",
+    "flow_name": "[Z] Back in Stock",
+    "flow_status": "live",
+    "action_id": "105627854",
+    "msg_id": "UeshNF",
+    "name": "[Z] Back in Stock Email 1",
+    "template_id": "XccdEd",
+    "subject_line": "{{ event.ProductName }} is back!",
+    "preview_text": "It's back in stock at NZ's lowest price. Free shipping over $79.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": "105627855",
+    "definition_type": "send-email"
+  },
+  {
+    "flow_id": "Ysj7sg",
+    "flow_name": "[Z] Back in Stock",
+    "flow_status": "live",
+    "action_id": "105627857",
+    "msg_id": "VpR8Gx",
+    "name": "Email #2",
+    "template_id": "RijuTw",
+    "subject_line": "{{ event.ProductName }} is still available",
+    "preview_text": "It's still here when you're ready. Same item, same Bargain Chemist price.",
+    "from_email": "hello@bargainchemist.co.nz",
+    "from_label": "Bargain Chemist",
+    "smart_sending": true,
+    "transactional": false,
+    "add_tracking_params": true,
+    "next_action": null,
+    "definition_type": "send-email"
+  }
+]

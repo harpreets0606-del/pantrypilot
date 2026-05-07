@@ -1,0 +1,167 @@
+[
+  {
+    "flow_id": "YdejKf",
+    "flow_name": "Welcome Series 2026 - No Coupon",
+    "action_id": "105917207",
+    "message_id": "TZmw7E",
+    "template_id": "UpdhCT",
+    "subject_line": "Welcome to Bargain Chemist, {{ first_name|default:'there' }}",
+    "preview_text": "NZ's most trusted pharmacy - and your best price starts now.",
+    "name": "Welcome Email 1 - Welcome to the Family",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "YdejKf",
+    "flow_name": "Welcome Series 2026 - No Coupon",
+    "action_id": "105917209",
+    "message_id": "RzUzYy",
+    "template_id": "UVB5U8",
+    "subject_line": "{{ first_name|default:'There' }}, here's what's flying off our shelves",
+    "preview_text": "NZ's best-selling vitamins, skincare and pharmacy essentials - see what Kiwis love.",
+    "name": "Welcome Email 2 - Best Sellers",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "YdejKf",
+    "flow_name": "Welcome Series 2026 - No Coupon",
+    "action_id": "105917211",
+    "message_id": "WXcevZ",
+    "template_id": "XgqKFQ",
+    "subject_line": "{{ first_name|default:'Still here' }} - 3 reasons NZ shops at Bargain Chemist",
+    "preview_text": "Price beat guarantee, free shipping, trusted pharmacists since 1984.",
+    "name": "Welcome Email 3 - Last Nudge",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "RPQXaa",
+    "flow_name": "[Z] Added to Cart Abandonment",
+    "action_id": "98628345",
+    "message_id": "TpkzDd",
+    "template_id": "QRewz9",
+    "subject_line": "{{ first_name|default:'Still here' }}? Your cart's waiting at NZ's lowest prices",
+    "preview_text": "Pick up where you left off - Price Beat 10% and free shipping over $79",
+    "name": "Email #2",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "RPQXaa",
+    "flow_name": "[Z] Added to Cart Abandonment",
+    "action_id": "98627502",
+    "message_id": "TCgQED",
+    "template_id": "TgFsGf",
+    "subject_line": "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist",
+    "preview_text": "Your cart's saved at NZ's lowest pharmacy prices - Price Beat 10% included.",
+    "name": "[Z] Added to Cart Abandonment Email #1",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926055",
+    "message_id": "Yhjjw5",
+    "template_id": "U5svSu",
+    "subject_line": "{{ first_name|default:'Hey' }}, ready for a hair care top-up?",
+    "preview_text": "Shampoo, conditioner, styling - everything you need from NZ's best prices.",
+    "name": "[Z] Replenishment - E3 Hair Care",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926062",
+    "message_id": "R2Yx8K",
+    "template_id": "SPqqDe",
+    "subject_line": "{{ first_name|default:'There' }}, time to restock your favourites?",
+    "preview_text": "Whatever you ordered last time - restock it at the same great Bargain Chemist price.",
+    "name": "[Z] Replenishment - E6 Fallback",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926061",
+    "message_id": "VeRkLk",
+    "template_id": "X3hegP",
+    "subject_line": "Time to restock the baby essentials, {{ first_name|default:'there' }}",
+    "preview_text": "Nappy creams, wipes and the everyday basics - all at NZ's lowest prices.",
+    "name": "[Z] Replenishment - E5 Baby & Family",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926058",
+    "message_id": "XEigTs",
+    "template_id": "RDZzKn",
+    "subject_line": "Your oral care kit needs a refresh, {{ first_name|default:'there' }}",
+    "preview_text": "Toothpaste, mouthwash, floss - the daily basics, ready when you are.",
+    "name": "[Z] Replenishment - E4 Oral Care",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926052",
+    "message_id": "SU3EYC",
+    "template_id": "WuTrZA",
+    "subject_line": "Your skincare routine misses you, {{ first_name|default:'you' }}",
+    "preview_text": "Consistency is what skin loves most - top up before you run dry.",
+    "name": "[Z] Replenishment - E2 Skincare",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ua5LdS",
+    "flow_name": "[Z] Replenishment - Category Based",
+    "action_id": "105926049",
+    "message_id": "Tx4HBf",
+    "template_id": "VjuB7J",
+    "subject_line": "Time to top up your vitamins, {{ first_name|default:'there' }}",
+    "preview_text": "Daily wellness works best when you don't run out. Free shipping over $79.",
+    "name": "[Z] Replenishment - E1 Vitamins",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "V9XmEm",
+    "flow_name": "[Z] Flu Season - Winter Wellness",
+    "action_id": "105627866",
+    "message_id": "QW6y2L",
+    "template_id": "SJwrxf",
+    "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
+    "preview_text": "Your guide to staying healthy and protected this flu season.",
+    "name": "[Z] Flu Season Email 1",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "V9XmEm",
+    "flow_name": "[Z] Flu Season - Winter Wellness",
+    "action_id": "105627868",
+    "message_id": "S7vnUC",
+    "template_id": "YtcgUa",
+    "subject_line": "Already under the weather, {{ first_name|default:'there' }}?",
+    "preview_text": "Pharmacist-backed picks to support your recovery, NZ's best prices.",
+    "name": "Email #2",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ysj7sg",
+    "flow_name": "[Z] Back in Stock",
+    "action_id": "105627854",
+    "message_id": "UeshNF",
+    "template_id": "W2Sbja",
+    "subject_line": "{{ event.ProductName }} is back!",
+    "preview_text": "It's back in stock at NZ's lowest price. Free shipping over $79.",
+    "name": "[Z] Back in Stock Email 1",
+    "smart_sending": true
+  },
+  {
+    "flow_id": "Ysj7sg",
+    "flow_name": "[Z] Back in Stock",
+    "action_id": "105627857",
+    "message_id": "VpR8Gx",
+    "template_id": "RijuTw",
+    "subject_line": "{{ event.ProductName }} is still available",
+    "preview_text": "Limited stock remaining. Don't miss your chance to grab one.",
+    "name": "Email #2",
+    "smart_sending": true
+  }
+]

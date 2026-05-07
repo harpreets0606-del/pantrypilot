@@ -1,0 +1,1 @@
+{"errors":[{"id":"20527b2e-b51a-4b3f-b2c1-7b8f9dfc3c63","status":400,"code":"invalid","title":"Invalid input.","detail":"additional-fields must be in []: (got definition)","source":{"parameter":"additional-fields"},"links":{},"meta":{}}]}
