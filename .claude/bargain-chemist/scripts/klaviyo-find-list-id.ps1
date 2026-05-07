@@ -7,6 +7,7 @@ param(
 )
 
 $ErrorActionPreference = 'Continue'
+$ProgressPreference    = 'SilentlyContinue'
 
 if (-not (Test-Path .env.local)) { Write-Error "ERROR: .env.local not found"; exit 1 }
 Get-Content .env.local | ForEach-Object {

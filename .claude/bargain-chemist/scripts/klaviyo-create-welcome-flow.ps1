@@ -27,6 +27,7 @@
 #   - Rate limit: 100 flow creates/day. We use 1.
 
 $ErrorActionPreference = 'Continue'
+$ProgressPreference    = 'SilentlyContinue'   # Fixes PS 5.1 slow upload bug
 
 # --- Load env ---
 if (-not (Test-Path .env.local)) { Write-Error "ERROR: .env.local not found"; exit 1 }
@@ -270,7 +271,8 @@ try {
                               -Method Post `
                               -Body $Body `
                               -ErrorAction Stop `
-                              -UseBasicParsing
+                              -UseBasicParsing `
+                              -TimeoutSec 90
     $json = $resp.Content | ConvertFrom-Json
     $flowId = $json.data.id
     Write-Host ""

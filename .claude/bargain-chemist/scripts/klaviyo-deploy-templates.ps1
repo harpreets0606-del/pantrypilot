@@ -9,6 +9,7 @@
 # with template IDs + names + Klaviyo edit URLs.
 
 $ErrorActionPreference = 'Continue'
+$ProgressPreference    = 'SilentlyContinue'   # Fixes PS 5.1 slow upload bug
 
 # Load .env.local
 if (-not (Test-Path .env.local)) {
@@ -51,13 +52,18 @@ Write-Host ""
 Write-Host "=== Deploying 4 templates to Klaviyo (account XCgiqg) ===" -ForegroundColor Cyan
 Write-Host ""
 
+$Idx = 0
 foreach ($t in $Templates) {
+    $Idx++
+    Write-Host ""
+    Write-Host "[$Idx/$($Templates.Count)] Uploading: $($t.Name)" -ForegroundColor Cyan
     if (-not (Test-Path $t.File)) {
-        Write-Host "  FAIL  $($t.Name)  -  file not found at $($t.File)" -ForegroundColor Red
+        Write-Host "  FAIL  file not found at $($t.File)" -ForegroundColor Red
         continue
     }
 
     $html = Get-Content $t.File -Raw -Encoding UTF8
+    Write-Host "  HTML size: $([math]::Round($html.Length/1KB,1)) KB - sending POST..." -ForegroundColor DarkGray
 
     $body = @{
         data = @{
@@ -76,7 +82,8 @@ foreach ($t in $Templates) {
                                   -Method Post `
                                   -Body $body `
                                   -ErrorAction Stop `
-                                  -UseBasicParsing
+                                  -UseBasicParsing `
+                                  -TimeoutSec 60
         $json = $resp.Content | ConvertFrom-Json
         $tid  = $json.data.id
         $editUrl = "https://www.klaviyo.com/email-editor/$tid/edit"
