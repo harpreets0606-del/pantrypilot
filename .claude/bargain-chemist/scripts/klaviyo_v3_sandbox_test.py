@@ -557,6 +557,42 @@ def phase_inject(key):
 
 
 # =================================================================
+# PHASE: ENSURE-LIVE
+# =================================================================
+
+def phase_ensure_live(key):
+    """Force all 3 send-email actions to status=live.
+    Run this if emails aren't sending — messages may be stuck in draft.
+    Profiles queued at a draft action will be released and sent immediately."""
+    state = load_state()
+    if not state.get("tier_actions"):
+        print("ERROR: no tier_actions in state — run --phase=build first")
+        return 1
+    tier_actions = state["tier_actions"]
+
+    print(f"Phase ENSURE-LIVE: PATCHing all send-email actions to status=live")
+    all_ok = True
+    for tier in ["A", "B", "C"]:
+        info = tier_actions.get(tier, {})
+        action_id = info.get("action_id")
+        if not action_id:
+            print(f"  Tier {tier}: no action_id in state")
+            all_ok = False
+            continue
+        code, body = patch_flow_action_live(action_id, key)
+        ok = code == 200
+        print(f"  Tier {tier}  action_id={action_id}  HTTP {code}  {'OK — now live' if ok else 'FAIL: ' + body}")
+        all_ok = all_ok and ok
+
+    if all_ok:
+        print("\n  All actions live. Queued profiles will send within 1-2 minutes.")
+        print("  Run --phase=verify in 3 minutes.")
+    else:
+        print("\n  Some actions failed. Check action IDs in state.json.")
+    return 0 if all_ok else 1
+
+
+# =================================================================
 # PHASE: VERIFY
 # =================================================================
 
@@ -734,7 +770,7 @@ def phase_cleanup(key):
 
 def main():
     ap = argparse.ArgumentParser(description="Y84ruV-v3 conditional-split sandbox test v2")
-    ap.add_argument("--phase", choices=["build", "inject", "reinject", "verify", "cleanup"], required=True)
+    ap.add_argument("--phase", choices=["build", "inject", "reinject", "ensure-live", "verify", "cleanup"], required=True)
     ap.add_argument("--values", help="Comma-separated $values to reinject e.g. 78,79,80,120", default="")
     args = ap.parse_args()
     key = load_key()
@@ -745,6 +781,8 @@ def main():
         return phase_inject(key)
     if args.phase == "reinject":
         return phase_reinject(key)
+    if args.phase == "ensure-live":
+        return phase_ensure_live(key)
     if args.phase == "verify":
         return phase_verify(key)
     if args.phase == "cleanup":
