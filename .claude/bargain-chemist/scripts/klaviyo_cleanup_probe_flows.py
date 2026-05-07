@@ -1,14 +1,24 @@
-"""Archive all PROBE/test flows and superseded draft flows.
+"""Delete all PROBE/test flows and superseded draft flows.
 
 Run this locally (not in the Claude Code sandbox):
     python3 .claude/bargain-chemist/scripts/klaviyo_cleanup_probe_flows.py
 
 What it does:
   1. Sets live PROBE flows (UPj2XH, Vny5bc) to manual (paused) first
-  2. Archives all 5 PROBE flows
-  3. Archives VaRyRc (incomplete Y84ruV-v2 rebuild — superseded)
-  4. Archives TsC8GZ ([Z] Welcome Series - No Coupon draft — superseded by live YdejKf)
-  5. Prints final live flow list for verification
+  2. DELETEs all 5 PROBE flows (irreversible — they're sandbox tests)
+  3. DELETEs VaRyRc (incomplete Y84ruV-v2 rebuild — superseded)
+  4. DELETEs TsC8GZ ([Z] Welcome Series - No Coupon draft — superseded by live YdejKf)
+  5. Prints final flow list for verification
+
+Why DELETE not archive: Klaviyo's PATCH /api/flows/{id} does NOT support the
+`archived` field (returns HTTP 400 "'archived' is not a valid field for the
+resource 'flow'"). POST /api/flows/{id}/archive/ also 404s. There is no known
+public API to archive a flow; the UI's Archive button is not exposed via REST.
+For these 7 disposable flows we use DELETE (documented stable). For flows you
+want to KEEP visible-but-archived in future, do it via the Klaviyo UI.
+
+Local artifacts under .claude/bargain-chemist/snapshots/ are preserved — DELETE
+only removes the Klaviyo-side flow record, not local rebuild work.
 """
 import json
 import requests
@@ -61,6 +71,23 @@ def patch_flow(flow_id, attrs, key, label=""):
     return r.status_code == 200
 
 
+def delete_flow(flow_id, key, label=""):
+    r = requests.delete(
+        f"https://a.klaviyo.com/api/flows/{flow_id}/",
+        headers=hdrs(key),
+        timeout=20,
+    )
+    tag = label or flow_id
+    # Klaviyo returns 204 No Content on success; 404 if already gone (idempotent re-run)
+    if r.status_code in (204, 200):
+        print(f"  {tag}  HTTP {r.status_code}  deleted")
+    elif r.status_code == 404:
+        print(f"  {tag}  HTTP 404  already gone")
+    else:
+        print(f"  {tag}  HTTP {r.status_code}  {r.text[:200]}")
+    return r.status_code in (204, 200, 404)
+
+
 def get_flows(key):
     r = requests.get(
         "https://a.klaviyo.com/api/flows/",
@@ -90,35 +117,35 @@ def main():
         "TsC8GZ": "[Z] Welcome Series - No Coupon draft (superseded by live YdejKf)",
     }
 
-    print("=== Step 1: Pause live PROBE flows (set to manual) ===")
+    print("=== Step 1: Pause live PROBE flows (set to manual before delete) ===")
     for fid, status in PROBE_FLOWS.items():
         if status == "live":
             patch_flow(fid, {"status": "manual"}, key, label=f"{fid} → manual")
 
-    # Klaviyo's PATCH /api/flows/{id} validator requires `status` in the body
-    # even when only flipping `archived`. We send status=manual unconditionally
-    # for archive ops: it's a no-op for already-manual flows (the 2 paused PROBEs)
-    # and a safe transition for draft flows (manual is valid + status becomes
-    # irrelevant once archived anyway).
-    archive_attrs = {"archived": True, "status": "manual"}
-
-    print("\n=== Step 2: Archive all 5 PROBE flows ===")
+    print("\n=== Step 2: DELETE all 5 PROBE flows (IRREVERSIBLE) ===")
     for fid in PROBE_FLOWS:
-        patch_flow(fid, archive_attrs, key, label=f"{fid} → archived")
+        delete_flow(fid, key, label=f"{fid} → DELETE")
 
-    print("\n=== Step 3: Archive superseded draft flows ===")
+    print("\n=== Step 3: DELETE superseded draft flows (IRREVERSIBLE) ===")
     for fid, reason in EXTRA_ARCHIVE.items():
         print(f"  ({reason})")
-        patch_flow(fid, archive_attrs, key, label=f"{fid} → archived")
+        delete_flow(fid, key, label=f"{fid} → DELETE")
 
-    print("\n=== Step 4: Verify — current non-archived flows ===")
+    print("\n=== Step 4: Verify — current flow list (deleted flows should be absent) ===")
     flows = get_flows(key)
-    visible = [f for f in flows if not f.get("attributes", {}).get("archived")]
-    for f in visible:
+    deleted_targets = set(PROBE_FLOWS) | set(EXTRA_ARCHIVE)
+    survivors = []
+    for f in flows:
         a = f["attributes"]
-        print(f"  {f['id']}  [{a['status']:>6}]  {a['name']}")
+        marker = "  ⚠️ STILL PRESENT" if f["id"] in deleted_targets else ""
+        if f["id"] in deleted_targets:
+            survivors.append(f["id"])
+        print(f"  {f['id']}  [{a['status']:>6}]  {a['name']}{marker}")
 
-    print("\nDone. Review the list above — only production [Z] flows and YdejKf should remain.")
+    if survivors:
+        print(f"\n⚠️  {len(survivors)} target flow(s) still present after delete: {survivors}")
+    else:
+        print("\n✅ All 7 target flows deleted. Only production [Z] flows + YdejKf remain.")
 
 
 if __name__ == "__main__":
