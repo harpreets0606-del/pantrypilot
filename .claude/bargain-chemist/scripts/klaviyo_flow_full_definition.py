@@ -56,11 +56,12 @@ def main():
         body = r.json()
         out = OUT_DIR / f"{fid}.json"
         out.write_text(json.dumps(body, indent=2))
-        defn = body.get("data", {}).get("attributes", {}).get("definition", {})
-        triggers = defn.get("triggers", [])
-        pf = defn.get("profile_filter", {})
-        n_groups = len(pf.get("condition_groups", []))
-        print(f"{fid}: {len(triggers)} trigger(s), profile_filter has {n_groups} condition group(s), {len(defn.get('actions',[]))} actions")
+        defn = body.get("data", {}).get("attributes", {}).get("definition") or {}
+        triggers = defn.get("triggers") or []
+        pf = defn.get("profile_filter") or {}
+        n_groups = len(pf.get("condition_groups") or [])
+        actions = defn.get("actions") or []
+        print(f"{fid}: {len(triggers)} trigger(s), profile_filter has {n_groups} condition group(s), {len(actions)} actions")
         time.sleep(0.2)
     print(f"\nDone. Saved to {OUT_DIR}")
 
