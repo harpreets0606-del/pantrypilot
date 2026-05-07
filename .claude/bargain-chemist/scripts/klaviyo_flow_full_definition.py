@@ -1,15 +1,12 @@
-"""Try every Klaviyo API parameter combination to extract the FULL flow definition
-including trigger filters, audience filters, and list bindings.
+"""Pull FULL flow definition (triggers, profile_filter, actions, trigger-splits)
+for every live flow. Uses the verified parameter `additional-fields[flow]=definition`
+with revision 2025-10-15.
 
-Tests:
-1. additional-fields[flow]=definition  (returns full flow definition with trigger)
-2. include=flow-actions,tags,trigger
-3. revision 2025-10-15 vs 2024-10-15 (different versions expose different fields)
-4. Whether trigger-split filters and audience filters are inside the flow-actions
-   resource at deeper inspection
+Output: snapshots/2026-05-07/flow-deep/<flowId>.json
 """
 import json
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -22,7 +19,7 @@ ENV_FILE = REPO / ".env.local"
 OUT_DIR = REPO / ".claude/bargain-chemist/snapshots/2026-05-07/flow-deep"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-FLOWS_TO_TEST = ["Y84ruV", "V9XmEm"]
+LIVE_FLOWS = ["RPQXaa", "T7pmf6", "Ua5LdS", "V9XmEm", "Y84ruV", "YdejKf", "Ysj7sg"]
 
 
 def load_key():
@@ -39,78 +36,33 @@ def load_key():
     sys.exit("ERROR: KLAVIYO_PRIVATE_KEY missing")
 
 
-def hdrs(key, revision):
-    return {
-        "Authorization": f"Klaviyo-API-Key {key}",
-        "revision": revision,
-        "Accept": "application/vnd.api+json",
-    }
-
-
-def try_url(label, url, key, revision, save_name):
-    print(f"\n--- {label} (rev {revision}) ---")
-    print(f"    {url}")
-    try:
-        r = requests.get(url, headers=hdrs(key, revision), timeout=30)
-    except Exception as e:
-        print(f"    NETWORK FAIL: {e}")
-        return None
-    print(f"    HTTP {r.status_code}, body {len(r.text)} bytes")
-    out = OUT_DIR / save_name
-    try:
-        out.write_text(json.dumps(r.json(), indent=2))
-    except Exception:
-        out.write_text(r.text)
-    if r.status_code == 200:
-        body = r.json()
-        attrs = body.get("data", {}).get("attributes", {})
-        print(f"    attribute keys: {list(attrs.keys())}")
-        # Check if 'definition' is now populated
-        if "definition" in attrs:
-            defn = attrs["definition"]
-            print(f"    DEFINITION keys: {list(defn.keys()) if isinstance(defn,dict) else type(defn).__name__}")
-            print(f"    sample: {json.dumps(defn, indent=2)[:600]}")
-        if "trigger" in attrs or "trigger_filters" in attrs or "audience_filter" in attrs or "smart_sending" in attrs:
-            for k in ("trigger", "trigger_filters", "audience_filter", "smart_sending", "trigger_conditions"):
-                if k in attrs:
-                    print(f"    FOUND {k}: {json.dumps(attrs[k], indent=2)[:400]}")
-        # Look in 'included' too for trigger details
-        for inc in body.get("included", []):
-            if inc.get("type") in ("flow-trigger", "list", "segment"):
-                print(f"    INCLUDED {inc.get('type')} id={inc.get('id')}: {json.dumps(inc.get('attributes',{}), indent=2)[:300]}")
-    else:
-        print(f"    body: {r.text[:300]}")
-    return r
-
-
 def main():
     key = load_key()
-    for fid in FLOWS_TO_TEST:
-        print(f"\n========== {fid} ==========")
-
-        # Test 1: Standard call (we already know this returns minimal data)
-        try_url(f"{fid} basic", f"https://a.klaviyo.com/api/flows/{fid}/",
-                key, "2025-10-15", f"{fid}-01-basic.json")
-
-        # Test 2: Add additional-fields[flow]=definition
-        try_url(f"{fid} additional-fields=definition",
-                f"https://a.klaviyo.com/api/flows/{fid}/?additional-fields%5Bflow%5D=definition",
-                key, "2025-10-15", f"{fid}-02-additional-definition.json")
-
-        # Test 3: Older revision sometimes returns more
-        try_url(f"{fid} additional-fields rev 2024-10-15",
-                f"https://a.klaviyo.com/api/flows/{fid}/?additional-fields%5Bflow%5D=definition",
-                key, "2024-10-15", f"{fid}-03-old-rev.json")
-
-        # Test 4: include trigger
-        try_url(f"{fid} include=trigger",
-                f"https://a.klaviyo.com/api/flows/{fid}/?include=flow-actions,tags",
-                key, "2025-10-15", f"{fid}-04-include-actions-tags.json")
-
-        # Test 5: list trigger relationship endpoint
-        try_url(f"{fid} relationships endpoint",
-                f"https://a.klaviyo.com/api/flows/{fid}/relationships/tags/",
-                key, "2025-10-15", f"{fid}-05-rels.json")
+    h = {
+        "Authorization": f"Klaviyo-API-Key {key}",
+        "revision": "2025-10-15",
+        "Accept": "application/vnd.api+json",
+    }
+    for fid in LIVE_FLOWS:
+        url = f"https://a.klaviyo.com/api/flows/{fid}/?additional-fields%5Bflow%5D=definition"
+        try:
+            r = requests.get(url, headers=h, timeout=30)
+        except Exception as e:
+            print(f"{fid}: NETWORK FAIL {e}")
+            continue
+        if r.status_code != 200:
+            print(f"{fid}: HTTP {r.status_code}: {r.text[:200]}")
+            continue
+        body = r.json()
+        out = OUT_DIR / f"{fid}.json"
+        out.write_text(json.dumps(body, indent=2))
+        defn = body.get("data", {}).get("attributes", {}).get("definition", {})
+        triggers = defn.get("triggers", [])
+        pf = defn.get("profile_filter", {})
+        n_groups = len(pf.get("condition_groups", []))
+        print(f"{fid}: {len(triggers)} trigger(s), profile_filter has {n_groups} condition group(s), {len(defn.get('actions',[]))} actions")
+        time.sleep(0.2)
+    print(f"\nDone. Saved to {OUT_DIR}")
 
 
 if __name__ == "__main__":
