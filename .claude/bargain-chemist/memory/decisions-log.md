@@ -59,3 +59,42 @@ _None yet — log starts when Phase 1 is complete._
 - **Confidence**: Medium-High on findings, Low on prediction (no comparable baseline yet).
 - **Outcome**: TBD
 - **Learning**: TBD
+
+---
+
+## 2026-05-07 — Welcome Series 2026 (No Coupon) created via API
+
+**What was deployed:**
+- 4 email templates uploaded via `POST /api/templates/`:
+  - `BC - Welcome Email 1 - Welcome to the Family` → ID `RjiNUy`
+  - `BC - Welcome Email 2 - Best Sellers` → ID `SuHDNq`
+  - `BC - Welcome Email 3 - Last Nudge` → ID `UPxjA8`
+  - `BC - Cart Abandonment Email 3 - Last Chance (72h)` → ID `Sq6pt2`
+- New flow created via beta `POST /api/flows/` → ID `YdejKf`
+- Flow shape (linear, no splits yet): Trigger (list `SxBenU`) → 5min → E1 → 1d → E2 → 2d → E3 → end
+- Templates: Family B design, canonical brand voice, no coupons (per locked strategy)
+- Existing `SehWRt` left untouched in DRAFT
+
+**Pending UI work (user):**
+- Add 2× "Placed Order? → exit" conditional splits between delays + emails (API schema for splits not yet verified — couldn't auto-create)
+- Add flow filter "has not been in this flow in last 30 days"
+- Preview each email with test profile
+- Flip from DRAFT → LIVE
+- Optionally archive SehWRt
+
+**Falsifiable prediction:**
+Within 14 days of LIVE activation:
+- Welcome Series 2026 should hit ≥40% open rate on Email 1 (current SehWRt baseline is irrelevant — it never went live)
+- Email 1 → placed-order rate ≥2.0% (Klaviyo benchmark for welcome 1st email)
+- Combined 3-email RPR ≥$2.50/recipient (lower bound; benchmark $3.34)
+
+**Confidence:** Medium — content quality is strong, brand voice locked, footer matches existing templates. Risk: feed name (`Best_Selling_No_Clearance`) may need a name fix in Klaviyo if the feed has been renamed.
+
+**How we'll know:**
+- Pull Klaviyo flow report for `YdejKf` 14 days after activation
+- Compare to benchmark + to TsC8GZ (current LIVE no-coupon series)
+
+**Related files:**
+- Templates: `.claude/bargain-chemist/templates/welcome-email-{1,2,3}.html`
+- Build spec: `.claude/bargain-chemist/templates/welcome-flow-build-spec.md`
+- API capabilities: `.claude/bargain-chemist/memory/klaviyo-api-capabilities.md`
