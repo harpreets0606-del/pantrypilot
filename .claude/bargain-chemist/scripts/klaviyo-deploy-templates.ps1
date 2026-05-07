@@ -41,6 +41,33 @@ $Results = @()
 $TempDir = Join-Path $env:TEMP "klaviyo-deploy-$([guid]::NewGuid().ToString('N').Substring(0,8))"
 New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 
+# Manual JSON string escaper - avoids PS 5.1 ConvertTo-Json hang on long HTML strings
+function ConvertTo-JsonString([string]$s) {
+    $sb = New-Object System.Text.StringBuilder
+    [void]$sb.Append('"')
+    foreach ($c in $s.ToCharArray()) {
+        switch ($c) {
+            '\' { [void]$sb.Append('\\') }
+            '"' { [void]$sb.Append('\"') }
+            "`b" { [void]$sb.Append('\b') }
+            "`f" { [void]$sb.Append('\f') }
+            "`n" { [void]$sb.Append('\n') }
+            "`r" { [void]$sb.Append('\r') }
+            "`t" { [void]$sb.Append('\t') }
+            default {
+                $i = [int]$c
+                if ($i -lt 32) {
+                    [void]$sb.AppendFormat('\u{0:x4}', $i)
+                } else {
+                    [void]$sb.Append($c)
+                }
+            }
+        }
+    }
+    [void]$sb.Append('"')
+    return $sb.ToString()
+}
+
 Write-Host ""
 Write-Host "=== Deploying 4 templates to Klaviyo via curl.exe (account XCgiqg) ===" -ForegroundColor Cyan
 
@@ -58,18 +85,14 @@ foreach ($t in $Templates) {
     $html = Get-Content $t.File -Raw -Encoding UTF8
     Write-Host "  HTML size: $([math]::Round($html.Length/1KB,1)) KB" -ForegroundColor DarkGray
 
-    # Build JSON body
-    $bodyObj = @{
-        data = @{
-            type = 'template'
-            attributes = @{
-                name        = $t.Name
-                editor_type = 'CODE'
-                html        = $html
-            }
-        }
-    }
-    $body = $bodyObj | ConvertTo-Json -Depth 10 -Compress
+    # Build JSON manually (avoids PS 5.1 ConvertTo-Json hang)
+    Write-Host "  Building JSON body..." -ForegroundColor DarkGray
+    $jsonStart = Get-Date
+    $nameJson = ConvertTo-JsonString $t.Name
+    $htmlJson = ConvertTo-JsonString $html
+    $body = '{"data":{"type":"template","attributes":{"name":' + $nameJson + ',"editor_type":"CODE","html":' + $htmlJson + '}}}'
+    $jsonMs = ((Get-Date) - $jsonStart).TotalMilliseconds
+    Write-Host "  JSON built in $([math]::Round($jsonMs))ms - body size: $([math]::Round($body.Length/1KB,1)) KB" -ForegroundColor DarkGray
 
     # Write body to temp file for curl --data-binary @file
     $bodyFile = Join-Path $TempDir "body-$Idx.json"
