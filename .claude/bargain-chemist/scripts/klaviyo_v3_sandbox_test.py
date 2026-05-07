@@ -673,6 +673,49 @@ def phase_verify(key):
 # PHASE: CLEANUP
 # =================================================================
 
+def phase_reinject(key):
+    """Fire fresh Checkout Started events for profiles that were BOT_PROTECTION suppressed
+    during the original inject. Call this AFTER manually re-subscribing those profiles.
+    Fires events only for profiles whose $value maps to boundaries given via --values."""
+    import argparse as _ap
+    # Parse --values from remaining argv
+    import sys as _sys
+    vals_raw = []
+    for i, a in enumerate(_sys.argv):
+        if a == "--values" and i + 1 < len(_sys.argv):
+            vals_raw = _sys.argv[i + 1].split(",")
+            break
+    if not vals_raw:
+        # Default: all Tier C + boundary v=78
+        vals_raw = ["78", "79", "80", "120"]
+    try:
+        target_vals = [int(v.strip()) for v in vals_raw]
+    except ValueError:
+        print("ERROR: --values must be comma-separated integers e.g. --values=78,79,80,120")
+        return 1
+
+    state = load_state()
+    if not state.get("flow_id"):
+        print("ERROR: no flow_id in state — run --phase=build first")
+        return 1
+
+    print(f"Phase REINJECT: firing fresh events for {target_vals}")
+    print(f"  (Profiles must be re-subscribed BEFORE running this)")
+
+    for v in target_vals:
+        email = f"{TEST_EMAIL_BASE}-{v}@{TEST_EMAIL_DOMAIN}"
+        code, body = track_checkout_started(email, v, key)
+        ok = "OK" if code in (200, 202) else f"FAIL: {body}"
+        print(f"    v={v:>4}  HTTP {code}  {ok}")
+        time.sleep(0.5)
+
+    state["reinject_at"] = datetime.utcnow().isoformat() + "Z"
+    state["reinject_vals"] = target_vals
+    write_state(state)
+    print(f"\n  Done. Wait 8+ minutes then run --phase=verify")
+    return 0
+
+
 def phase_cleanup(key):
     state = load_state()
     if not state.get("flow_id"):
@@ -691,7 +734,8 @@ def phase_cleanup(key):
 
 def main():
     ap = argparse.ArgumentParser(description="Y84ruV-v3 conditional-split sandbox test v2")
-    ap.add_argument("--phase", choices=["build", "inject", "verify", "cleanup"], required=True)
+    ap.add_argument("--phase", choices=["build", "inject", "reinject", "verify", "cleanup"], required=True)
+    ap.add_argument("--values", help="Comma-separated $values to reinject e.g. 78,79,80,120", default="")
     args = ap.parse_args()
     key = load_key()
 
@@ -699,6 +743,8 @@ def main():
         return phase_build(key)
     if args.phase == "inject":
         return phase_inject(key)
+    if args.phase == "reinject":
+        return phase_reinject(key)
     if args.phase == "verify":
         return phase_verify(key)
     if args.phase == "cleanup":
