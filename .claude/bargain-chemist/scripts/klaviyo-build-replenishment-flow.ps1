@@ -37,17 +37,26 @@ $IdsFile = ".claude/bargain-chemist/snapshots/$Date/replenishment-template-ids.j
 if (-not (Test-Path $IdsFile)) { Write-Error "Template IDs not found: $IdsFile - run klaviyo-deploy-replenishment-templates.ps1 first"; exit 1 }
 $Ids = Get-Content $IdsFile -Raw | ConvertFrom-Json
 
-# Build a key -> templateId map (explicit assignment avoids PS indexer parsing quirk)
-$T = @{}
-foreach ($t in $Ids) {
-    $k   = $t.Key
-    $tid = $t.TemplateId
-    $T.Add($k, $tid)
+# Resolve template IDs via Where-Object - avoids PS5.1 hashtable coercion quirk
+function Get-TplId([string]$key) {
+    $row = $Ids | Where-Object { $_.Key -eq $key } | Select-Object -First 1
+    if (-not $row) { Write-Error "Missing template ID for: $key"; exit 1 }
+    if ([string]::IsNullOrWhiteSpace($row.TemplateId)) { Write-Error "Empty TemplateId for key: $key"; exit 1 }
+    return $row.TemplateId
 }
-foreach ($k in 'vitamins','skincare','haircare','oralcare','babycare','fallback') {
-    if (-not $T.ContainsKey($k)) { Write-Error "Missing template ID for: $k"; exit 1 }
-    Write-Host ("  {0,-10} -> {1}" -f $k, $T[$k]) -ForegroundColor DarkGray
-}
+$tplVitamins = Get-TplId 'vitamins'
+$tplSkincare = Get-TplId 'skincare'
+$tplHaircare = Get-TplId 'haircare'
+$tplOralcare = Get-TplId 'oralcare'
+$tplBabycare = Get-TplId 'babycare'
+$tplFallback = Get-TplId 'fallback'
+Write-Host '  Loaded template IDs:' -ForegroundColor DarkGray
+Write-Host ("    vitamins  -> {0}" -f $tplVitamins) -ForegroundColor DarkGray
+Write-Host ("    skincare  -> {0}" -f $tplSkincare) -ForegroundColor DarkGray
+Write-Host ("    haircare  -> {0}" -f $tplHaircare) -ForegroundColor DarkGray
+Write-Host ("    oralcare  -> {0}" -f $tplOralcare) -ForegroundColor DarkGray
+Write-Host ("    babycare  -> {0}" -f $tplBabycare) -ForegroundColor DarkGray
+Write-Host ("    fallback  -> {0}" -f $tplFallback) -ForegroundColor DarkGray
 
 $AuthHeader = "Authorization: Klaviyo-API-Key $($env:KLAVIYO_PRIVATE_KEY)"
 $MetricId   = 'UWP7cZ'   # Ordered Product
@@ -193,7 +202,7 @@ $actions += New-RestrictedSplit -tempId 'split-restricted' -nextFalse 'split-vit
 # Vitamins
 $actions += New-CategorySplit -tempId 'split-vitamins' -catTag 'CAT=Vitamins' -nextTrue 'delay-vitamins' -nextFalse 'split-skincare'
 $actions += New-DayDelay      -tempId 'delay-vitamins' -days 60 -nextId 'email-vitamins'
-$actions += New-Email         -tempId 'email-vitamins' -tplId $T['vitamins'] `
+$actions += New-Email         -tempId 'email-vitamins' -tplId $tplVitamins `
     -messageName '[Z] Replenishment - E1 Vitamins' `
     -subject "Time to top up your vitamins, {{ first_name|default:'there' }}" `
     -preview "Daily wellness works best when you don't run out. Free shipping over `$79." `
@@ -202,7 +211,7 @@ $actions += New-Email         -tempId 'email-vitamins' -tplId $T['vitamins'] `
 # Skincare
 $actions += New-CategorySplit -tempId 'split-skincare' -catTag 'CAT=Skin Care' -nextTrue 'delay-skincare' -nextFalse 'split-haircare'
 $actions += New-DayDelay      -tempId 'delay-skincare' -days 45 -nextId 'email-skincare'
-$actions += New-Email         -tempId 'email-skincare' -tplId $T['skincare'] `
+$actions += New-Email         -tempId 'email-skincare' -tplId $tplSkincare `
     -messageName '[Z] Replenishment - E2 Skincare' `
     -subject "Your skincare routine misses you, {{ first_name|default:'you' }}" `
     -preview 'Consistency is what skin loves most - top up before you run dry.' `
@@ -211,7 +220,7 @@ $actions += New-Email         -tempId 'email-skincare' -tplId $T['skincare'] `
 # Hair Care
 $actions += New-CategorySplit -tempId 'split-haircare' -catTag 'CAT=Hair Care' -nextTrue 'delay-haircare' -nextFalse 'split-oralcare'
 $actions += New-DayDelay      -tempId 'delay-haircare' -days 60 -nextId 'email-haircare'
-$actions += New-Email         -tempId 'email-haircare' -tplId $T['haircare'] `
+$actions += New-Email         -tempId 'email-haircare' -tplId $tplHaircare `
     -messageName '[Z] Replenishment - E3 Hair Care' `
     -subject "{{ first_name|default:'Hey' }}, ready for a hair care top-up?" `
     -preview "Shampoo, conditioner, styling - everything you need from NZ's best prices." `
@@ -220,7 +229,7 @@ $actions += New-Email         -tempId 'email-haircare' -tplId $T['haircare'] `
 # Oral Care
 $actions += New-CategorySplit -tempId 'split-oralcare' -catTag 'CAT=Oral Hygiene & Care' -nextTrue 'delay-oralcare' -nextFalse 'split-babycare'
 $actions += New-DayDelay      -tempId 'delay-oralcare' -days 30 -nextId 'email-oralcare'
-$actions += New-Email         -tempId 'email-oralcare' -tplId $T['oralcare'] `
+$actions += New-Email         -tempId 'email-oralcare' -tplId $tplOralcare `
     -messageName '[Z] Replenishment - E4 Oral Care' `
     -subject "Your oral care kit needs a refresh, {{ first_name|default:'there' }}" `
     -preview 'Toothpaste, mouthwash, floss - the daily basics, ready when you are.' `
@@ -229,7 +238,7 @@ $actions += New-Email         -tempId 'email-oralcare' -tplId $T['oralcare'] `
 # Baby & Family
 $actions += New-CategorySplit -tempId 'split-babycare' -catTag 'CAT=Baby Care' -nextTrue 'delay-babycare' -nextFalse 'delay-fallback'
 $actions += New-DayDelay      -tempId 'delay-babycare' -days 30 -nextId 'email-babycare'
-$actions += New-Email         -tempId 'email-babycare' -tplId $T['babycare'] `
+$actions += New-Email         -tempId 'email-babycare' -tplId $tplBabycare `
     -messageName '[Z] Replenishment - E5 Baby & Family' `
     -subject "Time to restock the baby essentials, {{ first_name|default:'there' }}" `
     -preview "Nappy creams, wipes and the everyday basics - all at NZ's lowest prices." `
@@ -237,7 +246,7 @@ $actions += New-Email         -tempId 'email-babycare' -tplId $T['babycare'] `
 
 # Universal fallback
 $actions += New-DayDelay      -tempId 'delay-fallback' -days 45 -nextId 'email-fallback'
-$actions += New-Email         -tempId 'email-fallback' -tplId $T['fallback'] `
+$actions += New-Email         -tempId 'email-fallback' -tplId $tplFallback `
     -messageName '[Z] Replenishment - E6 Fallback' `
     -subject "{{ first_name|default:'There' }}, time to restock your favourites?" `
     -preview "Whatever you ordered last time - restock it at the same great Bargain Chemist price." `
