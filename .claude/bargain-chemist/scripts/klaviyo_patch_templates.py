@@ -28,9 +28,27 @@ ENV_FILE = REPO / ".env.local"
 def load_key() -> str:
     if not ENV_FILE.exists():
         sys.exit(f"ERROR: {ENV_FILE} not found")
-    for line in ENV_FILE.read_text().splitlines():
-        if line.startswith("KLAVIYO_PRIVATE_KEY="):
-            return line.split("=", 1)[1].strip()
+    # utf-8-sig strips BOM if present
+    text = ENV_FILE.read_text(encoding="utf-8-sig")
+    for raw in text.splitlines():
+        line = raw.strip()
+        if line.startswith("export "):
+            line = line[len("export "):].strip()
+        if line.startswith("KLAVIYO_PRIVATE_KEY"):
+            _, _, val = line.partition("=")
+            val = val.strip().strip('"').strip("'")
+            if val:
+                return val
+    # Fallback: env var
+    val = os.environ.get("KLAVIYO_PRIVATE_KEY", "").strip()
+    if val:
+        return val
+    print("Lines seen in .env.local:", file=sys.stderr)
+    for raw in text.splitlines():
+        # mask any value
+        if "=" in raw:
+            k, _, _ = raw.partition("=")
+            print(f"  {k.strip()!r}", file=sys.stderr)
     sys.exit("ERROR: KLAVIYO_PRIVATE_KEY not set in .env.local")
 
 
