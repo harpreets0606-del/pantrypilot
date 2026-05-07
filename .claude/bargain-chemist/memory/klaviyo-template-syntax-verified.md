@@ -34,9 +34,9 @@ Empirical results from POSTing test HTML to `/api/template-render` (revision 202
 | `\|round(2)` | Jinja2-only. Use `\|floatformat:2` (Django) instead. |
 | Arithmetic in templates: `{{ (79 - x)\|round(2) }}` | Django doesn't allow expression syntax. No native `sub`/multiply. Workarounds: `\|add:-N` (subtraction by adding negative), or compute server-side. |
 
-## Production context shape (verified from live Checkout Started events)
+## Production context shape (verified from live Checkout Started events 2026-05-08)
 
-The actual `event_properties` payload:
+Pulled 3 real Checkout Started events (metric VvcTue) via klaviyo_get_events MCP. Field meanings:
 
 ```json
 {
@@ -47,16 +47,23 @@ The actual `event_properties` payload:
   "Items": ["...", "..."],   // array of product titles
   "Total Discounts": "0.00",
   "$extra": {
-    "token": "...",          // for cart recovery URL construction (Shopify)
+    "token": "...",          // raw Shopify cart token
     "line_items": [...],     // full cart contents incl. line_price
-    "full_landing_site": "...",
-    "referring_site": "..."
+    "full_landing_site": "http://bargain-chemist.myshopify.com/products/<handle>?...",  // ⚠️  the product/page customer was on BEFORE checkout — NOT the cart recovery URL. Trap. Empirically: always points to a /products/<handle> page, never the cart.
+    "checkout_url": "https://www.bargainchemist.co.nz/.../checkouts/ac/<token>/recover?key=...&locale=en-NZ",  // ✅ THE cart recovery URL — use this for "Return to checkout" CTAs in abandoned-checkout flows
+    "responsive_checkout_url": "...",  // ✅ Same value as checkout_url in all 3 sample events. Either works.
+    "referring_site": "https://www.google.com/",   // upstream traffic source
+    "webhook_id": "..."
   },
   "Source Name": "web",
   "Customer Locale": "en-NZ",
   "Discount Codes": []
 }
 ```
+
+**FIELD-CHOICE TRAP (verified 2026-05-08):** for the "Return to checkout" link in abandoned-checkout templates, use `event.extra.checkout_url`, NOT `event.extra.full_landing_site`. The latter sounds right but contains the product page. This was discovered when test sends from Y84ruV v3 went to product pages instead of saved carts. Fix logged in decisions-log 2026-05-08.
+
+**For order-completed events** (filtered out of Y84ruV by profile_filter): `checkout_url` becomes an order-status authenticate URL (`/orders/.../authenticate?key=...`). Doesn't matter for cart-abandon flows since the profile_filter excludes these profiles, but worth knowing if the field is ever used in other flow types.
 
 **Klaviyo's auto-strip behaviour at runtime:** UNVERIFIED. Render endpoint does NOT auto-strip `$` from event keys (probe test 14 was inconclusive — context had both `$value` and `value`). For production safety, **always use `|lookup:'$value'`**, not `event.value`.
 

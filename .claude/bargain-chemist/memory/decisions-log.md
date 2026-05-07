@@ -315,3 +315,18 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
   - `.claude/bargain-chemist/scripts/build_y84ruv_templates.py` (commit `2d235cf`) — fetches W2Sbja, constructs candidates, render-validates, atomic-write
   - `.claude/bargain-chemist/scripts/klaviyo_rebuild_y84ruv_v3.py` (commit `2d235cf`) — Phase A POST + render-test, Phase B (--apply) snapshot + new flow + delete old
   - `.claude/bargain-chemist/scripts/extract_y84ruv_previews.py` (commit `2d235cf`) — defensive HTML-from-snapshot extractor for browser preview
+
+## 2026-05-08 — Y84ruV v3 CTA URL bug discovered + in-place fix deployed
+
+- **Context**: Test sends from Sr3hxz flow editor revealed the "Return to checkout" CTA in real emails went to **product pages** (e.g. `myshopify.com/products/bioglan-prebiotic-fibre-175g`), not saved carts. Klaviyo UI preview showed the link going to the cart correctly — classic preview-vs-production divergence.
+- **Diagnosis**: pulled 3 real Checkout Started events (metric VvcTue) via `klaviyo_get_events`. Confirmed `event.extra.full_landing_site` is the page the customer landed on BEFORE checkout — always a `/products/<handle>` URL, never the cart. The cart recovery URL lives at `event.extra.checkout_url` (and `event.extra.responsive_checkout_url`, same value).
+- **Fix**: changed CTA href from `{{ event.extra.full_landing_site|default:'...' }}` to `{{ event.extra.checkout_url|default:'https://www.bargainchemist.co.nz/cart' }}` in both E1 and E4 templates.
+- **Deploy approach**: Path 1 (in-place template update, no flow recreation). Wrote `patch_y84ruv_v3_url_fix.py` which:
+  1. PATCHes the 2 owned global templates (RqSXkv, RXgKBJ) with corrected HTML
+  2. PATCHes each send-email flow-action in Sr3hxz to re-assign the same template_id (forces Klaviyo to re-clone the latest owned-global HTML)
+  3. Verifies the new clones contain `checkout_url` and not `full_landing_site`
+  Same workflow as the 2026-05-07 1984/ASA fix deploy — `PATCH /api/flow-actions/{id}` revision `2025-10-15`.
+- **Memory updated**: `klaviyo-template-syntax-verified.md` now documents the `full_landing_site` vs `checkout_url` trap with verified payload samples.
+- **Verification gate**: re-run test sends from `Sr3hxz` flow editor at $value 20/50/120; CTA must go to a `bargainchemist.co.nz/.../checkouts/ac/<token>/recover` URL, NOT a `/products/...` URL.
+- **Confidence**: High on the field choice (3/3 real events confirmed the pattern). High on the in-place patch mechanism (verified workflow from 2026-05-07 deploy). The only remaining gap closes with the next round of test sends.
+- **Learning**: render-test in build script + dry-run + Klaviyo UI preview all PASSED — but real test sends caught the bug. **Visual preview of a rendered HTML doesn't validate the LIVE link destination because preview substitutes test context.** Going forward, always pair render-tests with at least one real test send that actually clicks links before declaring a deploy ready. Adding to mastery index as a permanent gotcha.

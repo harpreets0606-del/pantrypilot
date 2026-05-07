@@ -156,7 +156,7 @@ E1_SPEC = {
 <p style="margin:0 0 24px; font-family:Helvetica,Arial,sans-serif; font-size:16px; color:#444444; line-height:1.5; text-align:center;">Checkout's quick and secure. Your order will be on its way before you know it.</p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td align="center" style="background-color:#CC1B2A; border-radius:4px;">
-<a href="{{ event.extra.full_landing_site|default:'https://www.bargainchemist.co.nz/cart' }}" style="display:inline-block; padding:14px 40px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;" target="_blank">Return to checkout &rarr;</a>
+<a href="{{ event.extra.checkout_url|default:'https://www.bargainchemist.co.nz/cart' }}" style="display:inline-block; padding:14px 40px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;" target="_blank">Return to checkout &rarr;</a>
 </td></tr>
 </table>
 </td>
@@ -202,7 +202,7 @@ E4_SPEC = {
 <p style="margin:0 0 24px; font-family:Helvetica,Arial,sans-serif; font-size:16px; color:#444444; line-height:1.5; text-align:center;">Same secure checkout. Same Bargain Chemist prices.</p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td align="center" style="background-color:#CC1B2A; border-radius:4px;">
-<a href="{{ event.extra.full_landing_site|default:'https://www.bargainchemist.co.nz/cart' }}" style="display:inline-block; padding:14px 40px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;" target="_blank">Finish your order &rarr;</a>
+<a href="{{ event.extra.checkout_url|default:'https://www.bargainchemist.co.nz/cart' }}" style="display:inline-block; padding:14px 40px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;" target="_blank">Finish your order &rarr;</a>
 </td></tr>
 </table>
 </td>
@@ -333,7 +333,7 @@ def render_test(key, sid, label, html, expected_phrases_per_value):
                     "full_address": "1 Radcliffe Road, Belfast, Christchurch 8051, New Zealand",
                     "url": "https://www.bargainchemist.co.nz",
                 },
-                "event": {"$value": value, "extra": {"full_landing_site": "https://www.bargainchemist.co.nz/cart"}},
+                "event": {"$value": value, "extra": {"checkout_url": "https://www.bargainchemist.co.nz/checkouts/ac/TEST/recover?key=test"}},
             }
         }}}
         rr = requests.post("https://a.klaviyo.com/api/template-render/",
