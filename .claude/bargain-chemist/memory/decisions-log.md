@@ -214,3 +214,36 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
 - **Confidence**: High on the deployment itself. Medium on the inflight-cohort behaviour assumption (Klaviyo docs confirm clone reference is captured at flow-entry time, but worth re-checking next session via campaign report).
 - **Action taken**: Deployed via Python script. Snapshots of every POST/GET/PATCH/verify response saved to `.claude/bargain-chemist/snapshots/2026-05-07/deploy/`.
 - **Rollback path**: each old cloned ID still exists. To revert any one message: `PATCH /api/flow-actions/{action_id}` setting `template_id` back to the original cloned ID listed above.
+
+## 2026-05-07 — Full live-flow audit + 3 follow-up fixes + UTM tagging enabled
+
+- **Context**: User requested complete audit of every live flow ("everything from content to subject line to preview text to UI/UX to conditional logic"). Per CLAUDE.md verification protocol, dumped current live state of all 7 live flows + 20 send-email actions + 20 templates via `scripts/klaviyo_full_audit_dump.py`.
+- **Live-verified 7 flows** (snapshots/2026-05-07/audit/): YdejKf, RPQXaa, Y84ruV, Ua5LdS, V9XmEm, Ysj7sg, T7pmf6 — all `status=live`, archived=false. Metrics referenced in conditional splits verified via MCP: Sxnb5T (Placed Order), UWP7cZ (Ordered Product), VvcTue (Checkout Started — drives Y84ruV $79 trigger-split).
+- **Audit dimensions covered per email**: subject line (length, fear phrases, coupon, brand voice), preview text, body HTML, footer (NZ ASA: address, always-read-label, healthcare-pro, unsubscribe, business name, $79), UTM/links, image alt, smart sending, transactional flag, fabricated facts, restricted-product mentions, conditional logic, action sequence, time delays.
+- **Findings**:
+  - Flow structures all correct: Welcome 3-stage, Cart 2-stage, Abandoned Checkout with $79 trigger-split, Replenishment 6-category fan-out (30/45/60d delays gated by Ordered Product), Flu Season 2-stage, Back in Stock 2-stage, Win-back 2-stage with 90d sunset gate. All splits use Placed Order or Ordered Product as exit conditions — correct logic.
+  - All 20 emails: smart_sending=True, transactional=False, add_tracking_params=True ✅
+  - **3 critical issues identified + fixed this session**:
+    1. **Ysj7sg E2 (105627857) preview**: was `"Limited stock remaining. Don't miss your chance to grab one."` (2× ASA Rule 1(b) violations) → now `"It's still here when you're ready. Same item, same Bargain Chemist price."` (PATCHed via flow-actions API)
+    2. **YdejKf E3 (105917211) preview**: was `"...trusted pharmacists since 1984."` (NO UNVERIFIED FACTS rule violation — preview field had escaped the earlier 1984 sweep) → now `"Price beat guarantee, free shipping, trusted Kiwi pharmacy."` (PATCHed)
+    3. **V9XmEm E1 (SJwrxf) footer**: was missing `{{ organization.full_address }}` (ASA / Unsolicited Electronic Messages Act 2007 sender-identification gap) → rebuilt SJwrxf with full_address before © line, deployed via owned-template POST + flow-action re-assign. New clone: SRspqe (verified: full_address present)
+- **Lower-priority items deliberately left as-is** (per user):
+  - "Pharmacist only products — your pharmacist will advise..." disclaimer block in Y84ruV (3 emails) + Ysj7sg E1: regulatory disclosure text, not promotional. **User confirmed: keep as-is.**
+  - YdejKf E2 subject "here's what's flying off our shelves": borderline urgency but allowed.
+  - RPQXaa email naming reversed (E2 sends first, named "Email #2"): functional, naming cleanup is cosmetic.
+  - T7pmf6 + Y84ruV footer trust block doesn't reference $79: minor brand-consistency.
+- **UTM tagging — ENABLED at Klaviyo Account Settings → Tracking → UTM Tracking** (user-completed in Klaviyo UI):
+  - utm_source = Klaviyo (campaign + flow)
+  - utm_medium = email (campaign + flow) ← critical for GA4 channel grouping
+  - utm_campaign = Campaign name / Flow message name
+  - tw_profile_id custom row removed
+  - utm_id, utm_term unchecked
+  - Note: utm_source case is "Klaviyo" capitalized (Klaviyo's preset has no lowercase). GA4 channel grouping driven by utm_medium=email so this is fine — just keep consistent.
+  - Effective on next outbound send for each flow message.
+- **Prediction**: GA4 attribution for Klaviyo flow traffic moves from `direct/(none)` to `email/Klaviyo` within 7 days. Actual flow-driven sessions visible in GA4 Acquisition reports.
+- **Confidence**: High on the 3 fixes (verified post-deploy). Medium on the GA4 attribution improvement — depends on whether GA4 measurement protocol picks up the new params correctly.
+- **Action taken**: Fix script `scripts/klaviyo_apply_3_fixes.py`. Snapshots: `snapshots/2026-05-07/deploy-fix3/`. UTM page configured manually by user in Klaviyo UI.
+- **Open audit items still pending** (from earlier audit, NOT addressed today):
+  - Y84ruV "Copy of Email #4" (VCjCxL) duplicate of Email #4 (TuHa4f) — user previously identified as a copy-paste; flow trigger-split routes to one or the other based on cart $79 threshold. Confirm intent vs. accidental duplicate.
+  - RPQXaa naming cleanup (cosmetic)
+  - Order Confirmation flow handled by Shopify natively — should be marked "intentionally-not-in-Klaviyo" in flow-execution-plan.md
