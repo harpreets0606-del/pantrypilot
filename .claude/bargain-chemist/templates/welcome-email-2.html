@@ -49,25 +49,37 @@ a { color:#FF0031; text-decoration:underline; }
 <p style="margin:0 0 24px 0;">Not sure where to start? You're not alone. Here are the products NZ is trusting right now — from vitamins that actually work to skincare that delivers results, all at our lowest prices guaranteed.</p>
 </td></tr>
 
-<!-- PRODUCT FEED (Best Sellers) -->
-{% if feeds.Best_Selling_No_Clearance %}
+<!-- TOP 3 BEST-SELLERS (hardcoded; refresh quarterly) -->
 <tr><td style="padding:0 20px 24px 20px;">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-{% for item in feeds.Best_Selling_No_Clearance limit:3 %}
 <td class="product-col" style="padding:8px;text-align:center;vertical-align:top;" width="33%">
-<a href="{{ item.URL }}" style="text-decoration:none;">
-<img alt="{{ item.Title }}" src="{{ item.Image URL }}" style="width:100%;max-width:160px;height:auto;border:1px solid #eeeeee;" width="160"/>
+<a href="https://www.bargainchemist.co.nz/products/go-healthy-go-magnesium-sleep-120-capsules" style="text-decoration:none;">
+<img alt="GO Healthy Magnesium Sleep" src="https://cdn.shopify.com/s/files/1/0317/1926/0297/files/14805578317854.jpg?v=1740654373" style="width:100%;max-width:160px;height:auto;border:1px solid #eeeeee;" width="160"/>
 </a>
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#222222;margin:8px 0 4px 0;padding-bottom:0;line-height:1.3;">{{ item.Title }}</p>
-<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#FF0031;margin:0 0 8px 0;padding-bottom:0;">{{ item.Price }}</p>
-<a href="{{ item.URL }}" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#ffffff;text-decoration:none;padding:8px 16px;border-radius:3px;background-color:#FF0031;">Shop Now</a>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#222222;margin:8px 0 4px 0;padding-bottom:0;line-height:1.3;">GO Healthy Magnesium Sleep 120 VCaps</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#FF0031;margin:0 0 8px 0;padding-bottom:0;">$43.99</p>
+<a href="https://www.bargainchemist.co.nz/products/go-healthy-go-magnesium-sleep-120-capsules" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#ffffff;text-decoration:none;padding:8px 16px;border-radius:3px;background-color:#FF0031;">Shop Now</a>
 </td>
-{% endfor %}
+<td class="product-col" style="padding:8px;text-align:center;vertical-align:top;" width="33%">
+<a href="https://www.bargainchemist.co.nz/products/livon-lypospheric-vitamin-c-1000mg-30-sachets" style="text-decoration:none;">
+<img alt="LIVON Lypospheric Vitamin C 1000mg 30 Sachets" src="https://cdn.shopify.com/s/files/1/0317/1926/0297/products/Lypo-SphericVitaminC1000mg30Sachets.jpg?v=1585537216" style="width:100%;max-width:160px;height:auto;border:1px solid #eeeeee;" width="160"/>
+</a>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#222222;margin:8px 0 4px 0;padding-bottom:0;line-height:1.3;">LIVON Lypospheric Vitamin C 1000mg 30 Sachets</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#FF0031;margin:0 0 8px 0;padding-bottom:0;">$64.99</p>
+<a href="https://www.bargainchemist.co.nz/products/livon-lypospheric-vitamin-c-1000mg-30-sachets" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#ffffff;text-decoration:none;padding:8px 16px;border-radius:3px;background-color:#FF0031;">Shop Now</a>
+</td>
+<td class="product-col" style="padding:8px;text-align:center;vertical-align:top;" width="33%">
+<a href="https://www.bargainchemist.co.nz/products/oracoat-xylimelts-mild-mint-40-pack" style="text-decoration:none;">
+<img alt="Oracoat Xylimelts Mild Mint 40 Pack" src="https://cdn.shopify.com/s/files/1/0317/1926/0297/files/ORAXyliMM40_CAR_00051_Front.webp?v=1754446030" style="width:100%;max-width:160px;height:auto;border:1px solid #eeeeee;" width="160"/>
+</a>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#222222;margin:8px 0 4px 0;padding-bottom:0;line-height:1.3;">Oracoat Xylimelts Mild Mint 40 Pack</p>
+<p style="font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:bold;color:#FF0031;margin:0 0 8px 0;padding-bottom:0;">$23.99</p>
+<a href="https://www.bargainchemist.co.nz/products/oracoat-xylimelts-mild-mint-40-pack" style="display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:bold;color:#ffffff;text-decoration:none;padding:8px 16px;border-radius:3px;background-color:#FF0031;">Shop Now</a>
+</td>
 </tr>
 </table>
 </td></tr>
-{% endif %}
 
 <!-- FALLBACK / SOCIAL PROOF STRIP -->
 <tr><td style="padding:0 40px 32px 40px;">

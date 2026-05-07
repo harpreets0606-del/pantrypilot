@@ -10,7 +10,7 @@
 ## Business model (now confirmed)
 
 - **Brick-and-mortar + online pharmacy chain.** NOT just online.
-- Stores observed (page handles): Petone, Mt Roskill, Mt Wellington, WestCity, South Dunedin, Whanganui ("Bargain Plus") — at least 6 locations confirmed; total NZ-wide
+- Stores: **30+ locations nationwide** (confirmed by user 2026-05-07). Earlier "6+" was a wrong guess from page handles in the store-locator UI. Some confirmed names: Petone, Mt Roskill, Mt Wellington, WestCity, South Dunedin, Whanganui ("Bargain Plus"), Christchurch HQ (1 Radcliffe Road).
 - "100% New Zealand-owned and operated discount pharmacy chain"
 - **Click & Collect** offered at selected locations
 - **Vaccinations** offered (flu, shingles, etc.) — bookable via website (Acuity integration noted in Klaviyo lists)
