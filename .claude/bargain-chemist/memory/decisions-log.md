@@ -98,3 +98,65 @@ Within 14 days of LIVE activation:
 - Templates: `.claude/bargain-chemist/templates/welcome-email-{1,2,3}.html`
 - Build spec: `.claude/bargain-chemist/templates/welcome-flow-build-spec.md`
 - API capabilities: `.claude/bargain-chemist/memory/klaviyo-api-capabilities.md`
+
+---
+
+## 2026-05-07 — Flu Season E2 (YtcgUa) rebuilt from master template
+
+**What was deployed:**
+- YtcgUa template rebuilt from scratch using master template structure (matches VMMpC9 welcome series)
+- File: `.claude/bargain-chemist/templates/flu-recovery-e2.html` (20,435 bytes)
+- Key fixes: $79 free shipping (was $49), emoji HTML entities replacing 6 broken CDN icons, full brand footer with ASA language, correct Django syntax `{{ first_name|default:'there' }}` (was Jinja2 parentheses)
+- User pasted into Klaviyo via Source view → confirmed "looks good"
+- PATCH API returns 404 for flow-attached templates (named `[COMPLIANCE] msg_*`) — this is expected, manual paste is the only route
+
+**Known remaining issue (NOT yet fixed):**
+- V9XmEm E2 subject is "Have you booked your flu vaccine yet?" — this does NOT match the YtcgUa template body (which is about flu recovery products). Must update subject to "Already under the weather, {{ first_name|default:'there' }}?" and preview to "Pharmacist-backed recovery picks — feel like yourself again sooner. Free shipping over $79."
+
+**Prediction:** After subject fix, E2 open→click rate should improve meaningfully vs current mismatch state. Unquantified — no prior valid E2 baseline.
+**Confidence:** High on the diagnosis (mismatch confirmed from live data), Medium on magnitude of improvement.
+
+---
+
+## 2026-05-07 — Complete flow + email audit (all 17 flows)
+
+**Scope:** All 17 flows, all email subjects/previews/smart-sending/template assignments pulled from live snapshots in `.claude/bargain-chemist/snapshots/2026-05-07/all-flows/`. Template HTML content NOT audited (Klaviyo MCP `templates:read` scope missing — 401 on all template GET calls despite valid account credentials).
+
+**CONFIRMED LIVE ASA VIOLATIONS (fix immediately):**
+1. **Ysj7sg E1 preview:** "Grab yours before it sells out again" → Rule 1(b) scarcity
+2. **Ysj7sg E2 subject:** "Still available - but selling fast" → Rule 1(b)
+3. **Ysj7sg E2 preview:** "Limited stock remaining. Don't miss your chance to grab one." → Rule 1(b) x2
+4. **RPQXaa E2 preview:** "Items selling fast - protected by Price Beat Guarantee." → Rule 1(b)
+
+**Other live flow issues confirmed:**
+- V9XmEm E2: subject/preview mismatch with template body (vaccine vs recovery)
+- Y84ruV E2+E3: identical subject + preview + smart_sending=False on both
+- V4cZMd E1+E17: empty preview text + likely accidental duplicate email
+- YdejKf E2: "flying off our shelves" — borderline urgency (grey area, not hard violation)
+
+**Draft flow flags:**
+- VMKAyS E3: "$5 off to complete your checkout" — explicit coupon, violates EDLP strategy. Do NOT activate.
+- SehWRt: Placeholder subject, no template. Archive or build.
+- TsC8GZ: All 3 emails have empty previews. Consider archiving (YdejKf is the active welcome series).
+- XbQiKg E2: Placeholder subject, no template.
+- VJui9n (Order Confirmation): In DRAFT — not sending. Low risk to activate after HTML check.
+- RDJQYM (Post-Purchase): Manually paused. Needs activation decision.
+
+**Unresolved (need template HTML):**
+- $79 threshold correct in all live templates? (can't verify — MCP 401 on templates:read)
+- All live templates have correct footer (ASA language, unsubscribe, address)?
+- V4cZMd's 17 templates — images broken? Brand consistent?
+
+**Fix to unblock HTML audit:**
+Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/settings/api-keys
+
+**Recommended fix order (live flow issues only):**
+1. Ysj7sg E1 preview + E2 subject + E2 preview (3 ASA violations, highest risk)
+2. RPQXaa E2 preview (1 ASA violation)
+3. V9XmEm E2 subject + preview (mismatch)
+4. Y84ruV E2+E3 subject + preview differentiation + smart sending ON
+5. V4cZMd E1+E17 add preview text + confirm E17 is not a duplicate
+
+**Falsifiable prediction:** Fixing Ysj7sg E2 subject from "Still available - but selling fast" to "{{ event.ProductName }} is still available" will improve E2 open rate. Baseline to pull: Ysj7sg flow report before fix.
+**Confidence:** High on ASA violations (explicit rule breaches). Medium on conversion impact of fixes.
+**Action taken:** Fixes not yet applied — user to implement or instruct Claude to action.
