@@ -100,8 +100,8 @@ CLEAN_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "
   <a href="https://www.bargainchemist.co.nz/" target="_blank" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:20px;letter-spacing:1px;">BARGAIN CHEMIST</a>
 </td></tr>
 
-<!-- CART-AWARE NUDGE (Klaviyo Django; no |float, no math) -->
-{% if event.$value < 79 %}
+<!-- CART-AWARE NUDGE (Klaviyo Django; verified syntax — Klaviyo auto-strips $ on event.* property access) -->
+{% if event.value < 79 %}
 <tr><td class="nudge-low" style="padding:18px 28px;text-align:center;">
   <p style="margin:0;font-size:16px;line-height:1.5;color:#7A4F00;">
     Your cart is under $79 &mdash; add a few more items to unlock <strong>FREE shipping</strong> at NZ's lowest pharmacy prices.
@@ -122,7 +122,7 @@ CLEAN_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "
     Your cart is saved at NZ's lowest pharmacy prices. Pick up where you left off &mdash; everything's ready when you are.
   </p>
   <p style="text-align:center;margin:0 0 24px 0;">
-    <a class="btn" href="{{ event.extra.checkout_url|default:'https://www.bargainchemist.co.nz/cart' }}" target="_blank">Return To Your Cart</a>
+    <a class="btn" href="https://www.bargainchemist.co.nz/cart" target="_blank">Return To Your Cart</a>
   </p>
   <p style="font-size:14px;color:#666;text-align:center;margin:0;line-height:1.6;">
     Free shipping over $79  &middot;  Price Beat 10% Guarantee  &middot;  30+ stores nationwide
