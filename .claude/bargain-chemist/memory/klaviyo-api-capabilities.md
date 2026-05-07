@@ -168,7 +168,8 @@ When you assign a global template to a flow message, Klaviyo creates an internal
 | Get flow message | `/api/flow-messages/{id}/` | GET | ✅ Stable |
 | **Create flow (full definition)** | `/api/flows/` | **POST** | 🟡 **Beta** |
 | Update flow status (draft↔live↔manual) | `/api/flows/{id}/` | PATCH | ✅ Stable |
-| **Update flow definition (steps/branches)** | — | — | ❌ **Not supported** |
+| **Update flow definition (steps/branches/profile_filter/triggers)** | — | — | ❌ **Not supported — verified 2026-05-07** |
+| Update flow audience / profile filter via API | — | — | ❌ **Not supported. PATCH /api/flows/{id} with `definition` returns HTTP 400 "definition is not a valid field for the resource flow". Only `status` is updatable. Audience filters / triggers must be edited in Klaviyo UI.** |
 | Delete flow | `/api/flows/{id}/` | DELETE | ✅ Stable |
 
 ### Create Flow — operational details
