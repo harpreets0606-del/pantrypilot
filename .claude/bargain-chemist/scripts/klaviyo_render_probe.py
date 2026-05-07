@@ -63,6 +63,9 @@ TESTS = [
     ("12-if-lookup-dollar", "<html><body>{% if event|lookup:'$value' < 79 %}low{% else %}high{% endif %}</body></html>"),
     ("13-with-lookup-dollar", "<html><body>{% with v=event|lookup:'$value' %}{% if v < 79 %}low{% else %}high{% endif %}{% endwith %}</body></html>"),
     ("14-if-only-dollar-context", "<html><body>{% if event.value < 79 %}low{% else %}high{% endif %}</body></html>"),
+    ("15-elif-3way", "<html><body>{% if event|lookup:'$value' < 30 %}A{% elif event|lookup:'$value' < 79 %}B{% else %}C{% endif %}</body></html>"),
+    ("16-elif-3way-tierB", "<html><body>{% if event|lookup:'$value' < 30 %}A{% elif event|lookup:'$value' < 79 %}B{% else %}C{% endif %}</body></html>"),
+    ("17-elif-3way-tierC", "<html><body>{% if event|lookup:'$value' < 30 %}A{% elif event|lookup:'$value' < 79 %}B{% else %}C{% endif %}</body></html>"),
 ]
 
 
