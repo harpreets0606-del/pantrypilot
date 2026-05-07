@@ -267,15 +267,46 @@ Write-Host ""
 Write-Host "POST https://a.klaviyo.com/api/flows/ ..." -ForegroundColor Cyan
 
 try {
-    $bodyBytes = [System.Text.Encoding]::UTF8.GetBytes($Body)
-    $json = Invoke-RestMethod -Uri 'https://a.klaviyo.com/api/flows/' `
-                              -Headers $Headers `
-                              -Method Post `
-                              -Body $bodyBytes `
-                              -ContentType 'application/vnd.api+json' `
-                              -ErrorAction Stop `
-                              -TimeoutSec 90 `
-                              -DisableKeepAlive
+    # Use curl.exe (sidesteps PS 5.1 HTTP stack bugs)
+    $TempDir  = Join-Path $env:TEMP "klaviyo-flow-$([guid]::NewGuid().ToString('N').Substring(0,8))"
+    New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
+    $bodyFile = Join-Path $TempDir 'body.json'
+    $respFile = Join-Path $TempDir 'resp.json'
+    [System.IO.File]::WriteAllText($bodyFile, $Body, [System.Text.UTF8Encoding]::new($false))
+
+    $curlArgs = @(
+        '--silent', '--show-error',
+        '--max-time', '90',
+        '--write-out', '%{http_code}',
+        '--output', $respFile,
+        '-X', 'POST',
+        '-H', "Authorization: Klaviyo-API-Key $($env:KLAVIYO_PRIVATE_KEY)",
+        '-H', 'revision: 2024-10-15.pre',
+        '-H', 'Accept: application/vnd.api+json',
+        '-H', 'Content-Type: application/vnd.api+json',
+        '--data-binary', "@$bodyFile",
+        'https://a.klaviyo.com/api/flows/'
+    )
+    $httpCode = & curl.exe @curlArgs
+
+    if ($httpCode -ne '201' -and $httpCode -ne '200') {
+        Write-Host ""
+        Write-Host "  FAIL  HTTP $httpCode" -ForegroundColor Red
+        if (Test-Path $respFile) {
+            $errBody = Get-Content $respFile -Raw
+            $errFile = ".claude/bargain-chemist/snapshots/$Date/create-flow-error.json"
+            $errBody | Out-File -FilePath $errFile -Encoding utf8
+            Write-Host "  Error body saved to $errFile" -ForegroundColor DarkYellow
+            Write-Host ""
+            Write-Host $errBody -ForegroundColor DarkYellow
+        }
+        Remove-Item $TempDir -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item env:KLAVIYO_PRIVATE_KEY
+        exit 1
+    }
+
+    $json = Get-Content $respFile -Raw | ConvertFrom-Json
+    Remove-Item $TempDir -Recurse -Force -ErrorAction SilentlyContinue
     $flowId = $json.data.id
     Write-Host ""
     Write-Host ""
