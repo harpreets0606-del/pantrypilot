@@ -13,6 +13,48 @@
 
 ## Hard-won fixes
 
+### 0. WHEN PS 5.1 HTTP HANGS — JUST USE curl.exe
+
+**This is the lesson of the session.** Don't waste time trying to fix PS 5.1's HTTP cmdlets when they hang. Windows 10 1803+ ships `curl.exe` (real curl, not the PS alias) at `C:\Windows\System32\curl.exe`. It uses a completely different HTTP stack and doesn't have any of these issues.
+
+**Pattern for any Klaviyo API write from PowerShell:**
+```powershell
+# 1. Build body in PS, write to temp file
+$body = $obj | ConvertTo-Json -Depth 10 -Compress
+$bodyFile = Join-Path $env:TEMP "kv-$([guid]::NewGuid().ToString('N').Substring(0,8)).json"
+[System.IO.File]::WriteAllText($bodyFile, $body, [System.Text.UTF8Encoding]::new($false))
+
+# 2. Shell out to curl.exe
+$respFile = "$bodyFile.resp"
+$httpCode = & curl.exe `
+    --silent --show-error `
+    --max-time 60 `
+    --write-out '%{http_code}' `
+    --output $respFile `
+    -X POST `
+    -H "Authorization: Klaviyo-API-Key $($env:KLAVIYO_PRIVATE_KEY)" `
+    -H 'revision: 2024-10-15' `
+    -H 'Accept: application/vnd.api+json' `
+    -H 'Content-Type: application/vnd.api+json' `
+    --data-binary "@$bodyFile" `
+    'https://a.klaviyo.com/api/templates/'
+
+# 3. Parse response
+if ($httpCode -in '200','201') {
+    $json = Get-Content $respFile -Raw | ConvertFrom-Json
+    # use $json.data.id etc
+} else {
+    Write-Host "FAIL HTTP $httpCode"
+    Get-Content $respFile -Raw | Write-Host
+}
+```
+
+**Status:** Applied to `klaviyo-deploy-templates.ps1` and `klaviyo-create-welcome-flow.ps1` after `Invoke-WebRequest` AND `Invoke-RestMethod` BOTH hung indefinitely on the same machine (2026-05-07, fix v3 — final).
+
+**Default to this pattern from the start. Don't try Invoke-WebRequest/RestMethod first.**
+
+---
+
 ### 1. `Invoke-WebRequest` hangs on POST — PS 5.1 multi-cause issue
 **Symptom:** Script prints a header line, then hangs forever (or 30+ seconds per call) on the actual POST. `Ctrl+C` doesn't always stop it — must close the window.
 **Cause(s):** PS 5.1 has multiple compounding bugs around `Invoke-WebRequest`:
