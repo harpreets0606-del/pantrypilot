@@ -485,6 +485,31 @@ py delete_rsnnak.py                     # (optional, destructive) remove RtiVC5 
 
 **Klaviyo eventual-consistency gotcha discovered:** PATCH /api/flow-actions/{id}/ HTTP 200 response can contain the OLD cloned template_id even when the PATCH succeeded. Fresh GET 2 seconds later shows the actual new clone. patch_search_abandonment_fix.py initially false-negatived on E1 verification because it trusted the PATCH response. Fixed by switching to fresh-GET-after-PATCH pattern. Updated to mastery index.
 
+## 2026-05-08 — V9XmEm E1 footer fix deployed + structural memory improvements
+
+**V9XmEm E1 (SRspqe → SNtytG) — footer fix LIVE**
+- Replaced minimal disclaimer + dark-gray copyright footer with W2Sbja-aligned standard brand footer (white "Get social with us!" heading + 4 social icons + red ASA legal disclaimer + red unsubscribe with `{{ organization.name }}` + `{{ organization.full_address }}`).
+- Preserved navy seasonal hero + 3 winter-wellness tips + product categories + flu vaccine banner (deliberate creative choice unchanged).
+- Atomic deploy via `patch_v9xmem_e1_footer_fix.py` (commit e1233ab): static + render-test + POST new owned global VdUuAN → PATCH flow-action 105627866 → new clone SNtytG bound. Verified org.name + social block + red disclaimer all present in new clone.
+- Old clone SRspqe orphaned (no longer bound), still exists.
+
+**Methodology errors logged this session (all repeat-violations):**
+1. Tried direct PATCH on cloned template SRspqe — returned 404. Root cause: skipped reading mastery-index.md line 77 which already documents this as ❌. Same pattern was used correctly 3× earlier today for RtiVC5/XbQiKg/Sr3hxz.
+2. Added "thousands of Kiwis" to a banned-phrase list without checking primary data — flagged WtmqBu as "fabricated claim." User pushed back. Sxnb5T weekly unique = ~2,000 Kiwi customers per full week of April 2026. Claim is EMPIRICALLY VERIFIED. Withdrew finding.
+3. Static check searched for "Stay well this winter" but H1 actually reads "Stay well this<br/>flu season" (line break in middle, only "Stay Well This Winter" with caps appears in `<title>`).
+4. Conflated compliance markers (legal/ASA) with brand value props (creative choice) in audit rules — flagged absence of `$79` as a defect when it was a deliberate creative emphasis on `Price Beat 10%` instead.
+
+**Structural improvements committed (commit TBD):**
+- `audit-rules.json` — extracted banned/required lists from inline Python into single source of truth. Distinguishes hard requirements (legal/ASA) from creative choices (value props) from judgment calls (soft urgency) from claims-requiring-verification (specific facts). Adding rules requires explicit user approval via commit + review.
+- `prelude_check.py` — session-start checklist. Prints last 5 decisions, broken capabilities, mandatory protocols, audit-rule reminders, current flow state, open predictions. Run at start of every session per CLAUDE.md.
+- `klaviyo-mastery-index.md` — added "TOP RULES — DO NOT VIOLATE" section at the top with the 8 most-violated patterns from today's session, in plain-English form so they cannot be missed by reading the table-form entries below.
+
+**Remaining open items:**
+- T7pmf6 E2 (RJhLMj): duplicate UEMA/ASA footer fix (same in-place pattern as SRspqe just done)
+- DNS verification (SPF/DKIM/DMARC) — needs user to run nslookup
+- flow_report endpoint still HTTP 500 — re-pull tomorrow
+- Score 14-day predictions on 2026-05-22
+
 **Pending user actions to flip LIVE:**
 1. Open https://www.klaviyo.com/flow/RtiVC5/edit → send test send (real Viewed Product event) → confirm hero, value strip, CTA → "Set Live"
 2. Open https://www.klaviyo.com/flow/XbQiKg/edit → send test sends for E1 + E2 → confirm both → "Set Live"

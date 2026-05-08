@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "version": "2026-05-08",
+    "purpose": "Single source of truth for Klaviyo template/flow audit rules. Audit scripts must READ this file rather than inlining rule lists. Adding a new banned phrase requires explicit user approval (commit + review).",
+    "last_updated": "2026-05-08",
+    "last_updated_reason": "Initial extraction from inline Python lists in build_browse_search_templates.py / patch_v9xmem_e1_footer_fix.py. Decoupled from author-of-the-day's hot take.",
+    "review_protocol": "Before adding any phrase to banned-* lists, verify against primary data sources (Shopify, Klaviyo). If a brand can substantiate a claim from real data, it is NOT fabricated — do not ban it."
+  },
+
+  "compliance_required_legal": {
+    "_note": "ABSOLUTE requirements per NZ ASA Therapeutic & Health Advertising Code 2025 + Unsolicited Electronic Messages Act 2007. Missing any of these is a hard compliance FAIL — flow MUST be paused until fixed.",
+    "phrases": [
+      "Always read the label",
+      "see your healthcare professional"
+    ],
+    "liquid_macros": [
+      "{% unsubscribe",
+      "{{ organization.name }}",
+      "{{ organization.full_address }}"
+    ]
+  },
+
+  "banned_fear_strict": {
+    "_note": "Verbatim banned per CLAUDE.md ASA Code Rule 1(b) — fear-based language. Auto-fail if present.",
+    "phrases": [
+      "limited stock",
+      "selling fast",
+      "act now",
+      "last chance",
+      "while stocks",
+      "going fast",
+      "almost gone",
+      "hurry now",
+      "expires today",
+      "running out",
+      "popular products don't always"
+    ]
+  },
+
+  "banned_coupons_strict": {
+    "_note": "Bargain Chemist is EDLP (everyday low price) + Price Beat 10% — coupons explicitly out of scope per memory/no-coupon-strategy.md. Auto-fail if present.",
+    "phrases": [
+      "% off",
+      " coupon",
+      "promo code",
+      "discount code",
+      "voucher",
+      "$5 off",
+      "$10 off",
+      "use code"
+    ]
+  },
+
+  "banned_liquid_syntax": {
+    "_note": "Verified broken in Klaviyo runtime (see klaviyo-template-syntax-verified.md). Auto-fail if present.",
+    "patterns": [
+      "{{ event.$value",
+      "|float ",
+      "|round("
+    ]
+  },
+
+  "creative_choice_value_props": {
+    "_note": "MERCHANDISING HOOKS, not compliance requirements. Different emails can lead with different ones. DO NOT flag absence as a defect — that's a creative choice. Only flag if the user EXPLICITLY asks for brand-consistency enforcement.",
+    "phrases": [
+      "$79",
+      "Price Beat",
+      "30+ stores",
+      "Free shipping"
+    ]
+  },
+
+  "soft_urgency_judgment_call": {
+    "_note": "Soft urgency. Brand bans fear language but these aren't on the literal banned list. FLAG FOR USER JUDGMENT — do NOT auto-classify as fail. The user may have data supporting use (e.g., high cart abandonment justifying a small urgency lift).",
+    "phrases": [
+      "Stock moves fast",
+      "grab everything",
+      "before someone else",
+      "moves quickly",
+      "won't last"
+    ]
+  },
+
+  "specific_claims_require_verification": {
+    "_note": "ABSOLUTE rule per CLAUDE.md NO UNVERIFIED FACTS RULE. Specific marketing claims are NOT auto-fabricated. BEFORE flagging, check primary data: Shopify list-customers, Klaviyo Sxnb5T (Placed Order) weekly unique, etc. If the claim is supported by data, it is VERIFIED — do not ban it. If unsupported, the rule already requires user approval.",
+    "phrases_to_check": [
+      "thousands of",
+      "9 out of 10",
+      "since 19",
+      "forty year",
+      "40+ year",
+      "trusted by",
+      "loved by"
+    ],
+    "verification_protocol": "Query klaviyo_query_metric_aggregates on Sxnb5T (Placed Order) with measurement=unique over a 7-day window. If unique count >= 1000/wk, the claim 'thousands of [Kiwi] customers' is empirically supported."
+  },
+
+  "klaviyo_field_name_map": {
+    "_note": "Different metrics use different field name conventions for product attributes. Use the right field for each metric.",
+    "Viewed Product (XQ2zfW)": {
+      "product_name": "event.Name",
+      "product_url": "event.URL",
+      "product_image": "event.ImageURL",
+      "product_price": "event.Price",
+      "compare_at_price": "event.CompareAtPrice",
+      "product_id": "event.ProductID",
+      "categories": "event.Categories"
+    },
+    "Boost Clicked Search Result (Y2qHKK)": {
+      "product_name": "event.productName",
+      "product_url": "event.productUrl",
+      "product_category": "event.productCategory",
+      "product_price": "event.productPrice",
+      "search_query": "event.searchQuery"
+    },
+    "Added to Cart (S4jKYD / Shopify)": {
+      "product_name": "event|lookup:'Product Name'",
+      "product_url": "event|lookup:'URL'",
+      "product_image": "event|lookup:'ImageURL'",
+      "product_price": "event|lookup:'Price'",
+      "value": "event|lookup:'$value'"
+    },
+    "Checkout Started (VvcTue)": {
+      "value": "event|lookup:'$value'",
+      "checkout_url": "event.extra.checkout_url"
+    }
+  }
+}

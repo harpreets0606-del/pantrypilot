@@ -4,6 +4,28 @@
 
 ---
 
+## ⚠️ TOP RULES — DO NOT VIOLATE (added 2026-05-08 after repeat failures)
+
+These are the rules I have repeatedly violated within a single session, even though they were already documented elsewhere in this index. Read them every time before planning.
+
+1. **Never PATCH a flow-cloned template directly.** `PATCH /api/templates/{cloned_id}/` returns HTTP 404 even when GET works. Cloned templates (those bound to flow-actions) are read-only via PATCH. **Workflow:** POST new owned global with patched HTML → PATCH `/api/flow-actions/{action_id}/` with new `template_id` → Klaviyo creates new clone → fresh GET to read new clone ID. Pattern verified 4× on 2026-05-08 (RtiVC5, XbQiKg E1+E2, Sr3hxz, V9XmEm E1).
+
+2. **Klaviyo PATCH responses are eventually-consistent.** The `template_id` in a PATCH response on `/api/flow-actions/{id}` may show the OLD clone ID even when the PATCH succeeded. Always do a fresh GET ~2s later and read template_id from THAT response. See `patch_search_abandonment_fix.py:patch_action()` for the proven pattern.
+
+3. **Never add a phrase to a banned-phrase list without checking primary data.** Specific marketing claims like "thousands of Kiwis" are NOT auto-fabricated. CLAUDE.md §"NO UNVERIFIED FACTS RULE" applies in BOTH directions — don't insert unverified facts AND don't reject claims as fabricated without verification. Pre-add check: query `klaviyo_query_metric_aggregates` on `Sxnb5T` (Placed Order, measurement=unique, weekly). If unique buyers ≥ 1000/week, claims like "thousands of Kiwis every week" are EMPIRICALLY VERIFIED.
+
+4. **Compliance markers (legal/ASA) ≠ brand value props (creative).** Required on every email: `Always read the label`, `see your healthcare professional`, `{% unsubscribe %}`, `{{ organization.name }}`, `{{ organization.full_address }}`. Optional/creative-choice (do NOT flag absence as defect): `$79`, `Price Beat`, `30+ stores`. Different emails can lead with different value props. See `audit-rules.json` for canonical list.
+
+5. **Different metrics use different field names.** `Viewed Product` (XQ2zfW): `event.Name`, `event.URL`, `event.ImageURL`, `event.Price`, `event.CompareAtPrice`, `event.ProductID`, `event.Categories`. `Boost Clicked Search Result` (Y2qHKK): `event.productName`, `event.productUrl`, `event.productCategory`, `event.productPrice`, `event.searchQuery`. `Added to Cart` (S4jKYD via Shopify): `event|lookup:'Product Name'`, `event|lookup:'URL'`, `event|lookup:'$value'`. See `audit-rules.json:klaviyo_field_name_map`.
+
+6. **Klaviyo cloned templates are not visible in the UI Templates list.** Searching the [Templates page](https://www.klaviyo.com/templates) for a cloned template ID will return nothing. They live attached to flow-action message slots, accessible only via API. To view visually: open the flow URL → click into the email → template editor opens. Direct URL: `https://www.klaviyo.com/flow/{flow_id}/edit`.
+
+7. **Trust but verify subagent reports.** Audit subagents may pull from snapshots that are stale. Always spot-check at least 3 key claims from any subagent audit by direct MCP fetch before propagating findings. The agent's report describes its INTENT, not verified ground truth.
+
+8. **Run `prelude_check.py` at session start.** It prints last 5 decisions, all ❌ broken capabilities, mandatory protocols, audit-rules.json reminders, current flow state, and open predictions. Skipping it = forgetting prior session context.
+
+---
+
 ## How to use this file
 
 1. **Find the capability your task touches** in the table below.
