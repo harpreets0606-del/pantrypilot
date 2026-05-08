@@ -117,11 +117,20 @@ def patch_action(key, action_id, new_tid, subject, preview, label):
                      "attributes": {"definition": defn}}}
     rp = requests.patch(f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
                         headers=hdrs(key, content=True), json=body, timeout=30)
-    save(f"action-{action_id}-after.json", {"status": rp.status_code, "body": rp.text[:3000]})
+    save(f"action-{action_id}-patch-response.json", {"status": rp.status_code, "body": rp.text[:3000]})
     if rp.status_code != 200:
         sys.exit(f"❌ PATCH action {action_id} HTTP {rp.status_code}\n{rp.text[:500]}")
-    new_clone = rp.json()["data"]["attributes"]["definition"]["data"]["message"].get("template_id")
-    print(f"  ✅ {label} action {action_id} patched; new clone={new_clone}")
+    # Klaviyo's PATCH response can return the OLD clone template_id (eventual
+    # consistency / stale read). Always do a fresh GET to read the actual
+    # post-PATCH state. Verified 2026-05-08 (XbQiKg E1: PATCH response said
+    # RPZh8V (old) but fresh GET showed new clone S3jZGb).
+    time.sleep(2)
+    r2 = requests.get(f"https://a.klaviyo.com/api/flow-actions/{action_id}/",
+                      headers=hdrs(key), timeout=30)
+    save(f"action-{action_id}-after-fresh.json",
+         {"status": r2.status_code, "definition": r2.json()["data"]["attributes"]["definition"]})
+    new_clone = r2.json()["data"]["attributes"]["definition"]["data"]["message"].get("template_id")
+    print(f"  ✅ {label} action {action_id} patched; new clone={new_clone} (via fresh GET)")
     return new_clone
 
 
