@@ -30,6 +30,7 @@ Run locally:
 import json
 import re
 import sys
+import time
 from datetime import date
 from pathlib import Path
 
@@ -239,19 +240,58 @@ def render_check(key, candidate_html):
 
 
 # ---------------------------------------------------------------------------
-# PATCH the live SRspqe template directly
+# Klaviyo doesn't allow PATCH on cloned templates bound to flow-actions
+# (returns 404 "template does not exist" even when GET works). The proven
+# pattern is: POST new owned global → PATCH flow-action template_id →
+# Klaviyo creates a new clone bound to the action.
 # ---------------------------------------------------------------------------
-def patch_template(key, html):
-    body = {"data": {"type": "template", "id": TEMPLATE_ID, "attributes": {
+def create_owned_global(key, html):
+    body = {"data": {"type": "template", "attributes": {
+        "name": f"BC OWNED - V9XmEm E1 footer fix {TODAY}",
+        "editor_type": "CODE",
         "html": html,
-        "name": f"BC OWNED - SJwrxf - footer fix {TODAY}",
     }}}
-    r = requests.patch(f"https://a.klaviyo.com/api/templates/{TEMPLATE_ID}/",
-                       headers=hdrs(key, content=True), json=body, timeout=30)
-    save("patch-response.json", {"status": r.status_code, "body": r.text[:3000]})
+    r = requests.post("https://a.klaviyo.com/api/templates/",
+                      headers=hdrs(key, content=True), json=body, timeout=30)
+    save("create-owned-global-response.json", {"status": r.status_code, "body": r.text[:2000]})
+    if r.status_code not in (200, 201):
+        sys.exit(f"❌ POST owned global HTTP {r.status_code}\n{r.text[:500]}")
+    new_id = r.json()["data"]["id"]
+    print(f"  new owned global: {new_id}")
+    return new_id
+
+
+def patch_flow_action(key, new_template_id):
+    # Get current flow-action definition
+    r = requests.get(f"https://a.klaviyo.com/api/flow-actions/{ACTION_ID}/",
+                     headers=hdrs(key), timeout=30)
     if r.status_code != 200:
-        sys.exit(f"❌ PATCH SRspqe HTTP {r.status_code}\n{r.text[:500]}")
-    return r.json()
+        sys.exit(f"❌ GET flow-action {ACTION_ID} HTTP {r.status_code}")
+    defn = r.json()["data"]["attributes"]["definition"]
+    save("flow-action-before.json", defn)
+    old_template_id = defn["data"]["message"].get("template_id")
+    print(f"  current cloned template_id: {old_template_id}")
+
+    # Set new template_id (the owned global) — Klaviyo will clone it
+    defn["data"]["message"]["template_id"] = new_template_id
+    body = {"data": {"type": "flow-action", "id": ACTION_ID,
+                     "attributes": {"definition": defn}}}
+    rp = requests.patch(f"https://a.klaviyo.com/api/flow-actions/{ACTION_ID}/",
+                        headers=hdrs(key, content=True), json=body, timeout=30)
+    save("flow-action-patch-response.json", {"status": rp.status_code, "body": rp.text[:2000]})
+    if rp.status_code != 200:
+        sys.exit(f"❌ PATCH flow-action {ACTION_ID} HTTP {rp.status_code}\n{rp.text[:500]}")
+
+    # Klaviyo's PATCH response can return stale (old) template_id due to
+    # eventual consistency. Always do a fresh GET 2s later.
+    time.sleep(2)
+    r2 = requests.get(f"https://a.klaviyo.com/api/flow-actions/{ACTION_ID}/",
+                      headers=hdrs(key), timeout=30)
+    new_clone = r2.json()["data"]["attributes"]["definition"]["data"]["message"].get("template_id")
+    save("flow-action-after-fresh.json",
+         r2.json()["data"]["attributes"]["definition"])
+    print(f"  new cloned template_id (fresh GET): {new_clone}")
+    return new_clone
 
 
 # ---------------------------------------------------------------------------
@@ -295,17 +335,26 @@ def main():
         sys.exit(1)
     print(f"  ✅ render-test PASS — Liquid resolves cleanly, no leakage, all blocks rendered")
 
-    print("\n--- Step 5: PATCH SRspqe with patched HTML ---")
-    response = patch_template(key, candidate_html)
-    print(f"  ✅ PATCH SRspqe HTTP 200")
+    print("\n--- Step 5a: POST new owned-global template with patched HTML ---")
+    new_owned_id = create_owned_global(key, candidate_html)
 
-    print("\n--- Step 6: Verify by fresh GET ---")
-    rv = requests.get(f"https://a.klaviyo.com/api/templates/{TEMPLATE_ID}/",
+    print("\n--- Step 5b: PATCH flow-action to assign new owned global ---")
+    new_clone_id = patch_flow_action(key, new_owned_id)
+    if not new_clone_id or new_clone_id == TEMPLATE_ID:
+        print(f"  ⚠️  new clone id ({new_clone_id}) equals old or null — Klaviyo eventual-consistency? Retrying after 3s...")
+        time.sleep(3)
+        r3 = requests.get(f"https://a.klaviyo.com/api/flow-actions/{ACTION_ID}/",
+                          headers=hdrs(key), timeout=30)
+        new_clone_id = r3.json()["data"]["attributes"]["definition"]["data"]["message"].get("template_id")
+        print(f"  retry result: new clone id = {new_clone_id}")
+
+    print(f"\n--- Step 6: Verify new clone {new_clone_id} contains the fix ---")
+    rv = requests.get(f"https://a.klaviyo.com/api/templates/{new_clone_id}/",
                       headers=hdrs(key), timeout=30)
     if rv.status_code != 200:
         sys.exit(f"❌ verify GET HTTP {rv.status_code}")
     after_html = rv.json()["data"]["attributes"]["html"]
-    save("srspqe-after.html", after_html)
+    save("new-clone-after.html", after_html)
     has_org_name = "{{ organization.name }}" in after_html
     has_social = "Get social with us!" in after_html
     has_red_disclaimer = "background-color:#FF0031" in after_html and "Price beat guarantee" in after_html
@@ -315,9 +364,11 @@ def main():
 
     if has_org_name and has_social and has_red_disclaimer:
         print(f"\n=== ✅ V9XmEm E1 FOOTER FIX DEPLOYED ===")
-        print(f"Flow:        {FLOW_ID} (status=live)")
-        print(f"Action:      {ACTION_ID}")
-        print(f"Template:    {TEMPLATE_ID}")
+        print(f"Flow:           {FLOW_ID} (status=live)")
+        print(f"Action:         {ACTION_ID}")
+        print(f"Old clone:      {TEMPLATE_ID} (no longer bound)")
+        print(f"New owned:      {new_owned_id}")
+        print(f"New clone:      {new_clone_id} (now bound to action)")
         print(f"\nNext:")
         print(f"  1. Open https://www.klaviyo.com/flow/{FLOW_ID}/edit")
         print(f"  2. Click Email #1 (Stay well this winter)")
