@@ -83,8 +83,7 @@ def walk_flow_actions(key, flow_id, flow_label):
     url = f"https://a.klaviyo.com/api/flows/{flow_id}/flow-actions/"
     out = []
     while url:
-        r = requests.get(url, headers=hdrs(key), timeout=30,
-                         params={"include": "flow-messages"})
+        r = requests.get(url, headers=hdrs(key), timeout=30)
         if r.status_code != 200:
             return None, f"GET {flow_id} flow-actions HTTP {r.status_code}: {r.text[:200]}"
         body = r.json()
