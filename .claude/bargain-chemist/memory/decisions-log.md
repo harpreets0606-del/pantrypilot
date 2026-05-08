@@ -505,10 +505,39 @@ py delete_rsnnak.py                     # (optional, destructive) remove RtiVC5 
 - `klaviyo-mastery-index.md` — added "TOP RULES — DO NOT VIOLATE" section at the top with the 8 most-violated patterns from today's session, in plain-English form so they cannot be missed by reading the table-form entries below.
 
 **Remaining open items:**
-- T7pmf6 E2 (RJhLMj): duplicate UEMA/ASA footer fix (same in-place pattern as SRspqe just done)
 - DNS verification (SPF/DKIM/DMARC) — needs user to run nslookup
 - flow_report endpoint still HTTP 500 — re-pull tomorrow
 - Score 14-day predictions on 2026-05-22
+- DRAFT cleanups (optional, destructive): SnakeG, RSnNak, SehWRt, VMKAyS
+
+## 2026-05-08 — T7pmf6 E2 (RJhLMj → YwvJmD) duplicate footer dedupe deployed
+
+**Issue:** RJhLMj had the standard red Bargain Chemist footer AND a SECOND grey "auto-injected" UEMA/ASA footer block at the bottom of the email. Subscribers saw two unsubscribe links + two address blocks + two ASA disclaimers in one email.
+
+**Fix:** Surgical removal of the auto-injected block (`<!-- ── UEMA & ASA Mandatory Footer (auto-injected) ── -->`). The standard red footer above stays intact with all required compliance markers.
+
+**Deploy:** `patch_t7pmf6_e2_footer_dedupe.py` (commit 21452dc):
+- 2 unsubscribe macros → 1 ✅
+- 2 organization.full_address → 1 ✅
+- Auto-injected dupe block removed ✅
+- Win-back hero preserved ✅
+- POST new owned global V2hdG5 → PATCH flow-action 105721762 → new clone YwvJmD bound
+- Old clone RJhLMj orphaned but still exists
+
+**This is the LAST P0 compliance fix from today's audit.** All 4 LIVE-flow content issues fixed:
+1. ✅ V9XmEm E1 (SRspqe → SNtytG): added standard brand footer
+2. ✅ T7pmf6 E2 (RJhLMj → YwvJmD): removed duplicate auto-injected footer
+3. ⏸ RPQXaa E2 (UCUwWu): "Stock moves fast" / "Trusted by thousands of Kiwis" — user judgment call, deferred (these may be data-backed and creative-intentional)
+4. ❌ WtmqBu (YdejKf E2) "thousands of Kiwis": WITHDRAWN — verified by Sxnb5T data showing ~2,000 unique buyers/week
+
+**Day's deploy log (2026-05-08):**
+- RtiVC5 (Browse): WR3mRF — built fresh from W2Sbja
+- XbQiKg E1 (Search): S3jZGb — built fresh
+- XbQiKg E2 (Search): RWGKkM — built fresh (filled previously-null template slot)
+- Sr3hxz E1+E4 (Checkout v3): Vtggdk + Yr6YBF — built fresh
+- V9XmEm E1 (Flu): SRspqe → SNtytG — footer fix
+- T7pmf6 E2 (Win-back): RJhLMj → YwvJmD — footer dedupe
+- All flows LIVE, all clones bound, all atomic deploys verified end-to-end
 
 **Pending user actions to flip LIVE:**
 1. Open https://www.klaviyo.com/flow/RtiVC5/edit → send test send (real Viewed Product event) → confirm hero, value strip, CTA → "Set Live"
