@@ -467,3 +467,31 @@ py delete_rsnnak.py                     # (optional, destructive) remove RtiVC5 
 **Confidence:** High on the design rebuild (W2Sbja chrome + verified field names + atomic-write + real-event probes — same standards that worked for Sr3hxz). Medium on engagement predictions (small samples in historical data; new copy framing untested with this specific audience).
 
 **Open items:** none in this scope. RPQXaa URL field decision + V9XmEm/YdejKf trigger plumbing checks deferred per prior sessions.
+
+## 2026-05-08 — Browse + Search Abandonment deployed (DRAFT, awaiting LIVE flip)
+
+**Deployment status:** ALL 3 templates deployed + verified end-to-end against real events.
+
+**Live deployed clones in flow-actions:**
+- `RtiVC5` action 98627563 → owned global `WVECd5` → cloned to **`WR3mRF`** (replaces `Tutaam`)
+- `XbQiKg` action 105487706 (E1) → owned global `Thn6Vr` → cloned to **`S3jZGb`** (replaces `RPZh8V`)
+- `XbQiKg` action 105908180 (E2) → owned global `QRVaNj` → cloned to **`RWGKkM`** (was `template_id: None`)
+
+**End-to-end probe** (`probe_browse_search_real_event.py`) PASSED against real production events:
+- Viewed Product event: Pressing Nails Ombre Gel @ $24.99
+- Boost Search event: query="Pressing nails" / product="Pressing Nails Rare"
+- All 3 clones rendered with: zero Liquid leakage, zero myshopify.com URL traps, CTAs routing to bargainchemist.co.nz, expected phrases present
+- 44 hrefs total across 3 templates, all auditable destinations
+
+**Klaviyo eventual-consistency gotcha discovered:** PATCH /api/flow-actions/{id}/ HTTP 200 response can contain the OLD cloned template_id even when the PATCH succeeded. Fresh GET 2 seconds later shows the actual new clone. patch_search_abandonment_fix.py initially false-negatived on E1 verification because it trusted the PATCH response. Fixed by switching to fresh-GET-after-PATCH pattern. Updated to mastery index.
+
+**Pending user actions to flip LIVE:**
+1. Open https://www.klaviyo.com/flow/RtiVC5/edit → send test send (real Viewed Product event) → confirm hero, value strip, CTA → "Set Live"
+2. Open https://www.klaviyo.com/flow/XbQiKg/edit → send test sends for E1 + E2 → confirm both → "Set Live"
+3. (Optional, destructive) `py .claude\bargain-chemist\scripts\delete_rsnnak.py` — removes the Triple-Pixel duplicate of RtiVC5
+
+**14-day prediction window** starts at LIVE flip time:
+- RtiVC5: open ≥ 30%, CTR ≥ 4%, RPR ≥ $1.00
+- XbQiKg E1: open ≥ 50% (search intent is high), CTR ≥ 15%, RPR ≥ $0.50
+- XbQiKg E2 (NEW): open ≥ 30%, CTR ≥ 5%
+- Zero `{% %}` Liquid leakage in any delivered email
