@@ -414,3 +414,56 @@ Comprehensive audit of all 7 LIVE flows + 1 paused (Ysj7sg). Findings:
 - V9XmEm E2 subject mismatch double-check (resolved per snapshot — subject "Already under the weather" matches recovery body — but worth re-verifying with template HTML inspection)
 - 5 orphan templates from today's deploys — cleanup script when convenient
 - Browse/Search abandonment audit — full session of work
+
+## 2026-05-08 — Browse + Search Abandonment build (W2Sbja design rebuild)
+
+**User direction:** "use W2Sbja as reference always" + "test logic INSIDE the template DURING build" — applied same rigor as today's Y84ruV v3 work.
+
+**Pre-build discovery (via klaviyo_get_events):**
+- `XQ2zfW` "Viewed Product" (Klaviyo native) event payload uses field `Name` (not `ProductName`). Existing Tutaam template was using `event.ProductName` — likely empty in production sends. ⚠️ Field-name bug in legacy Tutaam.
+- `Y2qHKK` "[Boost] Clicked Search Result" payload uses `searchQuery`, `productName` (camelCase), `productCategory`, `productPrice`, `productUrl` (myshopify.com), `productTags`.
+- All 3 trigger metrics confirmed alive: events firing within minutes of audit time.
+
+**Architectural decision:** rebuild on W2Sbja chrome (not patch in place).
+- New templates produced by `build_browse_search_templates.py`:
+  - `browse-recover-w2sbja.html` for RtiVC5 (uses verified `event.Name` not `event.ProductName`)
+  - `search-recover-e1-w2sbja.html` for XbQiKg E1 (uses `event.searchQuery` + `event.productName`)
+  - `search-recover-e2-w2sbja.html` for XbQiKg E2 (NEW — fills the missing template_id slot)
+- All 3 use the always-on value strip (`$79 free shipping · Price Beat 10% · 30+ NZ stores`) replacing W2Sbja's urgency note.
+- All 3 include the always-on pharmacist-only-products disclaimer (regulatory).
+- Subjects stripped of fear language; Liquid uses verified-safe patterns from `klaviyo-template-syntax-verified.md`.
+
+**Build-time validation (atomic; nothing writes to disk if any check fails):**
+- Static checks: no fear/scarcity, no coupons, no fabricated facts; required approved-facts present; verified Liquid patterns present, banned patterns absent.
+- Render-test against REAL events fetched live at runtime (not synthetic). Multiple boundary contexts per template: real event, missing first_name, missing product fields, partial data, special chars in search query.
+- CTA URL audit during render: rejects any rendered URL containing `myshopify.com` (the full_landing_site-style trap).
+
+**Patch scripts (deploy via owned-global POST + flow-action PATCH):**
+- `patch_browse_abandonment_fix.py`: POSTs new owned global → PATCHes RtiVC5 action 98627563 with new template_id + subject + preview → verifies clone has W2Sbja chrome + no fear + uses event.Name.
+- `patch_search_abandonment_fix.py`: POSTs 2 new owned globals (E1+E2) → PATCHes XbQiKg actions 105487706 (E1) + 105908180 (E2 — currently template_id=None) with new template_ids + subjects + previews → verifies both clones.
+
+**End-to-end probe (`probe_browse_search_real_event.py`):**
+- Pulls latest real Viewed Product + Boost Search events from production
+- Renders deployed clones against them
+- Audits every rendered href: zero Liquid leakage, zero myshopify.com URL traps, expected phrase present, CTAs route to bargainchemist.co.nz
+- Same pattern as `probe_y84ruv_real_event.py` proven for Sr3hxz today
+
+**Reactivation runbook on user box (after `git pull`):**
+```
+py build_browse_search_templates.py     # build + render-test all 3 atomically
+py patch_browse_abandonment_fix.py      # deploy RtiVC5 fix
+py patch_search_abandonment_fix.py      # deploy XbQiKg E1+E2 fix
+py probes/probe_browse_search_real_event.py  # end-to-end against real events
+# Then in Klaviyo UI: send tests at real event contexts → flip RtiVC5 LIVE → flip XbQiKg LIVE
+py delete_rsnnak.py                     # (optional, destructive) remove RtiVC5 duplicate
+```
+
+**Falsifiable predictions (14-day window starts on each LIVE flip):**
+- RtiVC5: open ≥ 30%, CTR ≥ 4%, RPR ≥ $1.00 (lower than RPQXaa's $1.94 because browse intent is weaker than cart intent)
+- XbQiKg E1: open ≥ 50% (search intent is high), CTR ≥ 15%, RPR ≥ $0.50
+- XbQiKg E2 (the NEW one): open ≥ 30%, CTR ≥ 5% — first-time data, no baseline
+- Zero `{% %}` Liquid leakage in any delivered email
+
+**Confidence:** High on the design rebuild (W2Sbja chrome + verified field names + atomic-write + real-event probes — same standards that worked for Sr3hxz). Medium on engagement predictions (small samples in historical data; new copy framing untested with this specific audience).
+
+**Open items:** none in this scope. RPQXaa URL field decision + V9XmEm/YdejKf trigger plumbing checks deferred per prior sessions.
