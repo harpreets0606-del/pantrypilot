@@ -1,0 +1,90 @@
+{%- comment -%}
+  Klaviyo Back In Stock form for Bargain Chemist
+  Renders an email/SMS capture form on out-of-stock product variants.
+  Submits to Klaviyo's Client Back In Stock Subscriptions endpoint, which
+  fires the "Subscribed to Back in Stock" metric used by the
+  "[Z] Back in Stock" flow (id Ysj7sg).
+
+  Usage in product template (e.g. sections/main-product.liquid):
+    {%- render 'klaviyo-back-in-stock', product: product, current_variant: current_variant -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign variant = current_variant | default: product.selected_or_first_available_variant
+  assign variant_available = variant.available
+-%}
+
+<div
+  class="kl-bis"
+  data-kl-bis
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-url="{{ shop.url }}{{ product.url }}"
+  data-variant-id="{{ variant.id }}"
+  data-variant-title="{{ variant.title | escape }}"
+  data-variant-available="{{ variant_available }}"
+  {% if variant.featured_image %}data-variant-image="{{ variant.featured_image | image_url: width: 600 }}"{% endif %}
+  hidden
+>
+  <div class="kl-bis__heading">
+    <h3 class="kl-bis__title">Notify me when back in stock</h3>
+    <p class="kl-bis__subtitle">
+      We'll email or text you the moment
+      <strong class="kl-bis__variant-name" data-kl-bis-variant-name>{{ variant.title }}</strong>
+      is available again.
+    </p>
+  </div>
+
+  <form class="kl-bis__form" data-kl-bis-form novalidate>
+    <label class="kl-bis__field">
+      <span class="kl-bis__label">Email</span>
+      <input
+        type="email"
+        name="email"
+        autocomplete="email"
+        inputmode="email"
+        required
+        placeholder="you@example.com"
+        data-kl-bis-email
+      >
+    </label>
+
+    <label class="kl-bis__field">
+      <span class="kl-bis__label">Mobile (optional, for SMS alert)</span>
+      <input
+        type="tel"
+        name="phone"
+        autocomplete="tel"
+        inputmode="tel"
+        placeholder="+64 21 123 4567"
+        data-kl-bis-phone
+      >
+    </label>
+
+    <label class="kl-bis__consent">
+      <input type="checkbox" name="marketing" value="1" data-kl-bis-marketing>
+      <span>Also subscribe me to Bargain Chemist email updates.</span>
+    </label>
+
+    <button type="submit" class="kl-bis__submit" data-kl-bis-submit>
+      Notify me
+    </button>
+
+    <p class="kl-bis__msg" data-kl-bis-msg role="status" aria-live="polite"></p>
+
+    <p class="kl-bis__legal">
+      By submitting you agree to our
+      <a href="/policies/privacy-policy">Privacy Policy</a>.
+      Unsubscribe any time.
+    </p>
+  </form>
+</div>
+
+{{ 'klaviyo-back-in-stock.css' | asset_url | stylesheet_tag }}
+<script
+  src="{{ 'klaviyo-back-in-stock.js' | asset_url }}"
+  data-klaviyo-company-id="XCgiqg"
+  data-klaviyo-list-id="RhChwn"
+  defer
+></script>
