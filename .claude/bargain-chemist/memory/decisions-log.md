@@ -330,3 +330,34 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
 - **Verification gate**: re-run test sends from `Sr3hxz` flow editor at $value 20/50/120; CTA must go to a `bargainchemist.co.nz/.../checkouts/ac/<token>/recover` URL, NOT a `/products/...` URL.
 - **Confidence**: High on the field choice (3/3 real events confirmed the pattern). High on the in-place patch mechanism (verified workflow from 2026-05-07 deploy). The only remaining gap closes with the next round of test sends.
 - **Learning**: render-test in build script + dry-run + Klaviyo UI preview all PASSED — but real test sends caught the bug. **Visual preview of a rendered HTML doesn't validate the LIVE link destination because preview substitutes test context.** Going forward, always pair render-tests with at least one real test send that actually clicks links before declaring a deploy ready. Adding to mastery index as a permanent gotcha.
+
+## 2026-05-08 — Y84ruV v3 URL fix verified end-to-end via real-event render probe
+
+- **Context**: After the in-place URL fix, Klaviyo UI's "Send a test" still routed the inbox button to the home page. Two possibilities: (a) deployed template wrong, or (b) Klaviyo's test-send substitutes empty `event.extra` so the `|default:` fallback fires → empty `/cart` → Shopify redirects to home page.
+- **Probe**: `scripts/probes/probe_y84ruv_real_event.py` POSTed `/api/template-render/` against the LIVE deployed templates `Vtggdk` (E1) and `Yr6YBF` (E4) — same Klaviyo renderer used at send time — passing Camila's actual Checkout Started event payload (event id 77tyz766qKd, 2026-05-07T23:41:17Z, $21.99 Bioglan, retrieved earlier via `klaviyo_get_events`).
+- **Result**:
+  - E1 (Vtggdk) rendered href: `https://www.bargainchemist.co.nz/31719260297/checkouts/ac/hWNBuAB9g05U5qUkKCiFYrWG/recover?key=e212dcfe0710096f3d0c354c2a46ed0a&locale=en-NZ` ✅
+  - E4 (Yr6YBF) rendered href: same URL ✅
+  - Both buttons resolve to the actual cart-recovery URL embedded in the event payload.
+- **Diagnosis confirmed**: scenario (b). Klaviyo's UI test-send substitutes empty event context. The fallback `|default:'https://www.bargainchemist.co.nz/cart'` fires → Shopify treats `/cart` as empty → redirects to home page. **Production renderer + production event payload = correct URL.**
+- **Resolution**: Flow `Sr3hxz` cleared for LIVE flip. The 14-day prediction window starts on flip-to-live.
+- **Snapshots**: `.claude/bargain-chemist/snapshots/2026-05-08/probe-real-event/` (rendered HTML + JSON for both templates).
+- **Confidence**: Very high. Same renderer Klaviyo uses at send time + actual production event payload verified to produce the correct URL. No remaining ambiguity.
+- **Learning**: For any future "did the test send do the right thing?" question where preview ≠ production, the canonical resolution is to render-test the LIVE deployed template against a REAL event payload via `/api/template-render/`. Pattern saved as `probe_y84ruv_real_event.py`; reusable for similar future questions across other flows.
+
+## 2026-05-08 — Sr3hxz flipped to LIVE 🟢
+
+- **Action**: User flipped flow `Sr3hxz` (`[Z] Abandoned Checkout v3 - tiered`) status from DRAFT to LIVE via Klaviyo UI 'Set Live'.
+- **State**: live flow count is now **7**: RPQXaa, T7pmf6, Ua5LdS, V9XmEm, YdejKf, Ysj7sg, **Sr3hxz**.
+- **What is now sending**: every Checkout Started event from Shopify (metric VvcTue) on a profile that (a) has email marketing consent, (b) has not placed an order since flow start, (c) has not started another checkout since flow start, will trigger the linear sequence: 1h delay → E1 (3-tier in-template Liquid) → 23h delay → E4 (3-tier in-template Liquid) → end. CTA buttons resolve to `event.extra.checkout_url` (verified end-to-end 2026-05-08).
+- **Falsifiable predictions — 14-day window starts now (deadline 2026-05-22 00:00 Pacific/Auckland)**:
+  1. E1 open rate ≥ 35%
+  2. E1 click rate ≥ 4%
+  3. Combined E1+E4 RPR ≥ $1.50/recipient
+  4. Tier B (cart $30-$78) click rate ≥ Tier A (cart < $30) click rate (actionable nudge beats trust-only)
+  5. Zero leftover `{% %}` Liquid markers in any delivered email (= renderer healthy)
+- **How to score**: 2026-05-22 onwards, run `klaviyo_get_flow_report` for `Sr3hxz` filtered by send_channel=email, group by flow_message_id, last 14 days, statistics=[recipients, opens_unique, opens, clicks_unique, clicks, conversions, conversion_value], conversionMetricId=Sxnb5T (Placed Order). Compare to predictions above. Append outcome here.
+- **Pending operational cleanup** (non-blocking):
+  - 5 orphan templates in account: `X44nU8`, `TZAqap` (from earlier dry-run); `RN2eUW`, `SXr5NN` (clones replaced by URL-fix re-clone); plus old Y84ruV's three pre-existing orphans (`TUbBRk`, `TuHa4f`, `VCjCxL`). Cleanup script can be written when needed; harmless until then.
+  - V9XmEm E2 subject mismatch ("Have you booked your flu vaccine yet?" vs recovery body) — known open audit item, not yet addressed.
+  - RPQXaa cosmetic name reversal (E2 sends first, named "Email #2") — known open audit item.
