@@ -160,7 +160,7 @@ def static_check(candidate_html, rules):
     addr_count = candidate_html.count("{{ organization.full_address }}")
     name_count = candidate_html.count("{{ organization.name }}")
     if unsub_count != 1:
-        fails.append(f"Expected exactly 1 {% raw %}{% unsubscribe %}{% endraw %}, got {unsub_count}")
+        fails.append(f"Expected exactly 1 unsubscribe macro, got {unsub_count}")
     if addr_count != 1:
         fails.append(f"Expected exactly 1 organization.full_address, got {addr_count}")
     # organization.name should be present at least once
