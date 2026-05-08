@@ -167,11 +167,11 @@ def static_check(html):
     for marker in REQUIRED_MARKERS:
         if marker not in html:
             fails.append(f"missing required marker: '{marker}'")
-    # Sanity: must still start with <!DOCTYPE html> and have the navy hero
+    # Sanity: must still have the seasonal navy hero + flu-season body intact
     if "#1a3a5c" not in html and "1a3a5c" not in html:
         fails.append("seasonal navy hero color #1a3a5c missing — body content lost?")
-    if "Stay well this winter" not in html:
-        fails.append("hero copy 'Stay well this winter' missing — body content lost?")
+    if "flu season" not in html:
+        fails.append("hero/body content 'flu season' missing — body content lost?")
     return fails
 
 
@@ -225,7 +225,7 @@ def render_check(key, candidate_html):
             diags.append("organization.name didn't resolve")
         if "1 Radcliffe Road" not in rendered:
             diags.append("organization.full_address didn't resolve")
-        if "Stay well this winter" not in rendered:
+        if "flu season" not in rendered:
             diags.append("seasonal hero body content missing in render")
         if "Get social with us" not in rendered:
             diags.append("social block missing in render")
