@@ -100,7 +100,9 @@ def fetch_latest_event(key, metric_id, label):
     data = r.json().get("data", [])
     if not data:
         sys.exit(f"❌ no events for {metric_id}")
-    props = data[0]["attributes"]["eventProperties"]
+    attrs = data[0]["attributes"]
+    # REST returns event_properties; MCP returns eventProperties — handle both
+    props = attrs.get("event_properties") or attrs.get("eventProperties") or {}
     save(f"sample-event-{label}.json", props)
     return props
 
