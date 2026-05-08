@@ -361,3 +361,56 @@ Add `templates:read` scope to Klaviyo MCP API key at https://www.klaviyo.com/set
   - 5 orphan templates in account: `X44nU8`, `TZAqap` (from earlier dry-run); `RN2eUW`, `SXr5NN` (clones replaced by URL-fix re-clone); plus old Y84ruV's three pre-existing orphans (`TUbBRk`, `TuHa4f`, `VCjCxL`). Cleanup script can be written when needed; harmless until then.
   - V9XmEm E2 subject mismatch ("Have you booked your flu vaccine yet?" vs recovery body) — known open audit item, not yet addressed.
   - RPQXaa cosmetic name reversal (E2 sends first, named "Email #2") — known open audit item.
+
+## 2026-05-08 — Ysj7sg paused (Back in Stock trigger pipeline dead since 2023-12-11)
+
+- **Action**: User paused Ysj7sg via Klaviyo UI. Verified `status=manual` via `klaviyo_get_flows`.
+- **Why**: trigger metric `USbQRB` ("Subscribed to Back in Stock") last received an event on 2023-12-11 — over 17 months ago. Newer Klaviyo internal metric `Vrisga` ("submitted_back_in_stock_form", created 2026-03-03) has zero events ever. Both back-in-stock signup pipelines are dead. The flow itself (templates `XccdEd` + `RijuTw`) is structurally fine — just starved of events.
+- **Diagnosis**: most likely the Shopify back-in-stock app that fed `USbQRB` was uninstalled around Dec 2023. Klaviyo's native back-in-stock form was created on the account 2026-03-03 (`Vrisga` metric) but was either never deployed to bargainchemist.co.nz storefront or has no products configured.
+- **Upstream fix required** (out of Claude's scope, on user):
+  - Option A: deploy Klaviyo native back-in-stock form to product pages → events flow → re-point Ysj7sg trigger to `Vrisga`/successor
+  - Option B: install third-party Shopify back-in-stock app with Klaviyo integration
+  - Option C: identify and re-enable whatever was firing `USbQRB` pre-Dec 2023
+- **Watch**: if `Vrisga` or `USbQRB` event count > 0 in any future check, upstream is fixed; reactivate flow (DELETE+POST since flow definition isn't PATCHable).
+
+## 2026-05-08 — Live-flow end-to-end audit (post-Sr3hxz LIVE)
+
+Comprehensive audit of all 7 LIVE flows + 1 paused (Ysj7sg). Findings:
+
+**CTA URL trap audit (preventing Y84ruV-style bugs in other flows):**
+- Grepped all live-flow template HTMLs for `event.extra.full_landing_site` (the bad pattern). **Zero hits.** No other flow has the same trap.
+- All cart-recovery / product-link URLs verified using sane fields per template:
+  - RPQXaa (USNhYE/UCUwWu): `event|lookup:'URL'|default:'.../cart'` — ⚠️ the URL field for Added to Cart events is the PRODUCT page (per `klaviyo-template-syntax-verified.md`), not the cart. This means RPQXaa's CTA lands customers on the product page they added from. Could be intentional (Added-to-Cart context, product-relevant) or could be a Y84ruV-style trap. Performance is healthy ($5,503/30d, 5.4% CTR) so users click through regardless. **Decision item for user**: keep as-is, OR change to cart link.
+  - Ysj7sg (XccdEd): correct (back-in-stock product page)
+  - T7pmf6 (RJhLMj): `{{ organization.homepage }}` (Win-back, brand-home, correct)
+  - Sr3hxz (Vtggdk/Yr6YBF): `event.extra.checkout_url` (verified end-to-end today)
+  - Welcome / Replenishment / Flu Season templates: not cart-recovery context, no URL trap risk
+
+**Trigger plumbing audit (preventing Ysj7sg-style dormant flows):**
+- RPQXaa: trigger S4jKYD (Added to Cart, Shopify) — ✅ active
+- T7pmf6: trigger Sxnb5T (Placed Order) + profile_filter handles 90d lapsed gate — ✅ active
+- Ua5LdS: trigger UWP7cZ (Ordered Product) — ✅ active (every order fires)
+- V9XmEm: trigger SEGMENT VGQby3 — 🟡 NOT yet verified that segment is populating. Worth a `klaviyo_get_segment` call.
+- YdejKf: trigger LIST SxBenU — 🟡 NOT yet verified list is receiving signups. Worth checking recent profiles added to that list.
+- Sr3hxz: trigger VvcTue (Checkout Started) — ✅ active (3 events yesterday)
+
+**Performance status (last 30 days):**
+- 🟢 RPQXaa: $5,503 revenue, above benchmark (37% open / 5.4% click / 2.22% conv / $1.94 RPR)
+- ⏳ Other 5 flows: insufficient data — re-check at:
+  - V9XmEm: 2026-05-22 (or 200+ recipients)
+  - YdejKf: 2026-05-22 (14d post-LIVE for prediction window)
+  - Sr3hxz: 2026-05-22 (14d post-LIVE)
+  - T7pmf6: 2026-06-05 (30d post-create)
+  - Ua5LdS: 2026-06-08 (after first 30d delay elapses)
+
+**Browse/Search abandonment** — both DRAFT, not LIVE. Historical performance suggests material revenue available:
+- RSnNak Browse Abandonment Triple Pixel: DRAFT, but historical $2,540/30d — significant revenue dormant
+- XbQiKg Search Abandonment V4: DRAFT, very high engagement (59% open, 26% CTR on n=27)
+- Recommended for follow-up audit + reactivation in a separate session.
+
+**Open items deferred:**
+- RPQXaa URL field decision (product page vs cart) — pending user
+- V9XmEm + YdejKf trigger plumbing verification — 5 min of MCP work pending greenlight
+- V9XmEm E2 subject mismatch double-check (resolved per snapshot — subject "Already under the weather" matches recovery body — but worth re-verifying with template HTML inspection)
+- 5 orphan templates from today's deploys — cleanup script when convenient
+- Browse/Search abandonment audit — full session of work
