@@ -1,0 +1,201 @@
+{
+  "data": {
+    "type": "flow",
+    "id": "V9XmEm",
+    "attributes": {
+      "name": "[Z] Flu Season - Winter Wellness",
+      "status": "live",
+      "archived": false,
+      "created": "2026-05-04T05:24:20+00:00",
+      "updated": "2026-05-04T05:24:20+00:00",
+      "trigger_type": "Added to List"
+    },
+    "relationships": {
+      "flow-actions": {
+        "data": [
+          {
+            "type": "flow-action",
+            "id": "105627866"
+          },
+          {
+            "type": "flow-action",
+            "id": "105627868"
+          },
+          {
+            "type": "flow-action",
+            "id": "105627867"
+          }
+        ],
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/V9XmEm/relationships/flow-actions/",
+          "related": "https://a.klaviyo.com/api/flows/V9XmEm/flow-actions/"
+        }
+      },
+      "tags": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/V9XmEm/relationships/tags/",
+          "related": "https://a.klaviyo.com/api/flows/V9XmEm/tags/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/V9XmEm/"
+    }
+  },
+  "included": [
+    {
+      "type": "flow-action",
+      "id": "105627866",
+      "attributes": {
+        "created": "2026-05-04T05:24:21+00:00",
+        "updated": "2026-05-04T20:39:46+00:00",
+        "definition": {
+          "id": "105627866",
+          "type": "send-email",
+          "data": {
+            "message": {
+              "from_email": "hello@bargainchemist.co.nz",
+              "from_label": "Bargain Chemist",
+              "reply_to_email": "orders@bargainchemist.co.nz",
+              "cc_email": null,
+              "bcc_email": null,
+              "subject_line": "Stay well this winter, {{ person.first_name|default:'friend' }}",
+              "preview_text": "Your guide to staying healthy and protected this flu season.",
+              "template_id": "SRspqe",
+              "smart_sending_enabled": true,
+              "transactional": false,
+              "add_tracking_params": true,
+              "custom_tracking_params": null,
+              "additional_filters": null,
+              "name": "[Z] Flu Season Email 1",
+              "id": "QW6y2L"
+            },
+            "status": "live"
+          },
+          "links": {
+            "next": "105627867"
+          }
+        }
+      },
+      "relationships": {
+        "flow": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627866/relationships/flow/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627866/flow/"
+          }
+        },
+        "flow-messages": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627866/relationships/flow-messages/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627866/flow-messages/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flow-actions/105627866/"
+      }
+    },
+    {
+      "type": "flow-action",
+      "id": "105627868",
+      "attributes": {
+        "created": "2026-05-04T05:24:21+00:00",
+        "updated": "2026-05-07T07:15:40+00:00",
+        "definition": {
+          "id": "105627868",
+          "type": "send-email",
+          "data": {
+            "message": {
+              "from_email": "hello@bargainchemist.co.nz",
+              "from_label": "Bargain Chemist",
+              "reply_to_email": "orders@bargainchemist.co.nz",
+              "cc_email": null,
+              "bcc_email": null,
+              "subject_line": "Already under the weather, {{ first_name|default:'there' }}?",
+              "preview_text": "Pharmacist-backed picks to support your recovery, NZ's best prices.",
+              "template_id": "XmsJkZ",
+              "smart_sending_enabled": true,
+              "transactional": false,
+              "add_tracking_params": true,
+              "custom_tracking_params": null,
+              "additional_filters": null,
+              "name": "Email #2",
+              "id": "S7vnUC"
+            },
+            "status": "draft"
+          },
+          "links": {
+            "next": null
+          }
+        }
+      },
+      "relationships": {
+        "flow": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627868/relationships/flow/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627868/flow/"
+          }
+        },
+        "flow-messages": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627868/relationships/flow-messages/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627868/flow-messages/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flow-actions/105627868/"
+      }
+    },
+    {
+      "type": "flow-action",
+      "id": "105627867",
+      "attributes": {
+        "created": "2026-05-04T05:24:21+00:00",
+        "updated": "2026-05-04T05:24:21+00:00",
+        "definition": {
+          "id": "105627867",
+          "type": "time-delay",
+          "data": {
+            "unit": "days",
+            "value": 7,
+            "secondary_value": null,
+            "timezone": "profile",
+            "delay_until_weekdays": [
+              "monday",
+              "tuesday",
+              "wednesday",
+              "thursday",
+              "friday",
+              "saturday",
+              "sunday"
+            ]
+          },
+          "links": {
+            "next": "105627868"
+          }
+        }
+      },
+      "relationships": {
+        "flow": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627867/relationships/flow/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627867/flow/"
+          }
+        },
+        "flow-messages": {
+          "links": {
+            "self": "https://a.klaviyo.com/api/flow-actions/105627867/relationships/flow-messages/",
+            "related": "https://a.klaviyo.com/api/flow-actions/105627867/flow-messages/"
+          }
+        }
+      },
+      "links": {
+        "self": "https://a.klaviyo.com/api/flow-actions/105627867/"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://a.klaviyo.com/api/flows/V9XmEm/?include=flow-actions"
+  }
+}

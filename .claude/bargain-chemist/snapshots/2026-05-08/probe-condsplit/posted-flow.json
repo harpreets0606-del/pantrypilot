@@ -1,0 +1,126 @@
+{
+  "data": {
+    "type": "flow",
+    "attributes": {
+      "name": "PROBE - conditional-split metric_filters on $value",
+      "definition": {
+        "triggers": [
+          {
+            "type": "metric",
+            "id": "VvcTue"
+          }
+        ],
+        "profile_filter": {
+          "condition_groups": [
+            {
+              "conditions": [
+                {
+                  "type": "profile-marketing-consent",
+                  "consent": {
+                    "channel": "email",
+                    "can_receive_marketing": true,
+                    "consent_status": {
+                      "subscription": "any",
+                      "filters": null
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "entry_action_id": "split-1",
+        "actions": [
+          {
+            "temporary_id": "split-1",
+            "type": "conditional-split",
+            "data": {
+              "profile_filter": {
+                "condition_groups": [
+                  {
+                    "conditions": [
+                      {
+                        "type": "profile-metric",
+                        "metric_id": "VvcTue",
+                        "measurement": "count",
+                        "measurement_filter": {
+                          "type": "numeric",
+                          "operator": "greater-than",
+                          "value": 0
+                        },
+                        "timeframe_filter": {
+                          "type": "date",
+                          "operator": "flow-start"
+                        },
+                        "metric_filters": [
+                          {
+                            "property": "$value",
+                            "filter": {
+                              "type": "numeric",
+                              "operator": "less-than",
+                              "value": 30
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "links": {
+              "next_if_true": "email-A",
+              "next_if_false": "email-B"
+            }
+          },
+          {
+            "temporary_id": "email-A",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "name": "PROBE - Tier A (under $30)",
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "subject_line": "[PROBE A] Cart under $30",
+                "preview_text": "probe",
+                "template_id": "UH72Vm",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          },
+          {
+            "temporary_id": "email-B",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "name": "PROBE - Tier B+C ($30+)",
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "subject_line": "[PROBE B] Cart $30+",
+                "preview_text": "probe",
+                "template_id": "UH72Vm",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}

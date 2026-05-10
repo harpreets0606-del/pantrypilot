@@ -1,0 +1,30 @@
+﻿[
+    {
+        "name":  "BC - Welcome Email 1 - Welcome to the Family",
+        "id":  "RjiNUy",
+        "edit_url":  "https://www.klaviyo.com/email-editor/RjiNUy/edit",
+        "file":  ".claude/bargain-chemist/templates/welcome-email-1.html",
+        "deployed":  "2026-05-07T13:25:51.8331909+12:00"
+    },
+    {
+        "name":  "BC - Welcome Email 2 - Best Sellers",
+        "id":  "SuHDNq",
+        "edit_url":  "https://www.klaviyo.com/email-editor/SuHDNq/edit",
+        "file":  ".claude/bargain-chemist/templates/welcome-email-2.html",
+        "deployed":  "2026-05-07T13:25:52.9685160+12:00"
+    },
+    {
+        "name":  "BC - Welcome Email 3 - Last Nudge",
+        "id":  "UPxjA8",
+        "edit_url":  "https://www.klaviyo.com/email-editor/UPxjA8/edit",
+        "file":  ".claude/bargain-chemist/templates/welcome-email-3.html",
+        "deployed":  "2026-05-07T13:25:53.9876574+12:00"
+    },
+    {
+        "name":  "BC - Cart Abandonment Email 3 - Last Chance (72h)",
+        "id":  "Sq6pt2",
+        "edit_url":  "https://www.klaviyo.com/email-editor/Sq6pt2/edit",
+        "file":  ".claude/bargain-chemist/templates/cart-abandon-email-3.html",
+        "deployed":  "2026-05-07T13:25:55.0314101+12:00"
+    }
+]

@@ -1,0 +1,14 @@
+﻿[
+    {
+        "ActionId":  "98627502",
+        "Label":  "E1 - Cart Abandon Email 1",
+        "OwnedTemplate":  "UQvPqN",
+        "TemplateName":  "BC - Cart Abandonment Email 1 - You Forgot Something"
+    },
+    {
+        "ActionId":  "98628345",
+        "Label":  "E2 - Cart Abandon Email 2",
+        "OwnedTemplate":  "Sr4ThG",
+        "TemplateName":  "BC - Cart Abandonment Email 2 - Don\u0027t Miss Out"
+    }
+]

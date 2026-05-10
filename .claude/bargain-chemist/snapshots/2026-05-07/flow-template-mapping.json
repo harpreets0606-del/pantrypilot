@@ -1,0 +1,20 @@
+﻿[
+    {
+        "message_id":  "TZmw7E",
+        "label":  "E1 - Welcome to the Family",
+        "template_id":  "VMMpC9",
+        "local_file":  ".claude/bargain-chemist/templates/welcome-email-1.html"
+    },
+    {
+        "message_id":  "RzUzYy",
+        "label":  "E2 - Best Sellers",
+        "template_id":  "Tnktv3",
+        "local_file":  ".claude/bargain-chemist/templates/welcome-email-2.html"
+    },
+    {
+        "message_id":  "WXcevZ",
+        "label":  "E3 - Last Nudge",
+        "template_id":  "QWTxmV",
+        "local_file":  ".claude/bargain-chemist/templates/welcome-email-3.html"
+    }
+]

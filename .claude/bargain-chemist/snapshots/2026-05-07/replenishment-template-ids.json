@@ -1,0 +1,44 @@
+﻿[
+    {
+        "Key":  "vitamins",
+        "Name":  "[Z] Replenishment - E1 Vitamins",
+        "TemplateId":  "ULRiRz",
+        "CollectionHandle":  "vitamins-supplements",
+        "IntroDays":  60
+    },
+    {
+        "Key":  "skincare",
+        "Name":  "[Z] Replenishment - E2 Skincare",
+        "TemplateId":  "TwPdCj",
+        "CollectionHandle":  "skin-care",
+        "IntroDays":  45
+    },
+    {
+        "Key":  "haircare",
+        "Name":  "[Z] Replenishment - E3 Hair Care",
+        "TemplateId":  "SgM8p5",
+        "CollectionHandle":  "hair-care",
+        "IntroDays":  60
+    },
+    {
+        "Key":  "oralcare",
+        "Name":  "[Z] Replenishment - E4 Oral Care",
+        "TemplateId":  "XE4LUw",
+        "CollectionHandle":  "oral-hygiene-care",
+        "IntroDays":  30
+    },
+    {
+        "Key":  "babycare",
+        "Name":  "[Z] Replenishment - E5 Baby \u0026 Family",
+        "TemplateId":  "SPaUEi",
+        "CollectionHandle":  "baby-care",
+        "IntroDays":  30
+    },
+    {
+        "Key":  "fallback",
+        "Name":  "[Z] Replenishment - E6 Fallback (Your Favourites)",
+        "TemplateId":  "Wq2FFg",
+        "CollectionHandle":  "all-products",
+        "IntroDays":  45
+    }
+]

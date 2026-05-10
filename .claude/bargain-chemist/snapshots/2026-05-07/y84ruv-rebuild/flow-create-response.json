@@ -1,0 +1,201 @@
+{
+  "data": {
+    "type": "flow",
+    "id": "VaRyRc",
+    "attributes": {
+      "name": "Y84ruV-v2 - Abandoned Checkout (rebuilt 2026-05-07)",
+      "status": "draft",
+      "archived": false,
+      "created": "2026-05-07T11:38:35.484984+00:00",
+      "updated": "2026-05-07T11:38:35.490923+00:00",
+      "trigger_type": "Metric",
+      "definition": {
+        "triggers": [
+          {
+            "type": "metric",
+            "id": "VvcTue",
+            "trigger_filter": null
+          }
+        ],
+        "profile_filter": {
+          "condition_groups": [
+            {
+              "conditions": [
+                {
+                  "type": "profile-metric",
+                  "metric_id": "Sxnb5T",
+                  "measurement": "count",
+                  "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "equals",
+                    "value": 0
+                  },
+                  "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start"
+                  },
+                  "metric_filters": null
+                }
+              ]
+            },
+            {
+              "conditions": [
+                {
+                  "type": "profile-metric",
+                  "metric_id": "VvcTue",
+                  "measurement": "count",
+                  "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "equals",
+                    "value": 0
+                  },
+                  "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start"
+                  },
+                  "metric_filters": null
+                }
+              ]
+            },
+            {
+              "conditions": [
+                {
+                  "type": "profile-marketing-consent",
+                  "consent": {
+                    "channel": "email",
+                    "can_receive_marketing": true,
+                    "consent_status": {
+                      "subscription": "any",
+                      "filters": null
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "actions": [
+          {
+            "id": "105955339",
+            "type": "time-delay",
+            "data": {
+              "unit": "hours",
+              "value": 1,
+              "secondary_value": 0,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105955340"
+            }
+          },
+          {
+            "id": "105955340",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist",
+                "preview_text": "Pick up where you left off \u2014 Price Beat 10% and free shipping over $79.",
+                "template_id": "SKqCJ6",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Y84ruV-v2 Email 1 - Cart aware",
+                "id": "QWYKdB"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": "105955341"
+            }
+          },
+          {
+            "id": "105955341",
+            "type": "time-delay",
+            "data": {
+              "unit": "hours",
+              "value": 23,
+              "secondary_value": 0,
+              "timezone": "profile",
+              "delay_until_weekdays": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ]
+            },
+            "links": {
+              "next": "105955342"
+            }
+          },
+          {
+            "id": "105955342",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": "hello@bargainchemist.co.nz",
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "One step away from everyday savings",
+                "preview_text": "Your items are waiting \u2014 no rush.",
+                "template_id": "XvFeCU",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null,
+                "name": "Y84ruV-v2 Email 2 - One step away",
+                "id": "TUPtBW"
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        ],
+        "entry_action_id": "105955339"
+      }
+    },
+    "relationships": {
+      "flow-actions": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/VaRyRc/relationships/flow-actions/",
+          "related": "https://a.klaviyo.com/api/flows/VaRyRc/flow-actions/"
+        }
+      },
+      "tags": {
+        "links": {
+          "self": "https://a.klaviyo.com/api/flows/VaRyRc/relationships/tags/",
+          "related": "https://a.klaviyo.com/api/flows/VaRyRc/tags/"
+        }
+      }
+    },
+    "links": {
+      "self": "https://a.klaviyo.com/api/flows/VaRyRc/"
+    }
+  },
+  "links": {
+    "self": "https://a.klaviyo.com/api/flows/"
+  }
+}

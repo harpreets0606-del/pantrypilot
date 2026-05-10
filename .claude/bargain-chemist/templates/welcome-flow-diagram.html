@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bargain Chemist — Welcome Series Flow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 {
+    font-size: 28px;
+    color: #FF0031;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .node {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 24px;
+    min-width: 320px;
+    max-width: 440px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 2px solid #eee;
+    position: relative;
+  }
+  .node .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .node .title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 6px;
+  }
+  .node .meta {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .trigger {
+    background: linear-gradient(135deg, #222, #444);
+    color: white;
+    border-color: #222;
+  }
+  .trigger .label, .trigger .title { color: white; }
+
+  .email {
+    background: linear-gradient(135deg, #FF0031, #c8002a);
+    color: white;
+    border-color: #7B1523;
+  }
+  .email .label { color: rgba(255,255,255,0.85); }
+  .email .title { color: white; }
+  .email .meta { color: rgba(255,255,255,0.95); }
+  .email .subject {
+    background: rgba(0,0,0,0.18);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .delay {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    min-width: 200px;
+    padding: 12px 20px;
+  }
+  .delay .label { color: #92400e; }
+  .delay .title { color: #92400e; font-size: 14px; }
+
+  .split {
+    background: #dbeafe;
+    border-color: #3b82f6;
+    min-width: 280px;
+    padding: 14px 20px;
+  }
+  .split .label { color: #1e40af; }
+  .split .title { color: #1e40af; font-size: 14px; }
+  .split-branches {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .branch-yes, .branch-no {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .branch-yes { background: #dcfce7; color: #166534; }
+  .branch-no { background: #fee2e2; color: #991b1b; }
+
+  .end {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #22c55e;
+    min-width: 200px;
+    padding: 12px 20px;
+  }
+  .end .title { color: #166534; }
+
+  .arrow {
+    width: 2px;
+    height: 28px;
+    background: #ccc;
+    position: relative;
+  }
+  .arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: -4px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    transform: rotate(45deg);
+  }
+
+  .timeline {
+    margin-top: 60px;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .timeline h2 {
+    font-size: 18px;
+    color: #222;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .timeline-bar {
+    position: relative;
+    height: 80px;
+    background: linear-gradient(to right, #f7f7f7 0%, #f7f7f7 100%);
+    border-radius: 8px;
+    margin-top: 30px;
+  }
+  .timeline-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #ddd;
+    transform: translateY(-50%);
+  }
+  .marker {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #FF0031;
+    border: 4px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+  .marker .tooltip {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    font-weight: bold;
+  }
+  .marker .day {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #666;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .legend {
+    margin-top: 50px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #666;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌿 Welcome Series — Visual Flow</h1>
+  <p class="subtitle">Bargain Chemist • No-coupon strategy • 3 emails over 3 days</p>
+
+  <div class="flow">
+
+    <div class="node trigger">
+      <div class="label">Trigger</div>
+      <div class="title">🌐 Added to Website Form</div>
+      <div class="meta">New signup via website</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node delay">
+      <div class="label">Wait</div>
+      <div class="title">⏱️ 5 minutes</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node email">
+      <div class="label">Email 1 • Day 0</div>
+      <div class="title">Welcome to the Family</div>
+      <div class="meta">Brand intro · Price Beat 10% · Free shipping</div>
+      <div class="subject">📨 "Welcome to Bargain Chemist, {{first_name}} 👋"</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node delay">
+      <div class="label">Wait</div>
+      <div class="title">⏱️ 1 day</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node split">
+      <div class="label">Conditional Split</div>
+      <div class="title">Placed Order yet?</div>
+      <div class="split-branches">
+        <span class="branch-yes">YES → Exit</span>
+        <span class="branch-no">NO → continue ↓</span>
+      </div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node email">
+      <div class="label">Email 2 • Day 1</div>
+      <div class="title">Best Sellers</div>
+      <div class="meta">Product feed · Reviews · Category nav</div>
+      <div class="subject">📨 "{{first_name}}, here's what's flying off our shelves"</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node delay">
+      <div class="label">Wait</div>
+      <div class="title">⏱️ 2 days</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node split">
+      <div class="label">Conditional Split</div>
+      <div class="title">Placed Order yet?</div>
+      <div class="split-branches">
+        <span class="branch-yes">YES → Exit</span>
+        <span class="branch-no">NO → continue ↓</span>
+      </div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node email">
+      <div class="label">Email 3 • Day 3</div>
+      <div class="title">Last Nudge</div>
+      <div class="meta">3 reasons · Find a store · Free shipping reminder</div>
+      <div class="subject">📨 "3 reasons NZ shops at Bargain Chemist"</div>
+    </div>
+    <div class="arrow"></div>
+
+    <div class="node end">
+      <div class="title">🏁 Flow complete</div>
+    </div>
+
+  </div>
+
+  <div class="timeline">
+    <h2>📅 Timeline at a glance</h2>
+    <div class="timeline-bar">
+      <div class="timeline-track"></div>
+      <div class="marker" style="left: 2%;">
+        <div class="tooltip">Signup</div>
+        <div class="day">Day 0</div>
+      </div>
+      <div class="marker" style="left: 6%;">
+        <div class="tooltip">Email 1</div>
+        <div class="day">+5 min</div>
+      </div>
+      <div class="marker" style="left: 35%;">
+        <div class="tooltip">Email 2</div>
+        <div class="day">Day 1</div>
+      </div>
+      <div class="marker" style="left: 95%;">
+        <div class="tooltip">Email 3</div>
+        <div class="day">Day 3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#222"></span>Trigger</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#FF0031"></span>Email</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#fef3c7;border:1px solid #f59e0b"></span>Wait / Delay</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#dbeafe;border:1px solid #3b82f6"></span>Conditional split</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#dcfce7;border:1px solid #22c55e"></span>Exit / End</div>
+  </div>
+
+</div>
+</body>
+</html>

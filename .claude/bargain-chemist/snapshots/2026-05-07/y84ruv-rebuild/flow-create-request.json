@@ -1,0 +1,154 @@
+{
+  "data": {
+    "type": "flow",
+    "attributes": {
+      "name": "Y84ruV-v2 - Abandoned Checkout (rebuilt 2026-05-07)",
+      "definition": {
+        "triggers": [
+          {
+            "type": "metric",
+            "id": "VvcTue"
+          }
+        ],
+        "profile_filter": {
+          "condition_groups": [
+            {
+              "conditions": [
+                {
+                  "type": "profile-metric",
+                  "metric_id": "Sxnb5T",
+                  "measurement": "count",
+                  "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "equals",
+                    "value": 0
+                  },
+                  "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start"
+                  },
+                  "metric_filters": null
+                }
+              ]
+            },
+            {
+              "conditions": [
+                {
+                  "type": "profile-metric",
+                  "metric_id": "VvcTue",
+                  "measurement": "count",
+                  "measurement_filter": {
+                    "type": "numeric",
+                    "operator": "equals",
+                    "value": 0
+                  },
+                  "timeframe_filter": {
+                    "type": "date",
+                    "operator": "flow-start"
+                  },
+                  "metric_filters": null
+                }
+              ]
+            },
+            {
+              "conditions": [
+                {
+                  "type": "profile-marketing-consent",
+                  "consent": {
+                    "channel": "email",
+                    "can_receive_marketing": true,
+                    "consent_status": {
+                      "subscription": "any",
+                      "filters": null
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "entry_action_id": "delay-1",
+        "actions": [
+          {
+            "temporary_id": "delay-1",
+            "type": "time-delay",
+            "data": {
+              "unit": "hours",
+              "value": 1,
+              "secondary_value": null,
+              "timezone": "profile"
+            },
+            "links": {
+              "next": "email-1"
+            }
+          },
+          {
+            "temporary_id": "email-1",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "name": "Y84ruV-v2 Email 1 - Cart aware",
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": null,
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "{{ first_name|default:'Hey' }}, you forgot something at Bargain Chemist",
+                "preview_text": "Pick up where you left off \u2014 Price Beat 10% and free shipping over $79.",
+                "template_id": "UH72Vm",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": "delay-2"
+            }
+          },
+          {
+            "temporary_id": "delay-2",
+            "type": "time-delay",
+            "data": {
+              "unit": "hours",
+              "value": 23,
+              "secondary_value": null,
+              "timezone": "profile"
+            },
+            "links": {
+              "next": "email-2"
+            }
+          },
+          {
+            "temporary_id": "email-2",
+            "type": "send-email",
+            "data": {
+              "message": {
+                "name": "Y84ruV-v2 Email 2 - One step away",
+                "from_email": "hello@bargainchemist.co.nz",
+                "from_label": "Bargain Chemist",
+                "reply_to_email": null,
+                "cc_email": null,
+                "bcc_email": null,
+                "subject_line": "One step away from everyday savings",
+                "preview_text": "Your items are waiting \u2014 no rush.",
+                "template_id": "VfuPcA",
+                "smart_sending_enabled": true,
+                "transactional": false,
+                "add_tracking_params": true,
+                "custom_tracking_params": null,
+                "additional_filters": null
+              },
+              "status": "draft"
+            },
+            "links": {
+              "next": null
+            }
+          }
+        ]
+      }
+    }
+  }
+}
