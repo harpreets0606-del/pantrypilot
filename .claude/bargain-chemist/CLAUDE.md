@@ -121,3 +121,12 @@ For single-platform questions, just use the relevant MCP tools directly.
 - Update a profile or add to a list in bulk without dry-run + approval.
 - Recommend an action without stating the prediction and confidence.
 - Treat Klaviyo's revenue numbers as ground truth — Shopify is ground truth for orders.
+
+### Designer brief format — strict separation of responsibilities
+
+When briefing the design team for email templates:
+
+- **Designer brief contains ONLY**: flow logic, audience situation, journey position, rationale (why each email exists in the sequence), structural compliance requirements (footer must-haves, ASA disclaimers).
+- **Designer brief does NOT contain**: subject lines, preheader copy, hero copy, body copy, CTA wording, value-prop selection, voice/tone direction, content suggestions. **The brand team owns all of that.**
+- Don't include a "notes" column or content-creative direction in tables sent to the design team. They need flow context, not creative direction.
+- Reason: the brand team has its own brand kit, voice, and tone. The design team's job is structural + visual treatment, informed by flow logic from us and content direction from brand. Mixing creative direction into the engineering brief muddies ownership.
