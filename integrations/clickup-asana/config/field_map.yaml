@@ -15,7 +15,7 @@ asana_task:
     Priority:            "{resolved_priority}"     # from priority_resolver in rules.yaml
     Manager:             "{resolved_manager_gid}"  # mapped CU user, else default (Harpreet)
     "Estimated time":    "{cu.time_estimate | minutes}"   # CU returns ms → convert to minutes
-    Name:                "{cu.custom_id}"          # ZBR-XXXX visible in Name column
+    Name:                "{cu.custom_id | rename:ZBR-:BC-}"   # ZBR-3076 -> BC-3076 (drop Zyber branding, keep number)
     Details:             "{workstream_label} · {cu.task_type | default:'(no type)'}"
                                                     # e.g. "Engineering · Backend Dev"
                                                     #      "Klaviyo · Klaviyo"

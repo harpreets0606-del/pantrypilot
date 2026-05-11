@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__c0473e83-7a98-4a0f-b4be-5d4ceab1c524__clickup_get_task_comments"
+    ]
+  }
+}
