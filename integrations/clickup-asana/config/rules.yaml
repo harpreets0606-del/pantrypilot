@@ -1,0 +1,50 @@
+# Promotion rules. Read by the Mapping Agent before each sync run.
+
+# All CU tasks tagged with "[Bargain Chemist]" prefix promote to Asana.
+# Priority does NOT gate promotion — it controls sequencing/order within
+# the destination board's Priority custom field.
+promotion:
+  filter:
+    name_prefix: "[Bargain Chemist]"
+    include_archived: false
+  scope:
+    list_ids_allowlist:
+      - "901607444533"   # Bargain Chemist Task Board
+      - "901612845895"   # Klaviyo Retainer
+
+# Resolves a CU priority (which is mostly null) into Asana's enum values:
+# High | Medium | Low. Order of evaluation matters — first match wins.
+priority_resolver:
+  - when: { cu_priority: "urgent" }
+    set: "High"
+  - when: { cu_priority: "high" }
+    set: "High"
+  - when: { cu_priority: "normal" }
+    set: "Medium"
+  - when: { cu_priority: "low" }
+    set: "Low"
+
+  # Fallback rules when CU priority is null
+  - when: { name_contains_any: ["URGENT", "HIGH PRIORITY", "BLOCKER", "FROM TEAMS"] }
+    set: "High"
+  - when: { cu_status: "on hold" }
+    set: "Low"
+  - when: { age_days_gt: 60, cu_status_in: ["not started", "on hold"] }
+    set: "Low"
+  - when: { cu_status_in: ["working on it", "tweaks"] }
+    set: "Medium"
+
+  # Final default
+  - when: { match_remaining: true }
+    set: "Medium"
+
+# How to handle drift detected by the Reconciler (someone edited Asana directly).
+# Per user decision: "Detect and alert, don't overwrite".
+conflict_policy: detect_and_alert
+
+# Comments: per user decision, full history backfill + ongoing sync.
+# Posted as Asana comments prefixed for attribution.
+comments:
+  mode: full_history_then_ongoing
+  attribution_prefix: "[from ClickUp — @{cu_username}]"
+  post_as: "default_actor"   # no per-user impersonation; Atlas team identifies via prefix

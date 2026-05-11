@@ -1,0 +1,21 @@
+{
+  "discovered": [
+    { "custom_id": "ZBR-2804", "id": "86d1jxr54", "name": "[Bargain Chemist] • A/B testing guidance", "status": "not started", "parent_custom_id": "ZBR-2801", "assignees": ["david@zyber.co.nz"], "priority_cu": null, "task_type": "Klaviyo" },
+    { "custom_id": "ZBR-2813", "id": "86d1jxrmk", "name": "[Bargain Chemist] Post Purchase Flows - incl cross sells and upsells", "status": "not started", "parent_custom_id": "ZBR-2812", "assignees": ["david@zyber.co.nz"], "priority_cu": null, "task_type": "Klaviyo" },
+    { "custom_id": "ZBR-1501", "id": "86cyggbvb", "name": "BC-00200 :: Bargain Chemist Location Stock Updates", "status": "not started", "parent_custom_id": "ZBR-2846", "assignees": ["sam@zyber.co.nz"], "priority_cu": null, "task_type": "PM" },
+    { "custom_id": "ZBR-2845", "id": "86d1nygc4", "name": "[Bargain Chemist] Stock Discrepancy Issue", "status": "done", "parent_custom_id": "ZBR-2846", "assignees": ["sam@zyber.co.nz"], "priority_cu": null, "task_type": "Backend Dev" },
+    { "custom_id": "ZBR-2849", "id": "86d1pcuwu", "name": "[Bargain Chemist] Fragrance products - exclusions", "status": "done", "parent_custom_id": "ZBR-2846", "assignees": ["sam@zyber.co.nz"], "priority_cu": null, "task_type": "PM" },
+    { "custom_id": "ZBR-2887", "id": "86d1wuqah", "name": "[Bargain Chemist] Sign-up form - Pop-up", "status": "client review", "parent_custom_id": "ZBR-2800", "assignees": ["saniya@zyber.co.nz","brenda@zyber.co.nz","beverly@zyber.co.nz"], "priority_cu": null, "task_type": "Design" },
+    { "custom_id": "ZBR-2889", "id": "86d1wurb7", "name": "[Bargain Chemist] Re-engagement form", "status": "not started", "parent_custom_id": "ZBR-2800", "assignees": [], "priority_cu": null, "task_type": null },
+    { "custom_id": "ZBR-3008", "id": "86d25ytx0", "name": "[Bargain Chemist] Footer sign-up form", "status": "done", "parent_custom_id": "ZBR-2800", "assignees": ["ben@zyber.co.nz","saniya@zyber.co.nz","brenda@zyber.co.nz"], "priority_cu": null, "task_type": "Frontend Dev" },
+    { "custom_id": "ZBR-3016", "id": "86d26zghp", "name": "[Bargain Chemist] Welcome Coupon Script", "status": "client review", "parent_custom_id": "ZBR-2887", "assignees": ["tamara@zyber.co.nz","saniya@zyber.co.nz","brenda@zyber.co.nz"], "priority_cu": null, "task_type": "Frontend Dev", "note": "grandchild of ZBR-2800 via ZBR-2887" }
+  ],
+  "parents_confirmed": [
+    { "custom_id": "ZBR-2801", "id": "86d1jxr0w", "name": "[Bargain Chemist] Campaign Strategy", "list_name": "Klaviyo Retainer", "status": "client review", "subtask_count": 5, "subtask_custom_ids": ["ZBR-2802","ZBR-2803","ZBR-2804","ZBR-2805","ZBR-2806"] },
+    { "custom_id": "ZBR-2796", "id": "86d1jxq37", "name": "[Bargain Chemist] Account Setup Review", "list_name": "Klaviyo Retainer", "status": "done", "subtask_count": 4, "subtask_custom_ids": ["ZBR-2818","ZBR-2819","ZBR-2820","ZBR-2821"] },
+    { "custom_id": "ZBR-2812", "id": "86d1jxrhp", "name": "[Bargain Chemist] Flow expansion", "list_name": "Klaviyo Retainer", "status": "working on it", "subtask_count": 2, "subtask_custom_ids": ["ZBR-2813","ZBR-2814"] },
+    { "custom_id": "ZBR-2846", "id": "86d1nz825", "name": "[Bargain Chemist] Toniq Stock Sync Process", "list_name": "Bargain Chemist Task Board", "status": "with external", "subtask_count": 4, "subtask_custom_ids": ["ZBR-1501","ZBR-2792","ZBR-2845","ZBR-2849"] },
+    { "custom_id": "ZBR-2925", "id": "86d1zfn5g", "name": "[Bargain Chemist] AI Product FAQs", "list_name": "Bargain Chemist Task Board", "status": "not started", "subtask_count": 1, "subtask_custom_ids": ["ZBR-2931"], "note": "Parent confirmed; not in original 49-task inventory but exists as a task" },
+    { "custom_id": "ZBR-2800", "id": "86d1jxqj0", "name": "[Bargain Chemist] Database Growth Strategy", "list_name": "Klaviyo Retainer", "status": "done", "subtask_count": 4, "subtask_custom_ids": ["ZBR-2886","ZBR-2887","ZBR-2888","ZBR-2889","ZBR-3008"], "note": "Parent confirmed; not in original 49-task inventory but exists as a task. Plus grandchild ZBR-3016 via ZBR-2887" }
+  ]
+}
