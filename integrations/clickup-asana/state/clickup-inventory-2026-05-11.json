@@ -1,0 +1,73 @@
+{
+  "snapshot_at": "2026-05-11T00:00:00Z",
+  "source_workspace_id": "9016721657",
+  "source_space_id": "90162703757",
+  "source_folder_id": "90164429974",
+  "total_tasks": 49,
+  "note": "Inventory pulled via ClickUp MCP search filter=type:task, keywords='Bargain Chemist'. May be missing subtasks not surfaced by search (e.g. ZBR-2804). Re-pull with detail_level=detailed in Phase 3 to get full subtask trees + custom field values.",
+
+  "lists": {
+    "901607444533": { "name": "Bargain Chemist Task Board",  "task_count": 31, "destination": "BC Engineering" },
+    "901612845895": { "name": "Klaviyo Retainer",            "task_count": 18, "destination": "BC Klaviyo CRM" }
+  },
+
+  "tasks": [
+    { "list": "Eng", "custom_id": "ZBR-3076", "id": "86d2ggkq0", "name": "BackEnd Documentation", "status": "client review", "task_type": "Backend Dev", "priority_cu": "high",   "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2323", "id": "86d062f5f", "name": "Doordash Implementation", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz","david@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3003", "id": "86d25dqdy", "name": "Inventory sync by locations", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["david@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3075", "id": "86d2ggkpq", "name": "FrontEnd Documentation", "status": "client review", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3078", "id": "86d2ghjx8", "name": "Order Investigation", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2997", "id": "86d23dvkj", "name": "CWV Audit", "status": "input required", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2654", "id": "86d12rwqh", "name": "SEO & GEO", "status": "client review", "task_type": "PM", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3034", "id": "86d2a93re", "name": "Product Filter Review", "status": "client review", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2328", "id": "86d06z6g1", "name": "Order Editing investigation", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2744", "id": "86d1aa4dr", "name": "Increase Free Shipping Threshold to $79", "status": "done", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3042", "id": "86d2b9zb7", "name": "April Sale Theme", "status": "client review", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2931", "id": "86d1zw8dg", "name": "GA4 Search Tracking Implementation", "status": "client review", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2925" },
+    { "list": "Eng", "custom_id": "ZBR-2850", "id": "86d1pcv7d", "name": "Days for fulfilment & Unfulfilled reporting", "status": "client review", "task_type": "PM", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2846", "id": "86d1nz825", "name": "Toniq Stock Sync Process", "status": "with external", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz","brenda@zyber.co.nz","saniya@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2565", "id": "86d0q8bca", "name": "Bulk email customers from shopify", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3066", "id": "86d2fwz7j", "name": "Structured Data Findings from OMD", "status": "client review", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2995", "id": "86d22gjkp", "name": "FROM TEAMS: Hard Checkout Error", "status": "tweaks", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2793", "id": "86d1juq34", "name": "Australian Store launch - Checkout Currency Blocker", "status": "on hold", "task_type": "PM", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2792", "id": "86d1jtxpq", "name": "Shipping Issues", "status": "on hold", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2846" },
+    { "list": "Eng", "custom_id": "ZBR-3081", "id": "86d2k7hgg", "name": "New Product Uber Investigation", "status": "done", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2514", "id": "86d0kj4c2", "name": "Remove Residual Klevu code", "status": "done", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["ben@zyber.co.nz","saniya@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2874", "id": "86d1v6hrq", "name": "SKU Library Integration Process Documentation", "status": "done", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz","saniya@zyber.co.nz","brenda@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-3100", "id": "86d2ty9v2", "name": "Stock issue dark store", "status": "client review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2923", "id": "86d1zfczw", "name": "Update lifecycle of an order documentation", "status": "owner review", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["sam@zyber.co.nz","david@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2621", "id": "86d0yqyph", "name": "Bargain Chemist Technical Audit", "status": "done", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["brenda@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2994", "id": "86d22gjgj", "name": "FROM TEAMS: Customers receiving complete your purchase", "status": "done", "task_type": null, "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-2163", "id": "86cznf17j", "name": "Frontend Documentation", "status": "done", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["tamara@zyber.co.nz","amritwant@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-1869", "id": "86cynpyb1", "name": "Klevu Replacement", "status": "done", "task_type": null, "priority_cu": null, "assignees": [] },
+    { "list": "Eng", "custom_id": "ZBR-2924", "id": "86d1zfd2u", "name": "16/02/26 Shipping Threshold Issues Bargain Chemist", "status": "done", "task_type": "Frontend Dev", "priority_cu": null, "assignees": ["tamara@zyber.co.nz","saniya@zyber.co.nz","brenda@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-1916", "id": "86cyvp4dz", "name": "Website Figma Designs", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["beverly@zyber.co.nz","amritwant@zyber.co.nz"] },
+    { "list": "Eng", "custom_id": "ZBR-1913", "id": "86cyvnr2n", "name": "Shipping on specific products", "status": "done", "task_type": "Backend Dev", "priority_cu": null, "assignees": ["jericho@zyber.co.nz","amritwant@zyber.co.nz"] },
+
+    { "list": "Klaviyo", "custom_id": "ZBR-2814", "id": "86d1jxrmr", "name": "Replenishment Flows", "status": "client review", "task_type": null, "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2812" },
+    { "list": "Klaviyo", "custom_id": "ZBR-3083", "id": "86d2k7td6", "name": "Pop Up Sign Up Form", "status": "client review", "task_type": "Klaviyo", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2803", "id": "86d1jxr51", "name": "Segmentation use", "status": "not started", "task_type": "Klaviyo", "priority_cu": null, "assignees": ["david@zyber.co.nz"], "parent_custom_id": "ZBR-2801" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2805", "id": "86d1jxr5a", "name": "Design guidance", "status": "client review", "task_type": null, "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2801" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2812", "id": "86d1jxrhp", "name": "Flow expansion", "status": "working on it", "task_type": null, "priority_cu": null, "assignees": [] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2801", "id": "86d1jxr0w", "name": "Campaign Strategy", "status": "client review", "task_type": "Design", "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2816", "id": "86d1jxvv0", "name": "QGR for Q1 - HIGH PRIORITY", "status": "done", "task_type": "Klaviyo", "priority_cu": null, "assignees": ["jordan@zyber.co.nz","david@zyber.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2802", "id": "86d1jxr4d", "name": "Working with the internal BC team to optimise campaign performance", "status": "client review", "task_type": null, "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz","gurdeep.singh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2801" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2796", "id": "86d1jxq37", "name": "Account Setup Review", "status": "done", "task_type": null, "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2818", "id": "86d1jyaf8", "name": "Preference Page Revision", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["beverly@zyber.co.nz","saniya@zyber.co.nz"], "parent_custom_id": "ZBR-2796" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2806", "id": "86d1jxr5h", "name": "Non-promotional Campaign", "status": "client review", "task_type": "Klaviyo", "priority_cu": "normal", "assignees": ["david@zyber.co.nz","yubin@zyber.co.nz"], "parent_custom_id": "ZBR-2801" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2797", "id": "86d1jxqbu", "name": "Segmentation Strategy", "status": "done", "task_type": null, "priority_cu": null, "assignees": ["saniya@zyber.co.nz","brenda@zyber.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2821", "id": "86d1jyau9", "name": "Unsubscribe Page Revision", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["beverly@zyber.co.nz","saniya@zyber.co.nz"], "parent_custom_id": "ZBR-2796" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2819", "id": "86d1jyahx", "name": "Subscribe Page Revision", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["beverly@zyber.co.nz","saniya@zyber.co.nz"], "parent_custom_id": "ZBR-2796" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2820", "id": "86d1jyant", "name": "Email Opt in page (double opt in)", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["beverly@zyber.co.nz","saniya@zyber.co.nz"], "parent_custom_id": "ZBR-2796" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2863", "id": "86d1rxb6t", "name": "Free Shipping Threshold Block", "status": "done", "task_type": "Design", "priority_cu": null, "assignees": ["brenda@zyber.co.nz","saniya@zyber.co.nz","beverly@zyber.co.nz"] },
+    { "list": "Klaviyo", "custom_id": "ZBR-2886", "id": "86d1wuhmk", "name": "Setup Social-replies (Gatsby)", "status": "done", "task_type": null, "priority_cu": null, "assignees": ["gurdeep.singh@bargainchemist.co.nz","harpreetsingh@bargainchemist.co.nz","brenda@zyber.co.nz","saniya@zyber.co.nz"], "parent_custom_id": "ZBR-2800" },
+    { "list": "Klaviyo", "custom_id": "ZBR-2888", "id": "86d1wuqgr", "name": "Sign-up - In Store Review", "status": "done", "task_type": null, "priority_cu": null, "assignees": ["harpreetsingh@bargainchemist.co.nz"], "parent_custom_id": "ZBR-2800" }
+  ],
+
+  "known_gaps": [
+    "ZBR-2804 (A/B testing guidance, subtask of ZBR-2801) seen in detailed pull but not in search results — likely more subtasks not surfaced.",
+    "Custom field values (6-11 per task) not pulled — need detail_level=detailed in Phase 3.",
+    "Comments not pulled — required for backfill per user decision.",
+    "Parent task ZBR-2925 (AI Product FAQs) and ZBR-2800 (Database Growth Strategy) referenced as parents but not in this snapshot."
+  ]
+}

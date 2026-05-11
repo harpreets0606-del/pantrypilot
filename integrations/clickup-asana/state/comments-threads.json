@@ -1,0 +1,1179 @@
+{
+  "90160144304396": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Amrit Randhawa Please send me the email ID that I can use to create a member for the BC DD account. You do not need to",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160144516997",
+        "comment_text": "Thanks, @Amrit Randhawa. I have added developers@zyber.co.nz as a member to the BC DD account.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1762371082730"
+      },
+      {
+        "id": "90160144512968",
+        "comment_text": "@Gurdeep Singh developers@zyber.co.nz - thanks!",
+        "user": "Amrit Randhawa",
+        "user_email": null,
+        "date": "1762366742562"
+      }
+    ]
+  },
+  "90160146027915": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Amrit Randhawa \nWhen an order is placed in DD, do we want to auto accept the order, or let the store accept it? If we l",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160147407582",
+        "comment_text": "@Sam Edwards this should work the same as Uber - the app should check SOH and if the item is available to accept the order automatically",
+        "user": "Amrit Randhawa",
+        "user_email": null,
+        "date": "1763514753701"
+      }
+    ]
+  },
+  "90160147659886": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Amrit Randhawa I have reached the point when I am blocked where I can't generate DD credentials, as mentioned in Slack",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160147690679",
+        "comment_text": "@Gurdeep Singh are you able to generate the credentials that Sam needs?",
+        "user": "Amrit Randhawa",
+        "user_email": null,
+        "date": "1763574869500"
+      }
+    ]
+  },
+  "90160147709409": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Sam Edwards, I have created the credentials for you. Please use the details below:\n\nSigning Secret:\naOrE84ivBkb1OfOzB4e",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160147951288",
+        "comment_text": "Thanks @Gurdeep Singh I'll give them a go and let you know if I run into anymore problems",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1763660960686"
+      }
+    ]
+  },
+  "90160148948794": {
+    "parent_custom_id": "ZBR-2654",
+    "parent_task_name": "SEO & GEO",
+    "parent_excerpt": "@Harpreet Singh We were able to pull a quick report on the SEO health of the website - please see the description of thi",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160149475169",
+        "comment_text": "7 products have a meta title (0.44% of products) 2791 products have a meta description (17.94% of products). Are you saying only 7 products have meta titles and only 2,791 products have meta descriptions?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1764294306718"
+      }
+    ]
+  },
+  "90160149614209": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Gurdeep Singh \nAre we able to get the Business ID's for the test and production stores as seen the FAQ here?\nhttps://de",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160151043309",
+        "comment_text": "@Sam Edwards I got the business ID from DoorDash for the sandbox only, which is bargain_chemist_sandbox.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1764880250686"
+      }
+    ]
+  },
+  "90160152233958": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Amrit Randhawa @Gurdeep Singh I am again blocked on this because Toniq is failing to return products in the UAT environ",
+    "expected_reply_count": 9,
+    "actual_replies": 9,
+    "replies": [
+      {
+        "id": "90160157899178",
+        "comment_text": "@Sam Edwards Thanks for confirming. That is expected without the last_modified filter due to the large payload. Yes, pagination would be the best fix to reduce response time and avoid errors. I will pass this recommendation to the Toniq team.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1768242777705"
+      },
+      {
+        "id": "90160157265834",
+        "comment_text": "@Gurdeep Singh Yes it was a successful response on BCH444, but it took 2 minutes. Perhaps they could implement pagination to fix this all together?",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1767870719956"
+      },
+      {
+        "id": "90160157148596",
+        "comment_text": "@Sam Edwards Based on the feedback from the Toniq team, the 500 error in the UAT environment appears to be related to the last_modified parameter. They confirmed that when testing BCH444 on the Stage environment, the full product set was returned once the last_modified parameter was removed. This is likely because the Stage database has had minimal recent updates, which can cause issues when filtering by last modified date. As a next step, could you please try making the request without the last_modified parameter in UAT and confirm if the products are returned successfully?",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1767839255593"
+      },
+      {
+        "id": "90160156861312",
+        "comment_text": "@Gurdeep Singh please see comment above.",
+        "user": "Amrit Randhawa",
+        "user_email": null,
+        "date": "1767738348057"
+      },
+      {
+        "id": "90160156342203",
+        "comment_text": "@Amrit Randhawa The BCHTESTSTORE code doesn't work. Unable to find in store. We need to confirm with Toniq what the issue is. Can you try set up an early morning call with a technical specialist from their side to resolve this? Also, there is a message on Door Dash where it states 'Products may take 18 days to sync.' - We will need to test this.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1767557808948"
+      },
+      {
+        "id": "90160153839749",
+        "comment_text": "@Amrit Randhawa So we can test the code in staging before we deploy to production. Staging is connected to the staging Toniq environment",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1765978360284"
+      },
+      {
+        "id": "90160153622641",
+        "comment_text": "@Sam Edwards can we fetch the products from the Northwood store or the dark store? What is the purpose of this - is it just to populate the products?",
+        "user": "Amrit Randhawa",
+        "user_email": null,
+        "date": "1765922703103"
+      },
+      {
+        "id": "90160153550765",
+        "comment_text": "@Gurdeep Singh That store doesn't exist in UAT or production: image.png",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1765887303924"
+      },
+      {
+        "id": "90160152531296",
+        "comment_text": "@Sam Edwards The Toniq team mentioned that BCH444 is a test store for their internal use and cannot be used for API requests. Please try using store_id: BCHTESTSTORE instead.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1765488596008"
+      }
+    ]
+  },
+  "90160158573902": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Sam Edwards Picking this one up from Amrit.\n\nMay I please have an overview from your end on the next steps here?\n\nFrom",
+    "expected_reply_count": 13,
+    "actual_replies": 13,
+    "replies": [
+      {
+        "id": "90160160046165",
+        "comment_text": "Thanks @Harpreet Singh",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1769049445420"
+      },
+      {
+        "id": "90160160040285",
+        "comment_text": "@10-10:30 am Friday\n\nForwarding you the invite",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1769048301262"
+      },
+      {
+        "id": "90160159654317",
+        "comment_text": "@gurdeep, what's the earliest we can do with them on Friday, please?",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1768954851323"
+      },
+      {
+        "id": "90160159626061",
+        "comment_text": "@Brenda Walters Doordash team want to catch-up on Thursday or Friday morning to make sure we are all on the same page. This will also give us the opportunity to ask slightly more technical questions if needed. Please let me know which time works best for you.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1768942682743"
+      },
+      {
+        "id": "90160159373384",
+        "comment_text": "@Gurdeep Singh thank you for the update!",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1768868825583"
+      },
+      {
+        "id": "90160159353491",
+        "comment_text": "@Sam Edwards Thanks for the update. Just got an update from DoorDash team. The 18-day timeframe is the standard SLA for product builds, but with the certified integration they're working on, it should reduce to just a couple of days. Currently, we'll only have access to the DoorDash Developer portal, which is more like a testing environment. Doordash team mentioned there's an inactive Northwood store and one that was created by Doordash team, so they have started auditing the catalog already. He can see the logs coming through now. I will let you know once I get further updates.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1768860543092"
+      },
+      {
+        "id": "90160159307105",
+        "comment_text": "Thanks @Sam Edwards. @Gurdeep Singh @Harpreet Singh please see above. Can you please provide the relevant access to both dvelopers@zyber.co.nz, and can you please ensure full access to sands@zyber.co.nz as well.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1768837334388"
+      },
+      {
+        "id": "90160159254676",
+        "comment_text": "@Brenda Walters @Gurdeep Singh I have connected staging to Northwood. And no, this won't update stock levels Toniq. A big thing I noticed in the DoorDash documentation is that it can take up to 18 days to create new items to the business, then we can add them to the stores, which seems a little crazy to me. See question #2 in the FAQ here. And the error code Item not in catalog. Could we also give developers@zyber.co.nz access to the DD merchant portal so I can view uploaded products etc? Once we have items in the stores, I can start building our the orders portion of the app. @Harpreet Singh I have turned this on so it is syncing business items that have been modified since the start of the year, around 7000 products or so, but I cannot view them in DoorDash as I don't have access to the merchant portal",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1768817875221"
+      },
+      {
+        "id": "90160159102773",
+        "comment_text": "@Brenda Walters Can we get this done by tomorrow please?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1768776590087"
+      },
+      {
+        "id": "90160159101869",
+        "comment_text": "@Brenda Walters @Sam Edwards, We are okay with connecting to Northwood since we are only pushing the products into the DoorDash staging environment. However, we want to confirm that when we begin testing order placements through DoorDash, this won't affect the actual inventory.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1768776508542"
+      },
+      {
+        "id": "90160158749572",
+        "comment_text": "@Sam Edwards while we wait for Gurdeep on this. Are you able to advise the timeframe you think it'll take to connect to Northwood production, then push the products to DoorDash? This way we can get it underway ASAP and advise DoorDash when the products should be feeding through.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1768502722654"
+      },
+      {
+        "id": "90160158749532",
+        "comment_text": "@Gurdeep Singh Sam has suggested that we connect the staging portal to the Toniw APIs which are a bit more stable than staging, however, still leaves something to be desired. Are you happy for us to proceed with connection Northwood up, then we can pull the products in form production and push these through to the DoorDash staging environment?",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1768502656734"
+      },
+      {
+        "id": "90160158715727",
+        "comment_text": "@Brenda Walters Honestly I think that we shouldn't use the staging Toniq environment and connect the staging portal to one of their stores in the production environment, like Northwood. Their staging environment causes too many headaches as it barely works. This seems to be a reoccurring issue with Toniq. Their production endpoint causes multiple three minute timeout errors a day. If we are happy with this, I can carry on.",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1768490016337"
+      }
+    ]
+  },
+  "90160159307139": {
+    "parent_custom_id": "ZBR-2744",
+    "parent_task_name": "Increase Free Shipping Threshold to $79",
+    "parent_excerpt": "@Gurdeep Singh please advise when this needs to be pushed live to production so I can schedule this accordingly.",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160161993540",
+        "comment_text": "@Brenda Walters the free shipping threshold is updated to $79 on the website, but the checkout is still showing the old value.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1769971606922"
+      }
+    ]
+  },
+  "90160159975960": {
+    "parent_custom_id": "ZBR-2845",
+    "parent_task_name": "[Bargain Chemist] Stock Discrepancy Issue",
+    "parent_excerpt": "@Brenda Walters I'm running a sync for the last two months for every store. If that doesn't fix it I'll run a full sync",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160159986158",
+        "comment_text": "@Sam Edwards for reference this is what the client is seeing in Toniq",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1769030354445"
+      }
+    ]
+  },
+  "90160160992834": {
+    "parent_custom_id": "ZBR-2845",
+    "parent_task_name": "[Bargain Chemist] Stock Discrepancy Issue",
+    "parent_excerpt": "@Brenda Walters This has been re-synced and is looking good. It looks like the sync finished yesterday",
+    "expected_reply_count": 3,
+    "actual_replies": 3,
+    "replies": [
+      {
+        "id": "90160161374636",
+        "comment_text": "@Sam Edwards OK, it would be great to understand the sync from Toniq once we complete the task: 86d1nz825",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1769645946697"
+      },
+      {
+        "id": "90160161275602",
+        "comment_text": "@Brenda Walters I think I have finally figured it out. It looks like it is a new product, so the portal tries to sync inventory before it was created in Shopify, which it can't do. Also, I see in the notes in the code that Toniq also handles inventory sync? If so, we could turn the sync off on our end and listen to Shopify webhooks on inventory updates to keep the portal in-sync with Shopify. Estimate: 2 hours.",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1769602384175"
+      },
+      {
+        "id": "90160161065219",
+        "comment_text": "@Sam Edwards is there any indication as to why the SOH was so far out of sync? Were there any errors in the logs or anything? I need an explanation as to how this happened.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1769540770508"
+      }
+    ]
+  },
+  "90160161028954": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Brenda Walters I am stuck trying to place a test order in DD.\nI am waiting on a response from Ryan",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160161065128",
+        "comment_text": "@Gurdeep Singh @Saniya FYI please see latest from Sam re order replacement testing",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1769540666296"
+      }
+    ]
+  },
+  "90160161952341": {
+    "parent_custom_id": "ZBR-2744",
+    "parent_task_name": "Increase Free Shipping Threshold to $79",
+    "parent_excerpt": "@Brenda Walters @Gurdeep Singh This is done",
+    "expected_reply_count": 3,
+    "actual_replies": 3,
+    "replies": [
+      {
+        "id": "90160161996163",
+        "comment_text": "@Sam Edwards I have tested this in a private window as well and also tried adding a phone number, but it is still not working on my end.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1769976841489"
+      },
+      {
+        "id": "90160161994623",
+        "comment_text": "@Brenda Walters @Gurdeep Singh Weird, it is working for me. I can see multiple requests to the portal for this order, each time it returns $5.99: [{service_name:Nationwide delivery,description:,service_code:nationwide_delivery,currency:NZD,total_price:599}]. I did notice if you start adding a phone number the shipping value changes, this might be a FE/UI thing, if you don't have a phone number, it's free?",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1769974834458"
+      },
+      {
+        "id": "90160161993656",
+        "comment_text": "@Sam Edwards @Brenda Walters the free shipping threshold is updated to $79 on the website, but the checkout is still showing the old value.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1769971844332"
+      }
+    ]
+  },
+  "90160163025058": {
+    "parent_custom_id": "ZBR-2846",
+    "parent_task_name": "Toniq Stock Sync Process",
+    "parent_excerpt": "@Sam Edwards thank you so much for your time today to chat with the BC team. I have used my mate ChatGPT to help me brea",
+    "expected_reply_count": 3,
+    "actual_replies": 3,
+    "replies": [
+      {
+        "id": "90160164763539",
+        "comment_text": "Awaiting ETA for endpoint creation from Toniq",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770839189362"
+      },
+      {
+        "id": "90160163839157",
+        "comment_text": "@Sam Edwards thanks I have emailed Toniq",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770593968860"
+      },
+      {
+        "id": "90160163272526",
+        "comment_text": "@Brenda Walters That summary looks pretty accurate. As mentioned, could we ask Toniq about those two endpoints mentioned. Getting products by PLU/SKU, or is there a way to get products when they is pushed to Shopify. So option A > option B > workaround. Also to create a log file to show all inventory syncs. Estimate: 1 hour",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1770303999413"
+      }
+    ]
+  },
+  "90160163841303": {
+    "parent_custom_id": "ZBR-2514",
+    "parent_task_name": "Remove Residual Klevu code",
+    "parent_excerpt": "@Gurdeep Singh please note we have redone the removal of residual Klevu code, as when it was last completed back in Octo",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160164483330",
+        "comment_text": "@Brenda Walters yes, we have added this recently viewed section here.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1770766460212"
+      }
+    ]
+  },
+  "90160163857947": {
+    "parent_custom_id": "ZBR-2886",
+    "parent_task_name": "Setup Social-replies (Gatsby)",
+    "parent_excerpt": "@Gurdeep Singh @Harpreet Singh please are you able to connect your Instagram account at the link www.klaviyo.com/setting",
+    "expected_reply_count": 5,
+    "actual_replies": 5,
+    "replies": [
+      {
+        "id": "90160164804317",
+        "comment_text": "please flick him an email",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770854651363"
+      },
+      {
+        "id": "90160164803932",
+        "comment_text": "@Harpreet Singh OK thanks. Bede already has access",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770854522655"
+      },
+      {
+        "id": "90160164771035",
+        "comment_text": "Since we're currently using OMD's ad account to run ads, I believe we'll need that account connected to Klaviyo. Could you please reach out to OMD and ask them to grant Klaviyo the required access? You may also need to add Bede to Klaviyo to complete the connection.",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770843168248"
+      },
+      {
+        "id": "90160164770023",
+        "comment_text": "Thanks @Harpreet Singh There is also an issue with your meta integration in Klaviyo which needs attention www.klaviyo.com/integration/facebook",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770842430839"
+      },
+      {
+        "id": "90160164170565",
+        "comment_text": "Should be done in the next few minutes",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770681647840"
+      }
+    ]
+  },
+  "90160163865017": {
+    "parent_custom_id": "ZBR-2888",
+    "parent_task_name": "Sign-up - In Store Review",
+    "parent_excerpt": "@Harpreet Singh want to flag this one please - i noticed today while working on other pieces that these forms are still",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160164170258",
+        "comment_text": "The stores were asked to take these down previously, and it looks like we may have missed one or two locations. I've asked the Brand team to remind the stores again to remove them.",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770681554531"
+      }
+    ]
+  },
+  "90160164135642": {
+    "parent_custom_id": "ZBR-2846",
+    "parent_task_name": "Toniq Stock Sync Process",
+    "parent_excerpt": "@Sam Edwards response form Toniq - Will find out the ETA of them providing endpoints. which one would be our preferred,",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160164343180",
+        "comment_text": "@Brenda Walters We would prefer option 1, where we can get items by PLU",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1770717638454"
+      }
+    ]
+  },
+  "90160164191455": {
+    "parent_custom_id": "ZBR-2744",
+    "parent_task_name": "Increase Free Shipping Threshold to $79",
+    "parent_excerpt": "is this done?",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160164206437",
+        "comment_text": "@Harpreet Singh will close this off as it's done",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770690448385"
+      }
+    ]
+  },
+  "90160164191500": {
+    "parent_custom_id": "ZBR-2514",
+    "parent_task_name": "Remove Residual Klevu code",
+    "parent_excerpt": "has this been done?",
+    "expected_reply_count": 3,
+    "actual_replies": 3,
+    "replies": [
+      {
+        "id": "90160164483112",
+        "comment_text": "@Brenda Walters Please merge this into the master theme and let us know once it has been completed.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1770766375314"
+      },
+      {
+        "id": "90160164450818",
+        "comment_text": "Confirmed by @Gurdeep Singh. Klevu has been removed",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770754165082"
+      },
+      {
+        "id": "90160164206381",
+        "comment_text": "@Harpreet Singh Waiting on sign off from Gurdeep as per my comment above",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1770690429499"
+      }
+    ]
+  },
+  "90160164208144": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Harpreet Singh DoorDash have asked us about the implementation of QTY adjustments and substitutions. this was not a par",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160164208466",
+        "comment_text": "Yeah, let's have that call ASAP",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770690985987"
+      }
+    ]
+  },
+  "90160164769136": {
+    "parent_custom_id": "ZBR-2796",
+    "parent_task_name": "Account Setup Review",
+    "parent_excerpt": "@Harpreet Singh @Gurdeep Singh Are you please able to provide final confirmation that hello@bargainchemsit.co.nz exists",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160167618096",
+        "comment_text": "I can still see that we are using the older email, @Brenda Walters please update to the hello one.",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771895766177"
+      },
+      {
+        "id": "90160164810681",
+        "comment_text": "Yes, we just created that and its live. Ideally it should be used for marketing purpose only.",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1770856493589"
+      }
+    ]
+  },
+  "90160165786695": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Sam Edwards From DoorDash:\n\nSorry for the delayed response. \"Generic_category\" can be interpreted as \"any similar item.",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160165910070",
+        "comment_text": "@Brenda Walters Nah I don't think we need any changes to the scope. Sounds pretty similar to substitute but I'll add a tag or something",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1771320107253"
+      }
+    ]
+  },
+  "90160165796794": {
+    "parent_custom_id": "ZBR-2654",
+    "parent_task_name": "SEO & GEO",
+    "parent_excerpt": "@Harpreet Singh here is the CRO template as requested. docs.google.com/spreadsheets/d/1ncFgSN_ht7R2T3eCIl88xsTFSudVuSnw/",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160165798097",
+        "comment_text": "@Harpreet Singh I will share this once we're set up in ClickUp with them",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771286691544"
+      },
+      {
+        "id": "90160165797594",
+        "comment_text": "@Brenda Walters Should I download it and email it to OMD, or once you have OMD in ClickUp, can you tag them directly?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771286457375"
+      }
+    ]
+  },
+  "90160165797996": {
+    "parent_custom_id": "ZBR-2654",
+    "parent_task_name": "SEO & GEO",
+    "parent_excerpt": "Next Steps:\n\nDataFeed Audit - \nproducts_2026-02-17_13_00_21.zipGet access to Data Feed Watch - @Gurdeep Singh can you pl",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160166563032",
+        "comment_text": "Received thank you @Harpreet Singh",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771535132325"
+      },
+      {
+        "id": "90160165798351",
+        "comment_text": "Done, please confirm",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771286797739"
+      }
+    ]
+  },
+  "90160165805593": {
+    "parent_custom_id": "ZBR-2792",
+    "parent_task_name": "Shipping Issues",
+    "parent_excerpt": "@Brenda Walters I do not recall the exact reason why we restricted this to single line item carts, and I do not believe",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160165821588",
+        "comment_text": "@Gurdeep Singh Thanks for the context. This script is still required as it's the only method by which we can mitigate the double shipping charges, which is exactly what's happening in this example, in addition to the Same day delivery appearing when it shouldn't, as it's looking for multiple location stock and should be C&C only. The other issue is the SOH, which we are waiting on Toniq, but I want to update the script. Then I'll also load a task to move this script to a function in due course if possible.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771294810151"
+      }
+    ]
+  },
+  "90160165821694": {
+    "parent_custom_id": "ZBR-2792",
+    "parent_task_name": "Shipping Issues",
+    "parent_excerpt": "@Tamara Willmott Confirmation received around the single line item - we can go ahead and remove this, but are you please",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160165824205",
+        "comment_text": "Just noting the other task : 86d1zfd2u. I removed the line item restriction as part of that task already. So I will just need to look into the additional part with the same day shipping.",
+        "user": "Tamara Willmott",
+        "user_email": null,
+        "date": "1771295933813"
+      }
+    ]
+  },
+  "90160166561608": {
+    "parent_custom_id": "ZBR-2792",
+    "parent_task_name": "Shipping Issues",
+    "parent_excerpt": "Is there documentation for this? If yes, could you please share it, including the logic once it\u2019s been updated to reflec",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160166566597",
+        "comment_text": "@Harpreet Singh once you have hours again we can book this on 86d1zfczw",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771537717808"
+      }
+    ]
+  },
+  "90160167612390": {
+    "parent_custom_id": "ZBR-2995",
+    "parent_task_name": "FROM TEAMS: Hard Checkout Error",
+    "parent_excerpt": "@Harpreet Singh thanks for providing this. \n\nMy thoughts:\nthe user is not blocked form changing their delivery method an",
+    "expected_reply_count": 6,
+    "actual_replies": 6,
+    "replies": [
+      {
+        "id": "90160167928198",
+        "comment_text": "@Harpreet Singh yes on these tasks both have been rolled back 86d20nefu 86d20mucc And updated shipping profile in the admin just now",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771965552291"
+      },
+      {
+        "id": "90160167927993",
+        "comment_text": "@Brenda Walters Has this been rolled back?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771965405669"
+      },
+      {
+        "id": "90160167629204",
+        "comment_text": "Correct we will reinstate the logic to include the additional stores and it will mitigate some of this. @Harpreet Singh",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771899119732"
+      },
+      {
+        "id": "90160167629047",
+        "comment_text": "@Brenda Walters so, by tomorrow that should change as the old logic will be back. (fingers crossed)",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771899068759"
+      },
+      {
+        "id": "90160167628765",
+        "comment_text": "@Harpreet Singh The 'Click & Collect only' highlight is appearing automatically because the product isn't available in Northwood or the dark store for shipping, correct? This is correct - it's to show the customer that it's only available in store",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1771898983433"
+      },
+      {
+        "id": "90160167617709",
+        "comment_text": "@Brenda Walters Just to confirm my understanding. The 'Click & Collect only' highlight is appearing automatically because the product isn't available in Northwood or the dark store for shipping, correct? My concern is more around what we're seeing in the data. Checkout to purchase conversion has been trending down for a while: Feb-Jul 2025: strong and stable at 64-67%; Aug 2025: first dip to ~60%; Sep-Nov 2025: slight recovery to ~61-62%; Dec 2025-Feb 2026: sharp drop to ~56-57%, which is where we are now. The decline starts around August, and I don't have clear visibility on what changed at that point.",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771895622121"
+      }
+    ]
+  },
+  "90160167615163": {
+    "parent_custom_id": "ZBR-2994",
+    "parent_task_name": "FROM TEAMS: Customers receiving complete your purchase",
+    "parent_excerpt": "@Harpreet Singh I've reviewed this one and I think it was a kink in the Klaviyo flow so I've made some adjustments and p",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160167618185",
+        "comment_text": "Will do",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1771895796364"
+      }
+    ]
+  },
+  "90160168297133": {
+    "parent_custom_id": "ZBR-2323",
+    "parent_task_name": "Doordash Implementation",
+    "parent_excerpt": "@Sam Edwards we've received an email from Ryan at DoorDash with below items listed - looks like some adjustments may be",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160169809862",
+        "comment_text": "@Brenda Walters I have updated the payloads for the catalogs and inventory. I have added PLU, UPC (barcode), brand info (vendor), and item categorization (type) to the payload. We don't have size or weight info to forward to DoorDash",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772637640909"
+      },
+      {
+        "id": "90160168580873",
+        "comment_text": "@Brenda Walters I guess around 2 hours to go through it. Nice to have: It would be great to also receive 'items.other_identifiers.UPC', 'items.size', 'items.brand_info', and 'items.item_categorization'. I'm not sure if I can get these but I will have a look",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772135843374"
+      }
+    ]
+  },
+  "90160168301645": {
+    "parent_custom_id": "ZBR-2565",
+    "parent_task_name": "Bulk email customers from shopify",
+    "parent_excerpt": "@Sam Edwards Can we change this a little bit so that we add a tag to orders when the order is rerouted via the portal, l",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160168581098",
+        "comment_text": "@Brenda Walters I don't think this will impact the estimate as the tagging logic is already in the portal",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772136010228"
+      }
+    ]
+  },
+  "90160169292475": {
+    "parent_custom_id": "ZBR-2995",
+    "parent_task_name": "FROM TEAMS: Hard Checkout Error",
+    "parent_excerpt": "@Brenda Walters \n\nTheme: bargain-chemist/feature/cart-updates\nhttps://www.bargainchemist.co.nz/?preview_theme_id=1516484",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160169587760",
+        "comment_text": "@Tamara Willmott thanks, yes I don't think this is best practice as then Uber delivery won't show up either if it is available.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1772570873684"
+      }
+    ]
+  },
+  "90160169326697": {
+    "parent_custom_id": "ZBR-2997",
+    "parent_task_name": "CWV Audit",
+    "parent_excerpt": "@Brenda Walters Please see breakdown below ... [long CWV audit findings covering LCP, INP, CLS issues across collections",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160178861461",
+        "comment_text": "Hi @Harpreet Singh @Gurdeep Singh please review the above scope in detail so we are not sure if we recommend some of this. Please advise us how to proceed.",
+        "user": "Jordan Popovich",
+        "user_email": null,
+        "date": "1776049697660"
+      }
+    ]
+  },
+  "90160169537582": {
+    "parent_custom_id": "ZBR-3003",
+    "parent_task_name": "Inventory sync by locations",
+    "parent_excerpt": "@Brenda Walters Good news, it looks like a whole sync takes a few minutes per store with the refactor I put in.\nSo I hav",
+    "expected_reply_count": 4,
+    "actual_replies": 4,
+    "replies": [
+      {
+        "id": "90160169907987",
+        "comment_text": "@Brenda Walters @Harpreet Singh @Gurdeep Singh A full sync of all stores took ~45 minutes. So I have set this up to run at midnight every day",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772666060878"
+      },
+      {
+        "id": "90160169585989",
+        "comment_text": "@Harpreet Singh @Gurdeep Singh please see above. Sam has made the changes for a full catalog sync at midnight. We've completed the Dark store Sync and are doing the remaining store tonight. We will monitor and report back",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1772569772574"
+      },
+      {
+        "id": "90160169585694",
+        "comment_text": "@Brenda Walters We have done one (Dark Store), but the next sync will be for all around midnight each night, I'll check it again tomorrow to see how it goes. Now it does 250 products at a time, instead of 1",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772569512090"
+      },
+      {
+        "id": "90160169578725",
+        "comment_text": "@Sam Edwards this is amazing. Are you able to confirm if we've just synced 1 store or multiple now?",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1772564360247"
+      }
+    ]
+  },
+  "90160169906532": {
+    "parent_custom_id": "ZBR-3003",
+    "parent_task_name": "Inventory sync by locations",
+    "parent_excerpt": "@Brenda Walters I have updated the quantities in Shopify for 640 SKUs using Ablestar. Could you please switch on the exi",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160170133622",
+        "comment_text": "@Brenda Walters @Gurdeep Singh With the daily sync changes, I have turned this off as it will overload the server with thousands of requests",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1772723820429"
+      },
+      {
+        "id": "90160169930074",
+        "comment_text": "@Gurdeep Singh as mentioned on Email to Peter and on Teams. This was turned on following our meeting on Tuesday morning.",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1772672808563"
+      }
+    ]
+  },
+  "90160171506662": {
+    "parent_custom_id": "ZBR-3008",
+    "parent_task_name": "[Bargain Chemist] Footer sign-up form",
+    "parent_excerpt": "@Jordan Popovich @Saniya this is now live",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160171852964",
+        "comment_text": "@Brenda Walters just sending this to you so you are across it as well",
+        "user": "Saniya",
+        "user_email": null,
+        "date": "1773175932169"
+      }
+    ]
+  },
+  "90160173127228": {
+    "parent_custom_id": "ZBR-2995",
+    "parent_task_name": "FROM TEAMS: Hard Checkout Error",
+    "parent_excerpt": "@Brenda Walters \n\nI have removed the \"Out of Stock\" functionality from the checkout. As expected the prescription limit",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160173452611",
+        "comment_text": "@Harpreet Singh FYI",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1773783110667"
+      }
+    ]
+  },
+  "90160173762357": {
+    "parent_custom_id": "ZBR-3042",
+    "parent_task_name": "April Sale Theme",
+    "parent_excerpt": "Hi @Harpreet Singh & @Gurdeep Singh your April sale theme is now ready above. Please let me know of any issues. \ud83d\ude42",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160175193038",
+        "comment_text": "Thanks @Jordan Popovich",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1774468698858"
+      }
+    ]
+  },
+  "90160174809802": {
+    "parent_custom_id": "ZBR-3003",
+    "parent_task_name": "Inventory sync by locations",
+    "parent_excerpt": "@Brenda Walters I don't see any items in red?\nI only see the original uploaded document. Did you forget to add them?",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160174916086",
+        "comment_text": "@Brenda Walters Sorry I miss read this, yes this has been done",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1774385138272"
+      },
+      {
+        "id": "90160174907860",
+        "comment_text": "image.png @Sam Edwards",
+        "user": "Brenda Walters",
+        "user_email": null,
+        "date": "1774380162831"
+      }
+    ]
+  },
+  "90160176737144": {
+    "parent_custom_id": "ZBR-2816",
+    "parent_task_name": "QGR for Q1 - HIGH PRIORITY",
+    "parent_excerpt": "Harpreet:\nThere were certain flows that were active in March 2025 v/s 2026 . can we have a comparison of how the perform",
+    "expected_reply_count": 4,
+    "actual_replies": 4,
+    "replies": [
+      {
+        "id": "90160178109192",
+        "comment_text": "I couldn't find a specific 'why we started the new flows / what was wrong with the old ones' communication scoped to the Bargain Chemist folder. The closest relevant places I can see are: The current thread where the question was asked (and the surrounding context about March 2025 vs 2026 performance): [Bargain Chemist] QGR for Q1 - HIGH PRIORITY; The related discussion point about the March 2025 'pop up (cookie-based form)'; Bargain Chemist 2.0 Upgrade Scope (Chat). If you tell me whether 'flows' here means Klaviyo flows or Shopify Flow / site flows, I can narrow the search harder.",
+        "user": "David Visser",
+        "user_email": null,
+        "date": "1775688517844"
+      },
+      {
+        "id": "90160176756130",
+        "comment_text": "isn't there a communication somewhere that says why we started the new flows and what was wrong with the older ones?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1775086116785"
+      },
+      {
+        "id": "90160176752611",
+        "comment_text": "so according to Brenda there was a pop up (cookie-based form) running in March 2025 and hence the improved performance?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1775084598716"
+      },
+      {
+        "id": "90160176751520",
+        "comment_text": "@Jordan Popovich can we finalise a strategy on improving our flows? What can be done immediate v/s short terms v/s long term? can I see some sort of Audit done?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1775084414986"
+      }
+    ]
+  },
+  "90160178986229": {
+    "parent_custom_id": "ZBR-3081",
+    "parent_task_name": "New Product Uber Investigation",
+    "parent_excerpt": "@Jordan Popovich I just tested this and it all seems to be working fine.\nCan I get the address and time of day they test",
+    "expected_reply_count": 8,
+    "actual_replies": 8,
+    "replies": [
+      {
+        "id": "90160181004039",
+        "comment_text": "Thanks @Sam Edwards, It is working now.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1776810629481"
+      },
+      {
+        "id": "90160180995652",
+        "comment_text": "@Gurdeep Singh I assume this isn't working for you because there is no stock in the portal database, so it won't return uber deliveries, where is it getting the stock from? Can you try again now, I have added the stock to the DB",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1776805811532"
+      },
+      {
+        "id": "90160180691543",
+        "comment_text": "@Gurdeep Singh I have tested this again using a few different addresses in a private window between 9:26am and 9:30am and Uber delivery is still not showing.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1776720741325"
+      },
+      {
+        "id": "90160180572838",
+        "comment_text": "@Gurdeep Singh Weird, it is working for me. Are you able to try a different address as I don't see any requests to the portal for this order on that day. Shopify caches responses from carrier service API to minimise requests/load so I assume this is what happened here.",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1776682614963"
+      },
+      {
+        "id": "90160179705677",
+        "comment_text": "@Sam Edwards I've just tested this again at 2:47pm NZST and Uber delivery is still not showing.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1776307801366"
+      },
+      {
+        "id": "90160179545444",
+        "comment_text": "@Gurdeep Singh I see you wrote this message at 07:22 NZST, so I can only assume you tested this before 08:00 NZST, which is before the Northwood store opens, so it won't return Uber delivery.",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1776248704388"
+      },
+      {
+        "id": "90160179356632",
+        "comment_text": "Hi @Sam Edwards, I've just tested this again on the live store, and it's still not working from my side. Please check the screenshot below for reference.",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1776194568959"
+      },
+      {
+        "id": "90160179113578",
+        "comment_text": "Hi @Harpreet Singh & @Gurdeep Singh please see Sams comment above for required information.",
+        "user": "Jordan Popovich",
+        "user_email": null,
+        "date": "1776127454541"
+      }
+    ]
+  },
+  "90160179294184": {
+    "parent_custom_id": "ZBR-3076",
+    "parent_task_name": "BackEnd Documentation",
+    "parent_excerpt": "@Jordan Popovich https://docs.google.com/document/d/1695PUE9uH-0lVAyEpn4zlNdilhTYR1658Ah_CRHLDV4\nBargain Chemist - Porta",
+    "expected_reply_count": 1,
+    "actual_replies": 1,
+    "replies": [
+      {
+        "id": "90160182559429",
+        "comment_text": "@Harpreet Singh see above - this is a PDF download",
+        "user": "David Visser",
+        "user_email": null,
+        "date": "1777434155100"
+      }
+    ]
+  },
+  "90160180553570": {
+    "parent_custom_id": "ZBR-3003",
+    "parent_task_name": "Inventory sync by locations",
+    "parent_excerpt": "@Gurdeep Singh\nCurrently the sync runs every Tuesday and Friday at midday, after the planned sync on your at 10am.\nI hav",
+    "expected_reply_count": 4,
+    "actual_replies": 4,
+    "replies": [
+      {
+        "id": "90160180687391",
+        "comment_text": "@Harpreet Singh Yes that is still in place, it was never removed",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1776719060457"
+      },
+      {
+        "id": "90160180687129",
+        "comment_text": "@Jordan Popovich What about the 2-inventory threshold? is that still in place?",
+        "user": "Harpreet Singh",
+        "user_email": null,
+        "date": "1776718869165"
+      },
+      {
+        "id": "90160180681976",
+        "comment_text": "Please confirm if further action is required here @Gurdeep Singh @Harpreet Singh",
+        "user": "Jordan Popovich",
+        "user_email": null,
+        "date": "1776714793705"
+      },
+      {
+        "id": "90160180681319",
+        "comment_text": "Thanks @Sam Edwards",
+        "user": "Gurdeep Singh",
+        "user_email": null,
+        "date": "1776714047163"
+      }
+    ]
+  },
+  "90160181004862": {
+    "parent_custom_id": "ZBR-3083",
+    "parent_task_name": "Pop Up Sign Up Form",
+    "parent_excerpt": "@Jordan Popovich Can you show me how it will look on the home page (as a screenshot) and email me the design so that I c",
+    "expected_reply_count": 2,
+    "actual_replies": 2,
+    "replies": [
+      {
+        "id": "90160181293924",
+        "comment_text": "Hi @Harpreet Singh & @Gurdeep Singh this has been updated and mocked up for you to feedback on.",
+        "user": "Jordan Popovich",
+        "user_email": null,
+        "date": "1776898733387"
+      },
+      {
+        "id": "90160181287072",
+        "comment_text": "@Jordan Popovich @Tamara Willmott I've updated the text to remove any discount-related content and attached the preview file. Figma (Client): www.figma.com/design/cJPvsDT3xgdkEhnQjctdBC/...",
+        "user": "Yubin Chung",
+        "user_email": null,
+        "date": "1776895089261"
+      }
+    ]
+  },
+  "90160182371301": {
+    "parent_custom_id": "ZBR-3100",
+    "parent_task_name": "Stock issue dark store",
+    "parent_excerpt": "@David Visser\nCan you please send me the link?\nWhat do you mean pulling from all locations?",
+    "expected_reply_count": 3,
+    "actual_replies": 3,
+    "replies": [
+      {
+        "id": "90160182490607",
+        "comment_text": "@Harpreet Singh See above (I sent this via Teams) - let me know if there are any specific orders to investigate.",
+        "user": "David Visser",
+        "user_email": null,
+        "date": "1777416384621"
+      },
+      {
+        "id": "90160182480256",
+        "comment_text": "@David Visser The way the app works, is if an order comes through that can't be fulfilled from a single location, it assigns the whole order to the dark store. This was what was requested by BC as they said they can move stock around and get more stock in if they need to. Is there a specific order you'd like me to investigate?",
+        "user": "Sam Edwards",
+        "user_email": null,
+        "date": "1777410711179"
+      },
+      {
+        "id": "90160182477743",
+        "comment_text": "@Sam Edwards apologies for the confusion here, I think the meaning of 'link' here is integration. Are we allowing products allocated to the dark store to be pulled from different locations?",
+        "user": "David Visser",
+        "user_email": null,
+        "date": "1777409373036"
+      }
+    ]
+  }
+}
