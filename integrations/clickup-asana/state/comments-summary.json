@@ -1,8 +1,94 @@
 {
-  "_note": "BLOCKED: clickup_get_task_comments tool was denied permission in this sandbox session. Comment backfill cannot proceed via this MCP server until the user grants the permission, or an alternative source (ClickUp REST API direct, or pre-cached export) is provided.",
-  "blocked": true,
-  "total_comments": null,
-  "tasks_with_comments": null,
-  "top_10_noisiest": [],
-  "next_step": "Request the user enable mcp__c0473e83-7a98-4a0f-b4be-5d4ceab1c524__clickup_get_task_comments in settings.json, then re-run this gap-closing task."
+  "total_tasks_pulled": 60,
+  "total_comments": 231,
+  "tasks_with_zero_comments": [
+    "ZBR-2850",
+    "ZBR-2849",
+    "ZBR-2812",
+    "ZBR-2800",
+    "ZBR-2804",
+    "ZBR-2813",
+    "ZBR-2889"
+  ],
+  "top_10_noisiest": [
+    {
+      "custom_id": "ZBR-2323",
+      "task_name": "Doordash Implementation",
+      "comment_count": 25,
+      "first_commenter": "Amrit Randhawa",
+      "last_commenter": "David Visser"
+    },
+    {
+      "custom_id": "ZBR-1501",
+      "task_name": "BC-00200 :: Bargain Chemist Location Stock Updates",
+      "comment_count": 25,
+      "first_commenter": "Stuart Fowler",
+      "last_commenter": "Brenda Walters"
+    },
+    {
+      "custom_id": "ZBR-3003",
+      "task_name": "Inventory sync by locations",
+      "comment_count": 21,
+      "first_commenter": "Sam Edwards",
+      "last_commenter": "David Visser"
+    },
+    {
+      "custom_id": "ZBR-2792",
+      "task_name": "Shipping Issues",
+      "comment_count": 16,
+      "first_commenter": "Sam Edwards",
+      "last_commenter": "Brenda Walters"
+    },
+    {
+      "custom_id": "ZBR-2565",
+      "task_name": "Bulk email customers from shopify",
+      "comment_count": 12,
+      "first_commenter": "Amrit Randhawa",
+      "last_commenter": "David Visser"
+    },
+    {
+      "custom_id": "ZBR-2514",
+      "task_name": "Remove Residual Klevu code",
+      "comment_count": 12,
+      "first_commenter": "Amrit Randhawa",
+      "last_commenter": "Ben Hammonds"
+    },
+    {
+      "custom_id": "ZBR-2744",
+      "task_name": "Increase Free Shipping Threshold to $79",
+      "comment_count": 9,
+      "first_commenter": "Tamara Willmott",
+      "last_commenter": "Harpreet Singh"
+    },
+    {
+      "custom_id": "ZBR-2654",
+      "task_name": "SEO & GEO",
+      "comment_count": 7,
+      "first_commenter": "Amrit Randhawa",
+      "last_commenter": "Brenda Walters"
+    },
+    {
+      "custom_id": "ZBR-2995",
+      "task_name": "FROM TEAMS: Hard Checkout Error",
+      "comment_count": 5,
+      "first_commenter": "Brenda Walters",
+      "last_commenter": "Jordan Popovich"
+    },
+    {
+      "custom_id": "ZBR-2888",
+      "task_name": "Sign-up - In Store Review",
+      "comment_count": 5,
+      "first_commenter": "Brenda Walters",
+      "last_commenter": "Brenda Walters"
+    }
+  ],
+  "external_links_found": 30,
+  "sample_comments": [
+    "[from ClickUp \u2014 @Stuart Fowler]: @Evgenia Burthank you :heart:",
+    "[from ClickUp \u2014 @Evgenia Bur]: @Stuart Fowler I've started the import",
+    "[from ClickUp \u2014 @Stuart Fowler]: @Evgenia Bur could you update Mount Wellington so it's stock is enabled for inventory?\n\nhttps://admin.shopify.com/store/bargain-chemist/settings/locations/76431392905",
+    "[from ClickUp \u2014 @Evgenia Bur]: @Stuart Fowler import is in progress",
+    "[from ClickUp \u2014 @Evgenia Bur]: @Stuart Fowler Today's import is in progress including Mt Wellington location"
+  ],
+  "errors": []
 }
