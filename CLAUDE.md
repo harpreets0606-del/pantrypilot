@@ -20,7 +20,9 @@ State lives under `integrations/clickup-asana/`:
 - `state/` — snapshots of the source CU workspace (inventory, comments,
   custom fields)
 - `runs/` — dated run notes; the most recent deploy-status doc records what
-  was synced and what's outstanding
+  was synced and what's outstanding. Also read the most recent
+  `*-session-notes.md` for open conversational threads with Harpreet
+  (ambiguous mappings, unprioritised cards, blockers).
 - `tmp/deploy/` — work lists used during the migration (created GIDs,
   comment-work, attachments-map, etc.)
 
