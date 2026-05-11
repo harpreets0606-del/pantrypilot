@@ -16,15 +16,20 @@ destination_project_name: "Bargain Chemist"    # NOT TO BE MODIFIED
 #  - "Details" custom field is populated with "{Workstream} · {CU task_type}"
 #    e.g., "Engineering · Backend Dev", "Klaviyo · Klaviyo"
 
+# Deployment order (decided 2026-05-11): write Engineering's 22 live cards
+# first, then Klaviyo's 13 live cards, then both Completed Work History
+# summary cards last. Writer Agent processes routes in array order.
 routes:
   - source_list_id: "901607444533"
     source_list_name: "Bargain Chemist Task Board"
     workstream_label: "Engineering"
     title_prefix: "[Eng]"
-    notes: "31 tasks. Engineering / platform / ops work."
+    deploy_order: 1
+    notes: "35 tasks (22 live + 13 done). Engineering / platform / ops work. Deploys first."
 
   - source_list_id: "901612845895"
     source_list_name: "Klaviyo Retainer"
     workstream_label: "Klaviyo"
     title_prefix: "[Klaviyo]"
-    notes: "18 tasks. Marketing / CRM lifecycle work."
+    deploy_order: 2
+    notes: "25 tasks (13 live + 12 done). Marketing / CRM lifecycle work. Deploys second."
