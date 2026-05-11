@@ -90,5 +90,34 @@
     "[from ClickUp \u2014 @Evgenia Bur]: @Stuart Fowler import is in progress",
     "[from ClickUp \u2014 @Evgenia Bur]: @Stuart Fowler Today's import is in progress including Mt Wellington location"
   ],
-  "errors": []
+  "errors": [],
+  "threaded_replies_total": 109,
+  "parent_comments_with_replies": 46,
+  "top_5_threaded_parents": [
+    {
+      "custom_id": "ZBR-2323",
+      "comment_excerpt": "@Sam Edwards Picking this one up from Amrit.\n\nMay I please have an overview from your end on the next steps here?\n\nFrom",
+      "reply_count": 13
+    },
+    {
+      "custom_id": "ZBR-2323",
+      "comment_excerpt": "@Amrit Randhawa @Gurdeep Singh I am again blocked on this because Toniq is failing to return products in the UAT environ",
+      "reply_count": 9
+    },
+    {
+      "custom_id": "ZBR-3081",
+      "comment_excerpt": "@Jordan Popovich I just tested this and it all seems to be working fine.\nCan I get the address and time of day they test",
+      "reply_count": 8
+    },
+    {
+      "custom_id": "ZBR-2995",
+      "comment_excerpt": "@Harpreet Singh thanks for providing this. \n\nMy thoughts:\nthe user is not blocked form changing their delivery method an",
+      "reply_count": 6
+    },
+    {
+      "custom_id": "ZBR-2886",
+      "comment_excerpt": "@Gurdeep Singh @Harpreet Singh please are you able to connect your Instagram account at the link www.klaviyo.com/setting",
+      "reply_count": 5
+    }
+  ]
 }
