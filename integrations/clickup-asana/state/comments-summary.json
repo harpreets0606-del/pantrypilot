@@ -1,0 +1,8 @@
+{
+  "_note": "BLOCKED: clickup_get_task_comments tool was denied permission in this sandbox session. Comment backfill cannot proceed via this MCP server until the user grants the permission, or an alternative source (ClickUp REST API direct, or pre-cached export) is provided.",
+  "blocked": true,
+  "total_comments": null,
+  "tasks_with_comments": null,
+  "top_10_noisiest": [],
+  "next_step": "Request the user enable mcp__c0473e83-7a98-4a0f-b4be-5d4ceab1c524__clickup_get_task_comments in settings.json, then re-run this gap-closing task."
+}
