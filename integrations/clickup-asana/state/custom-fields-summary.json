@@ -1,0 +1,99 @@
+{
+  "_note": "Summary of unique custom field names found across tasks pulled in this session (15+ direct pulls + 5 parent tasks with subtasks). Field schemas are identical within each list, so the field roster is comprehensive. task_count_with_value reflects only tasks pulled in this session (not the full 49).",
+  "fields": [
+    {
+      "name": "Owner",
+      "type": "users (multi-user)",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "task_count_with_value": 23,
+      "example_values": [
+        ["jordan@zyber.co.nz","david@zyber.co.nz"],
+        ["saniya@zyber.co.nz"],
+        ["amritwant@zyber.co.nz"]
+      ]
+    },
+    {
+      "name": "Job Type",
+      "type": "drop_down",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "options": ["Project","S&S","Zyber Billable","Zyber Non-Billable","Change Request","Block","Klaviyo","Contingency","Paid Scope"],
+      "task_count_with_value": 6,
+      "example_values": ["Klaviyo","S&S","Project"]
+    },
+    {
+      "name": "Client Brief",
+      "type": "drop_down",
+      "lists": ["Bargain Chemist Task Board"],
+      "options": ["Pending","Done","Stuck"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Estimate",
+      "type": "drop_down",
+      "lists": ["Bargain Chemist Task Board"],
+      "options": ["Done","Stuck","With Client","Working on it","S&S to Estimate"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Video Brief Link",
+      "type": "short_text",
+      "lists": ["Bargain Chemist Task Board"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Is overage allowed on this task?",
+      "type": "drop_down",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "options": ["Yes","No"],
+      "task_count_with_value": 17,
+      "example_values": ["Yes"]
+    },
+    {
+      "name": "Remove",
+      "type": "short_text",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Time remaining",
+      "type": "number",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "task_count_with_value": 2,
+      "example_values": [1]
+    },
+    {
+      "name": "Theme",
+      "type": "short_text",
+      "lists": ["Bargain Chemist Task Board"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Shopify Store URL",
+      "type": "short_text",
+      "lists": ["Bargain Chemist Task Board"],
+      "task_count_with_value": 0,
+      "example_values": []
+    },
+    {
+      "name": "Environment",
+      "type": "drop_down",
+      "lists": ["Bargain Chemist Task Board", "Klaviyo Retainer"],
+      "options": ["Production","Staging"],
+      "task_count_with_value": 2,
+      "example_values": ["Production"]
+    }
+  ],
+  "summary": {
+    "unique_field_names": 11,
+    "engineering_list_field_count": 11,
+    "klaviyo_list_field_count": 6,
+    "shared_fields": ["Owner","Job Type","Is overage allowed on this task?","Remove","Time remaining","Environment"],
+    "engineering_only_fields": ["Client Brief","Estimate","Video Brief Link","Theme","Shopify Store URL"],
+    "headline_finding": "Custom fields are mostly empty in practice. Owner is the only widely-populated field (~all tasks). Job Type, Is overage, Time remaining are sparsely populated. Client Brief, Estimate, Video Brief Link, Remove, Theme, Shopify Store URL appear to be unused in any pulled task. Recommend mapping only Owner + Job Type + Time remaining + Environment to Asana custom fields; ignore the rest."
+  }
+}

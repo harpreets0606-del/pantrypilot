@@ -1,0 +1,34 @@
+# User mapping ClickUp → Asana.
+# Per user decision (2026-05-11): Only Harpreet and Gurdeep migrate.
+# Atlas Digital manages their own people in Asana — we don't tag them.
+# Zyber (agency) staff stay in ClickUp only; their assignment is preserved
+# in the Asana task description as "[CU Assignees: ...]" for context.
+
+mapped:
+  - cu_id: 100903392
+    cu_username: "Harpreet Singh"
+    cu_email: "harpreetsingh@bargainchemist.co.nz"
+    asana_gid: "1214510558878078"
+
+  - cu_id: 94940687
+    cu_username: "Gurdeep Singh"
+    cu_email: "gurdeep.singh@bargainchemist.co.nz"
+    asana_gid: "1214510558878075"
+
+# CU users that intentionally do NOT get an Asana assignee.
+# The Writer Agent appends their names to the task description instead.
+unmapped_zyber_staff:
+  - { cu_id: 276602211, cu_username: "David Visser",         cu_email: "david@zyber.co.nz" }
+  - { cu_id: 94893376,  cu_username: "Sam Edwards",          cu_email: "sam@zyber.co.nz" }
+  - { cu_id: 94840929,  cu_username: "Brenda Walters",       cu_email: "brenda@zyber.co.nz" }
+  - { cu_id: 100935586, cu_username: "Saniya",               cu_email: "saniya@zyber.co.nz" }
+  - { cu_id: 94893384,  cu_username: "Beverly Di Mercurio",  cu_email: "beverly@zyber.co.nz" }
+  - { cu_id: 94916562,  cu_username: "Jordan Popovich",      cu_email: "jordan@zyber.co.nz" }
+  - { cu_id: 94893379,  cu_username: "Yubin Chung",          cu_email: "yubin@zyber.co.nz" }
+  - { cu_id: 94840928,  cu_username: "Tamara Willmott",      cu_email: "tamara@zyber.co.nz" }
+  - { cu_id: 94918043,  cu_username: "Amrit Randhawa",       cu_email: "amritwant@zyber.co.nz" }
+  - { cu_id: 94915288,  cu_username: "Ben Hammonds",         cu_email: "ben@zyber.co.nz" }
+  - { cu_id: 94893378,  cu_username: "Jericho Gimoros",      cu_email: "jericho@zyber.co.nz" }
+
+# Default Manager (Asana people custom field) when no mapped CU user is on the task.
+default_manager_asana_gid: "1214510558878078"   # Harpreet

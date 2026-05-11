@@ -1,0 +1,30 @@
+# Single Asana destination for all 49 ClickUp tasks.
+# Decision (2026-05-11): use the existing "Bargain Chemist" project as-is.
+# DO NOT rename, restructure, add/remove sections, or add/remove custom fields.
+# We only WRITE TASKS into the existing structure.
+
+source_workspace_id: "9016721657"          # Harpreet's authenticated CU workspace
+source_space_id: "90162703757"             # Bargain Chemist space (shared)
+source_folder_id: "90164429974"
+
+destination_workspace_gid: "1205781270518547"  # atlasventures.co
+destination_project_gid: "1214475175808445"    # "Bargain Chemist" — owned by Bridget Zimmerman
+destination_project_name: "Bargain Chemist"    # NOT TO BE MODIFIED
+
+# Within-board differentiation (since Eng + Klaviyo coexist in one project):
+#  - Title prefix is rewritten from "[Bargain Chemist]" → "[Eng]" or "[Klaviyo]"
+#  - "Details" custom field is populated with "{Workstream} · {CU task_type}"
+#    e.g., "Engineering · Backend Dev", "Klaviyo · Klaviyo"
+
+routes:
+  - source_list_id: "901607444533"
+    source_list_name: "Bargain Chemist Task Board"
+    workstream_label: "Engineering"
+    title_prefix: "[Eng]"
+    notes: "31 tasks. Engineering / platform / ops work."
+
+  - source_list_id: "901612845895"
+    source_list_name: "Klaviyo Retainer"
+    workstream_label: "Klaviyo"
+    title_prefix: "[Klaviyo]"
+    notes: "18 tasks. Marketing / CRM lifecycle work."

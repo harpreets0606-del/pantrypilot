@@ -1,0 +1,25 @@
+# Maps ClickUp status (lowercase, exact match) to the Asana section name
+# in the destination project. Section gids are resolved at runtime by name.
+#
+# All 12 destination sections exist in the existing Bargain Chemist project:
+#   Resources | Backlog | For Estimation | Estimation Complete - Pending Approval
+#   Ready To Do | In Progress | Pending QA/Review | Pending Client
+#   Ready for Deployment | Deployed (Final Checks) | Done | Documentation
+
+status_to_section:
+  "not started":      "Backlog"
+  "working on it":    "In Progress"
+  "tweaks":           "In Progress"
+  "client review":    "Pending Client"
+  "owner review":     "Pending QA/Review"
+  "input required":   "Pending Client"
+  "with external":    "Pending Client"
+  "on hold":          "Backlog"
+  "done":             "Done"
+
+# Tasks whose status is not in the map fall through to default_section
+default_section: "Backlog"
+
+# When a CU task moves into "on hold" we also tag it so it's visually distinct
+# in the Backlog section.
+on_hold_tag: "on-hold"

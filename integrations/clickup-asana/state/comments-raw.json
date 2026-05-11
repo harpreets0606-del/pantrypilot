@@ -1,0 +1,8 @@
+{
+  "_note": "BLOCKED: clickup_get_task_comments is not permitted in the current sandbox. All 25 attempted invocations were denied with permission error. No comment data could be pulled in this session.",
+  "blocked": true,
+  "tool_attempted": "mcp__c0473e83-7a98-4a0f-b4be-5d4ceab1c524__clickup_get_task_comments",
+  "tasks_attempted": 25,
+  "tasks_succeeded": 0,
+  "comments_by_task": {}
+}

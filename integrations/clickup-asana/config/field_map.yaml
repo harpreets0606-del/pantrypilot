@@ -1,0 +1,51 @@
+# Field-by-field translation from ClickUp task → Asana task payload.
+# Single-destination model: all writes go into project 1214475175808445.
+
+asana_task:
+  # Title rewrite: drop the "[Bargain Chemist]" prefix (redundant since we're IN the BC
+  # project) and replace with the workstream prefix from destinations.yaml.
+  # Example: "[Bargain Chemist] BackEnd Documentation" → "[Eng] BackEnd Documentation"
+  name:                 "{title_prefix} {cu.name | strip_bargain_chemist_prefix}"
+
+  notes:                "{rendered_description}"   # see notes_template below
+  due_on:               "{cu.due_date | date}"     # null-safe
+  start_on:             "{cu.start_date | date}"
+
+  custom_fields:
+    Priority:            "{resolved_priority}"     # from priority_resolver in rules.yaml
+    Manager:             "{resolved_manager_gid}"  # mapped CU user, else default (Harpreet)
+    "Estimated time":    "{cu.time_estimate | minutes}"   # CU returns ms → convert to minutes
+    Name:                "{cu.custom_id}"          # ZBR-XXXX visible in Name column
+    Details:             "{workstream_label} · {cu.task_type | default:'(no type)'}"
+                                                    # e.g. "Engineering · Backend Dev"
+                                                    #      "Klaviyo · Klaviyo"
+                                                    #      "Engineering · (no type)"
+
+  # Section assignment computed via status_section_map.yaml at write time.
+  section_name:          "{resolved_section}"
+
+# notes_template — the Asana task description body.
+# Preserves CU context: source ZBR id, source URL, ALL assignees (including
+# Zyber-only staff who don't have Asana accounts), and the original CU list.
+notes_template: |
+  {cu.description}
+
+  ──────────────────────────────────────────
+  Workstream: {workstream_label}
+  Synced from ClickUp · {cu.custom_id}
+  Source: {cu.url}
+  CU List: {cu.list.name}
+  CU Status: {cu.status}
+  CU Assignees: {cu.assignees | names_emails}
+  Last updated in CU: {cu.date_updated | iso}
+
+# Idempotency: Writer hashes (name, notes, custom_fields, section_name)
+# and stores in id_map.sqlite. Skip write if hash unchanged.
+hash_fields:
+  - name
+  - notes
+  - custom_fields.Priority
+  - custom_fields.Manager
+  - custom_fields."Estimated time"
+  - custom_fields.Details
+  - section_name
