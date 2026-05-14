@@ -192,15 +192,17 @@ timeframe_filter: {type:'all-time'}
 | `RnnhTh` | BC — Lapsed Retail Customers 90-180D | 7,333 |
 | `VvBRbu` | BC — All Retail Customers (last 1095d ~3y) | 59,314 |
 
-**Wave 2 — new P0 segments (6 segments):**
+**Wave 2 — new P0 segments (6 segments — all renamed, no [SIZING] prefix):**
 | ID | Segment | Verified count |
 |---|---|---|
 | `YgrizT` | BC — Pharmacy-Only Buyers (no retail) | **4,177** |
 | `X2pdkD` | BC — GLP-1 Customers (Wegovy + Mounjaro) | **24** |
 | `XFc26k` | BC — Lapsed Retail 180-365D (win-back) | **13,563** |
-| `YdzNmz` | BC — Unengaged Subscribed 180D (sunset) | UNREAD — verify in Klaviyo UI |
-| `WkwEvG` | BC — High AOV Retail ($100+ order) | UNREAD — verify in Klaviyo UI |
-| `Ti4FKX` | BC — Retail Cart Abandoners 60d | UNREAD — verify in Klaviyo UI |
+| `YdzNmz` | BC — Unengaged Subscribed 180D (sunset) | **34,249** |
+| `WkwEvG` | BC — High AOV Retail ($100+ order) | **0** ⚠️ filter broken or $100 too high |
+| `Ti4FKX` | BC — Retail Cart Abandoners 60d | **1,230** |
+
+**See `/home/user/pantrypilot/google-ads-segment-activation-plan.md` for the full campaign×segment mapping plan.**
 
 ### 68 existing [Z] category × time-window segments
 17 categories × 4 windows (30/60/90/180 day engaged):
