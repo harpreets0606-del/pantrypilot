@@ -306,12 +306,20 @@ Allergy, Baby, Cold & Flu, Cosmetics, First Aid, Fragrance, Hair, Household, Per
 
 ## 12. Decisions Pending User Confirmation
 
-- [ ] Rename [SIZING] BC segments → BC (deploy)
-- [ ] Build P0 (5 segments) as [SIZING]?
-- [ ] Build P1 (5 segments) as [SIZING]?
-- [ ] Cart Abandoners 30d (620) below CM threshold — widen window or accept?
-- [ ] Recent L7D (~850) below CM threshold — keep as exclusion-only?
-- [ ] Address Browse Abandoners retail-filter limitation (Viewed Product has no Collections property)?
+- [x] ~~Rename [SIZING] BC segments → BC (deploy)~~ — **DONE 2026-05-14**: All 14 renamed via PATCH /api/segments
+- [ ] Build P1 segments (Champions, New Subscribers, Multi-channel, Hibernating, Discount-Dependent)
+- [ ] Cart Abandoners 30d (620) below CM threshold — Cart Abandoners 60d added as parallel segment
+- [ ] Recent L7D (~850) below CM threshold — confirmed for exclusion-only use
+- [ ] Browse Abandoners retail-filter limitation (Viewed Product has no Collections property)?
+
+## P1 Schema Probe Results (2026-05-14)
+
+| Schema | Result | Notes |
+|---|---|---|
+| SMS subscribed consent (`channel: 'sms'`) | ✅ Accepted | Multi-channel segment buildable |
+| `profile-list` condition with `list_id` | ❌ Rejected (400) even with real list ID | Klaviyo uses different condition type for list membership; needs more research |
+| `Total Discounts > 0` filter | ❓ Unknown (Zapier wrapper stripped output) | Retry needed |
+| `Discount Codes is-not-empty` filter | ❌ Rejected (400) | Wrong operator |
 
 ---
 
