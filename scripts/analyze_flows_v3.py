@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+"""
+Defensive flow analyzer with 4-tier classification.
+
+Same goal as v2 but with diagnostics + flexible field-name handling.
+v2 silently returned 0 send-email actions for every flow despite v1
+finding them on the same endpoint. Most likely cause: Klaviyo API
+field-name inconsistency (action_type snake vs actionType camel) or
+case variation in the action type value itself.
+
+This script:
+- Tries both action_type AND actionType keys
+- Accepts multiple value spellings (send-email, send_email, SEND_EMAIL)
+- ALWAYS prints the distinct action types it sees per flow (diagnostic)
+
+4-tier classification (unchanged from v2):
+  CREATIVE-ONLY    - pure brand creative; trivial re-skin
+  CATEGORY LINKS   - hardcoded /collections/ URLs; low maintenance
+  PRODUCT SHOWCASE - hardcoded /products/; needs QUARTERLY refresh
+  EVENT-DRIVEN     - Klaviyo Jinja over event payload; eng-locked
+
+Run:
+    KLAVIYO_API_KEY="pk_xxx" python3 scripts/analyze_flows_v3.py
+"""
+
+import os
+import re
+import sys
+
+import requests
+
+KLAVIYO_BASE = "https://a.klaviyo.com/api"
+REVISION = "2024-10-15"
+
+MANUAL_FLOWS = [
+    "RDJQYM", "RPQXaa", "RtiVC5", "Sr3hxz", "T7pmf6",
+    "Ua5LdS", "V9XmEm", "XbQiKg", "YdejKf", "Ysj7sg",
+]
+
+SEND_EMAIL_VALUES = {
+    "send-email", "send_email", "SEND_EMAIL",
+    "SendEmail", "Send Email", "send-message-email",
+}
+
+EVENT_DRIVEN_PATTERNS = [
+    r"\{\{\s*event\.", r"\{\{\s*Items\b", r"\{\{\s*line_items",
+    r"\{\{\s*product\b", r"\{\{\s*items\.\d", r"\{%\s*for\b",
+    r"\{\{\s*search_term\b", r"\{\{\s*viewed_product", r"checkout_url",
+    r"\{\{\s*order\.", r"\{\{\s*ProductID", r"\{\{\s*RecommendedProducts",
+]
+
+
+def headers(api_key):
+    return {
+        "Authorization": f"Klaviyo-API-Key {api_key}",
+        "accept": "application/vnd.api+json",
+        "revision": REVISION,
+    }
+
+
+def fetch(url, api_key):
+    r = requests.get(url, headers=headers(api_key), timeout=30)
+    if r.status_code != 200:
+        return None, f"{r.status_code} {r.text[:200]}"
+    return r.json(), None
+
+
+def get_action_type(action):
+    """Try both snake_case and camelCase field names."""
+    attrs = action.get("attributes", {})
+    return attrs.get("action_type") or attrs.get("actionType") or attrs.get("type") or ""
+
+
+def is_send_email(action):
+    atype = get_action_type(action)
+    return atype in SEND_EMAIL_VALUES
+
+
+def analyze_html(html):
+    is_event_driven = any(re.search(p, html, re.IGNORECASE) for p in EVENT_DRIVEN_PATTERNS)
+    product_urls = list(set(re.findall(r'(?:bargainchemist\.co\.nz|/)products/[a-z0-9-]+', html, re.IGNORECASE)))
+    all_collection_urls = list(set(re.findall(r'(?:bargainchemist\.co\.nz|/)collections/[a-z0-9-]+', html, re.IGNORECASE)))
+    collection_urls = [u for u in all_collection_urls if not u.endswith('/all')]
+    price_matches = re.findall(r'\$\d+\.\d{2}', html)
+    unique_prices = len(set(price_matches))
+    cdn_images = len(re.findall(r'cdn\.shopify\.com', html))
+    has_hardcoded_marker = bool(re.search(r'(?:hardcoded|refresh\s+(?:quarterly|monthly)|update\s+manually)', html, re.IGNORECASE))
+    universal_blocks = list(set(re.findall(r'data-klaviyo-universal-block="([^"]+)"', html)))
+    return {
+        "event_driven": is_event_driven,
+        "product_urls": product_urls,
+        "collection_urls": collection_urls,
+        "unique_prices": unique_prices,
+        "cdn_images": cdn_images,
+        "has_hardcoded_marker": has_hardcoded_marker,
+        "universal_blocks": universal_blocks,
+        "html_size": len(html),
+    }
+
+
+def classify_template(a):
+    if a["event_driven"]:
+        return "EVENT-DRIVEN"
+    if len(a["product_urls"]) >= 3 or (a["has_hardcoded_marker"] and len(a["product_urls"]) >= 1):
+        return "PRODUCT SHOWCASE"
+    if len(a["collection_urls"]) >= 3:
+        return "CATEGORY LINKS"
+    if len(a["product_urls"]) >= 1:
+        return "PRODUCT SHOWCASE (light)"
+    return "CREATIVE-ONLY"
+
+
+def classify_flow(per_template):
+    order = {
+        "CREATIVE-ONLY": 0, "CATEGORY LINKS": 1,
+        "PRODUCT SHOWCASE (light)": 2, "PRODUCT SHOWCASE": 3,
+        "EVENT-DRIVEN": 4,
+    }
+    if not per_template:
+        return "NO_TEMPLATES"
+    worst = max(per_template, key=lambda t: order.get(t["tier"], 0))
+    return worst["tier"]
+
+
+def main():
+    api_key = os.environ.get("KLAVIYO_API_KEY")
+    if not api_key:
+        print("ERROR: KLAVIYO_API_KEY env var not set", file=sys.stderr)
+        sys.exit(1)
+
+    overall = []
+    for flow_id in MANUAL_FLOWS:
+        print(f"\n{'=' * 60}\nFLOW: {flow_id}\n{'=' * 60}")
+        meta, _ = fetch(f"{KLAVIYO_BASE}/flows/{flow_id}/", api_key)
+        flow_name = meta["data"]["attributes"].get("name", "?") if meta else "?"
+        print(f"Name: {flow_name}")
+
+        actions_resp, err = fetch(f"{KLAVIYO_BASE}/flows/{flow_id}/flow-actions/", api_key)
+        if err:
+            print(f"  ERROR: {err}")
+            continue
+
+        actions = actions_resp.get("data", [])
+
+        # Diagnostic: show all action types seen
+        seen_types = sorted(set(get_action_type(a) for a in actions))
+        print(f"Total actions: {len(actions)}  |  Action types seen: {seen_types}")
+
+        send_actions = [a for a in actions if is_send_email(a)]
+        print(f"send-email actions identified: {len(send_actions)}")
+
+        per_template = []
+        for action in send_actions:
+            action_id = action["id"]
+            msgs_resp, err = fetch(f"{KLAVIYO_BASE}/flow-actions/{action_id}/flow-messages/", api_key)
+            if err:
+                print(f"  -- action {action_id}: messages fetch failed: {err}")
+                continue
+            for msg in msgs_resp.get("data", []):
+                msg_id = msg["id"]
+                attrs = msg.get("attributes", {})
+                msg_name = attrs.get("name", msg_id)
+                channel = attrs.get("definition", {}).get("channel", "email")
+                if channel != "email":
+                    continue
+                tpl_resp, err = fetch(f"{KLAVIYO_BASE}/flow-messages/{msg_id}/template/", api_key)
+                if err or not tpl_resp.get("data"):
+                    print(f"  -- {msg_name}: no template ({err})")
+                    continue
+                tpl_data = tpl_resp["data"]
+                tpl_id = tpl_data["id"]
+                html = tpl_data.get("attributes", {}).get("html") or ""
+                a = analyze_html(html)
+                tier = classify_template(a)
+                a["msg_name"] = msg_name
+                a["tpl_id"] = tpl_id
+                a["tier"] = tier
+                per_template.append(a)
+                print(f"  -- {msg_name[:50]:50s}  tpl={tpl_id}  -> {tier}")
+                if a["product_urls"]:
+                    print(f"       hardcoded products: {len(a['product_urls'])}  prices: {a['unique_prices']}  CDN images: {a['cdn_images']}")
+                if a["collection_urls"]:
+                    sample = ', '.join(c.split('/')[-1] for c in a['collection_urls'][:5])
+                    more = '...' if len(a['collection_urls']) > 5 else ''
+                    print(f"       collection links: {len(a['collection_urls'])}  ({sample}{more})")
+                if a["has_hardcoded_marker"]:
+                    print("       contains 'hardcoded'/'refresh' marker in HTML")
+                if a["event_driven"]:
+                    print("       event-driven (Klaviyo Jinja over event payload)")
+
+        flow_tier = classify_flow(per_template)
+        overall.append({"id": flow_id, "name": flow_name, "tier": flow_tier,
+                        "template_count": len(per_template), "templates": per_template})
+        print(f"\nFLOW TIER: {flow_tier}")
+
+    print("\n\n" + "=" * 70)
+    print("SUMMARY — 4-tier classification (worst tier per flow)")
+    print("=" * 70)
+    print()
+    print("CREATIVE-ONLY        - pure brand creative; trivial re-skin")
+    print("CATEGORY LINKS       - collection-link cards; low maintenance")
+    print("PRODUCT SHOWCASE     - hardcoded products; QUARTERLY refresh required")
+    print("EVENT-DRIVEN         - Klaviyo Jinja dynamic blocks; engineering-locked")
+    print()
+    for f in overall:
+        print(f"  {f['tier']:25s}  {f['name']}  ({f['template_count']} email{'s' if f['template_count'] != 1 else ''})  [id={f['id']}]")
+
+
+if __name__ == "__main__":
+    main()
