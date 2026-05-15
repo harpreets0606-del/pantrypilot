@@ -42,7 +42,7 @@ Pre-existing legacy segments (verified, untouched):
 - `S6sijb` `[Z]` Sitewide (30d engaged), `VmBy2n` 60d, `Wby7tp` 90d, `RKdgTM` 180d
 - `QYmdK4` `[Z]` Vitamins & Supplements (180d engaged)
 
-## 3. The High AOV ($100+) Zero-Count Issue
+## 3. The High AOV ($100+) Zero-Count Issue — Diagnosed 2026-05-15
 
 `WkwEvG` definition (verified):
 ```
@@ -52,13 +52,30 @@ Placed Order (count > 0) WHERE
 AND profile is subscribed (email)
 ```
 
-Returns **0 profiles** despite store-wide AOV ~$56 (so $100+ orders certainly exist). Likely root causes, in order of likelihood:
+Returns **0 profiles**. Diagnosis via `klaviyo_get_events` on metric `Sxnb5T` (3 most recent Placed Order events) — sample event #507112:
 
-1. **Property name mismatch** — Klaviyo's Shopify integration may emit order value as `Total Price`, `value`, or `Order Value` rather than `$value`. Two filters within the same condition are ANDed *on the same event*, so a missing/mis-cased property silently zeroes the result.
-2. **AND-on-same-event interaction** — combined `$value > 100` AND `Collections contains_any _retail` requires both on the *same* order event. If product collection metadata isn't on the order event itself (only on line items), the join fails.
-3. Threshold genuinely too high (less likely given store volume).
+```json
+{
+  "$value": 14.59,
+  "Collections": ["Advil", "All Products", "_pharmacy-only", "_retail", ...],
+  "$currency_code": "NZD",
+  ...
+}
+```
 
-**Phase-1 fix path:** open one Placed Order event for a known $100+ retail customer in Klaviyo UI (`/metric/Sxnb5T`), inspect actual property names, rebuild filter against the right field. Try $50 threshold as fallback.
+**Property names `$value` and `Collections` are correct.** Initial hypothesis (mis-cased field name) is ruled out.
+
+**Confirmed root cause: same-event `metricFilters` AND combinator unreliability.** Klaviyo's evaluation of two `metricFilters` within a single condition (both `$value` numeric filter AND `Collections` list filter on the same Placed Order event) is a known edge case — particularly when one filter is on a top-level event property (`$value`) and another is on an array-typed property (`Collections`). The segment shows `isProcessing: false`, so it has finished computing → genuine zero result, not a stale query.
+
+**Fix (Phase-1):** rebuild `WkwEvG` using two **separate condition groups** (group-level AND), not two filters within one condition:
+
+```
+Group 1: Placed Order count > 0 in last 1095d WHERE $value > 100
+Group 2: Placed Order count > 0 in last 1095d WHERE Collections contains_any [_retail]
+Group 3: profile subscribed
+```
+
+This is the same logical query but uses the reliable group-level AND. Fallback if still zero: drop threshold to $50.
 
 ## 4. Google Ads Customer Match Capability (verified — Zapier `list_enabled_zapier_actions`)
 
@@ -81,20 +98,25 @@ All required Customer Match endpoints are enabled and OAuth-authenticated via Za
 - Whether Bargain Chemist's specific MCC accepts Customer Match given the Health & Beauty industry classification (Google restricts CM for "Personal hardships"/medical categories — pharmacy borderline).
 - Whether OMD agency (per pasted context) has audience-attach permissions on the live campaigns.
 
-## 5. Klaviyo Metrics Used by Segments (referenced metric IDs)
+### 4a. Google Ads raw GAQL — version mismatch (verified 2026-05-15)
 
-From segment definitions verified above:
+Calling `_zap_raw_request` against `https://googleads.googleapis.com/v18/...` returns **404 Not Found**. Zapier's underlying Google Ads OAuth client is bound to a different API version. Practical implication:
 
-| Metric ID | Inferred meaning (from usage) |
-|---|---|
-| `Sxnb5T` | Placed Order |
-| `VvcTue` | Started Checkout / Cart |
-| `XQ2zfW` | Viewed Product |
-| `SZ8GZJ` | Opened Email |
-| `W3AFKt` | Clicked Email |
-| `UfaNeY` | One of: Active on Site / Received Email / SMS metric |
+- **Avoid `_zap_raw_request` for GAds.** Use the structured Zapier actions (`find_campaign_by_name`, `create_customer_list`, `add_email_to_customer_list_v3`, etc.) — Zapier routes them via the correct version internally.
+- If raw GAQL is genuinely needed, test versions in this order: v17, v19, v20 (latest stable as of writing). Or switch to direct Google Ads API access with a service account, which is out of scope for Phase 1.
 
-Phase-1 confirmation: call `klaviyo_get_metric` on each ID to lock the names — the segment logic is correct regardless, this is just for documentation hygiene.
+## 5. Klaviyo Metrics Used by Segments (verified via `klaviyo_get_metric`, 2026-05-15)
+
+| Metric ID | Name | Integration |
+|---|---|---|
+| `Sxnb5T` | Placed Order | Shopify |
+| `VvcTue` | Checkout Started | Shopify |
+| `XQ2zfW` | Viewed Product | API |
+| `UfaNeY` | Active on Site | API |
+| `SZ8GZJ` | Opened Email | Klaviyo |
+| `W3AFKt` | Clicked Email | Klaviyo |
+
+All segment definitions reference correct metric IDs.
 
 ## 6. What This Session Did NOT Verify
 

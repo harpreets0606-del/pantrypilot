@@ -91,10 +91,11 @@ The other estimates are deliberately not numericised — they require campaign-l
 
 ## 4. Execution Phases
 
-### Phase 0 — Verify (next session, ~30 min)
-- [ ] Confirm campaign names + IDs via Google Ads (GAQL or UI walkthrough)
-- [ ] Confirm Customer Match works for this MCC: create one 5-email test list
-- [ ] Decide on `WkwEvG` rebuild: inspect a real $100+ retail order to find correct property name
+### Phase 0 — Verify (in progress, 2026-05-15)
+- [ ] Confirm campaign names + IDs via Google Ads — *raw GAQL hits v18-404; use `find_campaign_by_name` structured action with `mainAccountId` selector (next step)*
+- [ ] Confirm Customer Match works for this MCC: create one 5-email test list — *awaiting user approval (write to live GAds)*
+- [x] Diagnose `WkwEvG`: property names `$value` + `Collections` are correct; root cause is same-event `metricFilters` AND unreliability. Fix = rebuild as two separate condition groups (see analysis §3)
+- [x] Lock metric IDs: Placed Order `Sxnb5T`, Checkout Started `VvcTue`, Viewed Product `XQ2zfW`, Active on Site `UfaNeY`, Opened Email `SZ8GZJ`, Clicked Email `W3AFKt`
 - [ ] Confirm whether OMD agency or owner makes the audience-attach changes
 
 ### Phase 1 — Exclusion-only sync (24-48h, lowest risk)
