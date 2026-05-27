@@ -348,8 +348,17 @@ ReviewItem (mined, pain-tagged) · AuditRecord · Consent.
 
 ## 12. Tech stack ⚖️
 Python calc microservice (pyswisseph) · TS/Node BFF · Claude Agent SDK · Postgres+pgvector ·
-Next.js web · WhatsApp Business Cloud API · Stripe (global) + Razorpay/UPI (India) ·
+Next.js **PWA, web-only at launch** (home-screen install + web push; no native app) ·
+WhatsApp Business Cloud API · Stripe web checkout (global) + Razorpay/UPI (India) ·
 modular monolith with clean boundaries (not premature microservices).
+
+**Channel decision — web-only PWA + WhatsApp.** Apple rejects astrology under App Store
+guideline 4.3, and native in-app purchase takes **15–30%** vs **~3%** on web checkout `✅`;
+iOS web push works via an installed PWA (16.4+) `✅`, and WhatsApp is the diaspora's
+superior engagement channel. So launch is **web-only**; a native **Android app arrives in
+the India phase** (Play Store is India's dominant, more-permissive discovery channel). iOS
+native only if retention economics later justify it (and can use Apple's external-link
+route to avoid the commission).
 
 ## 13. Compliance / ethics / legal
 - **Positioning:** spiritual guidance + **clear disclaimers**; not medical/financial/legal
@@ -365,12 +374,12 @@ modular monolith with clean boundaries (not premature microservices).
 - **Phase 0 — Foundations:** kundli + numerology engines (tested vs reference charts); KB
   schema + rights tagger + provenance/hashing; ingest first T1 texts; Knowledge Map v1;
   eval harness.
-- **Phase 1 — NRI MVP:** web app, exact charts → **cited** interpretation (+meaning) →
+- **Phase 1 — NRI MVP:** web PWA, exact charts → **cited** interpretation (+meaning) →
   honest remedies; full Guard + safeguards; verified provider directory (seed) + referral;
   freemium/subscription (Stripe); **Gun Milan** matching.
 - **Phase 2 — NRI reach:** WhatsApp; panchang/transit/dasha nudges; multilingual *consult*
   layer; compliant vendor cold-email engine; review-mining pipeline live.
-- **Phase 3 — India entry:** market-config flip — vernacular UI + voice, Razorpay/UPI,
+- **Phase 3 — India entry:** market-config flip — vernacular UI + voice, **Android app (Play Store)**, Razorpay/UPI,
   per-minute human-consult marketplace (inverted product), Tier-2/3 GTM.
 - **Phase 4 — Depth & marketplace maturity:** T2 licenses + T4 experts; palmistry (CV),
   vastu, tarot, muhurta; in-app booking + payments + commission.
