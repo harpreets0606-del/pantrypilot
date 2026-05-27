@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Darpan — Kundli matching you can actually trust</title>
+  <meta name="description" content="Honest Vedic kundli (Gun Milan) matching for NRIs. Every insight sourced. No fear-selling. Transparent pricing. Verified astrologers." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <div class="brand">दर्पण <span>Darpan</span></div>
+      <nav><a href="#match">Free match</a><a href="#why">Why us</a></nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">For Indians, anywhere in the world</p>
+      <h1>Kundli matching you can <em>actually trust</em>.</h1>
+      <p class="sub">A genuine Vedic Gun Milan — computed with astronomical precision,
+        every reading traced to its source, no fear-selling, no surprise charges.
+        Built for the diaspora that's tired of being sold gemstones to fix problems
+        that were invented to sell them.</p>
+      <a class="cta" href="#match">Check your match — free</a>
+      <ul class="badges">
+        <li>✓ Sourced, not made up</li>
+        <li>✓ No fear-mongering</li>
+        <li>✓ Transparent pricing</li>
+        <li>✓ Your data stays private</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="match" class="tool">
+    <div class="wrap">
+      <h2>Free 36-point compatibility check</h2>
+      <p class="lead">Enter both birth details. We compute the real Ashtakoota score on
+        Lahiri sidereal Moon positions — the same method a good astrologer uses, shown
+        openly so you can see exactly how each point was scored.</p>
+
+      <form id="matchForm" class="grid2">
+        <fieldset>
+          <legend>Person 1</legend>
+          <label>Name <input name="name" placeholder="optional" /></label>
+          <label>Date of birth <input name="date" type="date" required /></label>
+          <label>Time of birth <input name="time" type="time" required /></label>
+          <label>Birth city
+            <select name="city" class="city" required></select>
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Person 2</legend>
+          <label>Name <input name="name" placeholder="optional" /></label>
+          <label>Date of birth <input name="date" type="date" required /></label>
+          <label>Time of birth <input name="time" type="time" required /></label>
+          <label>Birth city
+            <select name="city" class="city" required></select>
+          </label>
+        </fieldset>
+        <button type="submit" class="cta wide">Reveal our compatibility</button>
+      </form>
+
+      <div id="result" class="result hidden"></div>
+    </div>
+  </section>
+
+  <section id="why" class="why">
+    <div class="wrap">
+      <h2>Why Darpan is different</h2>
+      <div class="cards">
+        <div class="card"><h3>Every insight is sourced</h3><p>We show the method behind
+          every number. No vague "the stars say so" — you see exactly how each koota
+          was scored, and (soon) the classical text it comes from.</p></div>
+        <div class="card"><h3>No fear-selling, ever</h3><p>We will never invent a dosha
+          to scare you into a ₹50,000 gemstone. Remedies, if any, are optional,
+          transparent, and only when the chart genuinely supports them.</p></div>
+        <div class="card"><h3>Fixed, honest pricing</h3><p>No per-minute meter running
+          while you panic. No charges after you cancel. You always know the price
+          before you pay.</p></div>
+        <div class="card"><h3>Verified astrologers only</h3><p>When you want a human,
+          you get a credential-checked expert — not an anonymous moonlighter reading
+          from a script.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p><strong>Darpan</strong> — working name. For spiritual reflection and guidance.
+        Not medical, financial, or legal advice; for those, please consult a qualified
+        professional.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
