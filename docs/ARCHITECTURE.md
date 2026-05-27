@@ -1,36 +1,50 @@
-# Darpan AI — Architecture & Build Blueprint
+# Darpan AI — Architecture & Build Blueprint (v2)
 
-> **Working title only — "Darpan" (दर्पण, "mirror": the platform reflects your chart back to you). Rename freely.**
+> **Working title only — "Darpan" (दर्पण, "mirror"). Rename freely.**
 >
-> A spiritual-guidance platform for the Indian diaspora worldwide. It combines
-> deterministic Vedic-astrology and numerology engines with an AI interpretation
-> layer that **only speaks from sourced, citable knowledge**, then connects users
-> to vetted real-world providers (astrologers, priests, gemstone sellers, pandits,
-> remedy specialists) to close the loop.
+> A trust-first spiritual-guidance platform for the Indian diaspora, expanding to India.
+> Deterministic Vedic-astrology + numerology engines, an AI interpretation layer that
+> **only speaks from sourced, citable knowledge**, and a vetted-provider marketplace that
+> closes the loop — built specifically to fix the documented pain points that erode trust
+> in today's astrology apps.
+>
+> **Every factual claim in this document is tagged:** `✅` = verified against a cited source
+> (see §16); `⚖️` = engineering/strategy judgment; `🛠️` = operational commitment (won by
+> discipline, not code). This satisfies the project's golden rule: nothing stated as fact
+> without a source.
 
 ---
 
-## 0. The one principle everything hangs on
+## 1. Guiding principles (the spine)
 
-The headline ask was "100% accurate, no mistakes, fully referenced." Here is the
-honest, buildable version of that:
+1. **Deterministic engines + citation-enforced AI.** The math (charts, dashas, numerology)
+   is exact and reproducible. Interpretation is *only* ever composed from retrieved,
+   cited sources — the model is structurally forbidden from making any interpretive claim
+   it cannot attribute to a document we control. ⚖️
+2. **We guarantee provenance, not truth.** We can be ~100% sure that every statement
+   traces to a real source, the citation supports it, and nothing was invented. We make
+   **no** claim that the astrology itself is empirically true. ⚖️
+3. **Trust is the product.** The market is full of documented fear-selling, fake
+   practitioners, meter manipulation, and billing traps (§8, §16). Our entire
+   differentiation is being the honest, transparent, incentive-aligned alternative. ⚖️
+4. **Incentive alignment beats features.** We monetize so our interests match the user's
+   (AI-first, flat/transparent pricing, honest cited remedies) — which incumbents *can't*
+   copy without destroying their core revenue. ⚖️
+5. **Structural before operational.** Where a guarantee can be enforced by architecture
+   (`[S]`), enforce it there. What can't (`[O]`) is won by operational integrity, and must
+   be treated as an ongoing discipline, not a one-time feature.
 
-| Layer | Can it be "100% accurate"? | How we guarantee trust |
-|---|---|---|
-| **Calculation** (kundli, dashas, numerology) | **Yes — it's astronomy + arithmetic.** | Deterministic engines using a precision ephemeris. Reproducible to the arc-second. |
-| **Interpretation** (what the chart *means*) | **No — it is inherently subjective.** Respected astrologers disagree on the same chart. | The AI **never** speaks from its own "memory." Every sentence of interpretation is **retrieved from and cited to a source we control** (classical text, licensed book, or vetted expert content). No source → no claim. |
-
-**This is the spine of the system:**
-
-> **Deterministic engines + retrieval-grounded, citation-enforced AI. The model is forbidden from making any interpretive claim it cannot attribute to a document in our knowledge base.**
-
-That is what makes "no mistakes" real: not that astrology becomes objective, but
-that **the user can trace every statement to "per BPHS Ch. 7" or "per [licensed
-author], p. 142"** — and we can stand behind it.
+### What we can and cannot guarantee
+| ✅ Achievable (~100%) | ❌ Not achievable |
+|---|---|
+| Provenance — every claim traces to a real stored source | That the astrological claim is empirically true |
+| Faithfulness — the citation genuinely supports the claim | That two astrologers would agree on the chart |
+| Reproducibility — same chart + same sources → same reading | A "fully automatic, no-human" knowledge base that is also certain (see §5.2) |
+| Chart/math correctness (it's astronomy + arithmetic) | — |
 
 ---
 
-## 1. System overview
+## 2. System overview
 
 ```mermaid
 flowchart TD
@@ -38,329 +52,352 @@ flowchart TD
         WEB[Web App]
         WA[WhatsApp Bot]
     end
-
-    subgraph Core["Application & Orchestration"]
+    subgraph Core["Application & Orchestration (market-aware)"]
         API[API Gateway / BFF]
         ORCH[Agent Orchestrator]
+        MKT[Market Profile: locale, payment, pricing, compliance]
     end
-
     subgraph Engines["Deterministic Engines (exact)"]
-        EPH[Ephemeris / Swiss Ephemeris]
-        KUNDLI[Kundli Engine: charts, dashas, yogas, doshas, transits, gun-milan]
-        NUM[Numerology Engine: Chaldean / Pythagorean / Lo-Shu]
+        EPH[Swiss Ephemeris]
+        KUNDLI[Kundli: charts, dashas, yogas, doshas, transits, gun-milan]
+        NUM[Numerology: Chaldean / Pythagorean / Lo-Shu]
     end
-
     subgraph Brain["AI Interpretation Layer (Claude)"]
-        ASTRO[Astrology Agent]
-        NUMA[Numerology Agent]
-        SYNTH[Synthesis + Remedy Agent]
-        VERIFY[Citation/Verification Guard]
+        AGENTS[Astrology / Numerology / Synthesis agents]
+        GUARD[Verification + Safety Guard]
     end
-
-    subgraph Knowledge["Knowledge & Citation Engine (RAG)"]
-        INGEST[Ingestion Pipeline + Rights Tagger]
-        VDB[(Vector DB + Source Store)]
+    subgraph Knowledge["Knowledge & Citation Engine"]
+        INGEST[Ingestion + Rights Tagger + Human Verify]
+        KMAP[Structured Knowledge Map / Ontology]
+        VDB[(Vector DB + Immutable Source Store)]
     end
-
     subgraph Market["Marketplace / Full Cycle"]
-        DIR[Provider Directory]
-        MATCH[Remedy → Provider Matcher]
+        DIR[Verified Provider Directory]
+        MATCH[Remedy to Provider Matcher]
         REF[Referral / Lead Tracking]
-        CRM[Vendor CRM + Cold-Email Acquisition]
+        CRM[Vendor CRM + Compliant Acquisition]
     end
+    subgraph Ops["Living Systems"]
+        MINE[Review-Mining Pipeline -> Pain Taxonomy]
+        AUDIT[(Audit Log + Eval Harness)]
+    end
+    DATA[(User Data: profiles, birth data, consent, history)]
 
-    DATA[(User Data: profiles, birth data, history)]
-
-    WEB --> API
-    WA --> API
-    API --> ORCH
-    ORCH --> KUNDLI
+    WEB & WA --> API --> ORCH
+    ORCH --> MKT
+    ORCH --> KUNDLI --> EPH
     ORCH --> NUM
-    KUNDLI --> EPH
-    ORCH --> ASTRO
-    ORCH --> NUMA
-    ASTRO --> VDB
-    NUMA --> VDB
-    ASTRO --> SYNTH
-    NUMA --> SYNTH
-    SYNTH --> VERIFY
-    VERIFY --> MATCH
-    MATCH --> DIR
+    ORCH --> AGENTS
+    AGENTS --> KMAP --> VDB
+    AGENTS --> GUARD
+    GUARD --> MATCH --> DIR
     MATCH --> REF
     INGEST --> VDB
+    INGEST --> KMAP
     CRM --> DIR
+    GUARD --> AUDIT
+    MINE --> AUDIT
     API --> DATA
 ```
 
-**The end-to-end user loop (MVP):**
-1. User gives birth details (date, exact time, place) + full name.
-2. Engines compute the **exact** kundli + numerology profile.
-3. The AI agents interpret it, **every claim cited**, and explain *why*.
-4. The synthesis agent proposes **remedies/solutions** (each also cited).
-5. For any remedy that needs a human (a puja, a gemstone, a consultation), the
-   **matcher routes the user to a vetted provider** from our directory → referral
-   tracked → "full cycle" closed.
+**The user loop:** birth data → **exact** charts (engines) → **cited** interpretation +
+"what it means" (AI) → honest, cited **remedies** → hand-off to a **vetted provider** →
+referral tracked. Every step logged and auditable.
 
 ---
 
-## 2. Core component 1 — Deterministic Calculation Engines
+## 3. Core component 1 — Deterministic calculation engines
 
-These are the foundation. They are **pure, testable, reproducible code** with
-zero AI involvement. This is where "no mistakes" is literally true.
+Pure, testable, reproducible code; zero AI. This is where "no mistakes" is literally true.
 
-### 2.1 Kundli (Vedic / Jyotish) engine
-- **Ephemeris:** [Swiss Ephemeris](https://www.astro.com/swisseph/) (`pyswisseph`) — the gold standard, accurate to the arc-second, derived from NASA JPL data. (Note: AGPL — we either comply with AGPL or buy the commercial license. Decision needed before launch.)
-- **Zodiac:** Sidereal (Vedic), with **Lahiri / Chitrapaksha ayanamsa** as default (the Indian government standard). Support Raman & KP as options.
-- **Inputs:** DOB, **exact birth time** (critical — Lagna changes every ~2 min), birth place → lat/long + **historical timezone/DST** resolution (this is a common bug source; we use a proper TZ database).
-- **Outputs:**
-  - 9 grahas (Navagraha: Sun…Saturn + Rahu/Ketu lunar nodes), longitudes, retrograde state, combustion.
-  - **Lagna** (ascendant) + house placements (whole-sign, traditional Vedic).
-  - **Nakshatra** (27 lunar mansions) + pada, for the Moon and all planets.
-  - **Divisional charts (Vargas):** D1 Rashi, D9 Navamsa (marriage), D10 Dasamsa (career) for MVP; expand to Shodasavarga (16) later.
-  - **Vimshottari Dasha** tree (Maha → Antar → Pratyantar periods) computed from Moon's nakshatra.
-  - **Yogas** (Raj, Dhana, Gajakesari, etc.) and **Doshas** (Mangal/Manglik, Kaal Sarpa, Sade Sati) — detected by deterministic rules.
-  - **Transits (Gochar):** current planetary positions vs natal — this is the **real-time** layer (recomputed on demand / daily).
-  - **Gun Milan (Ashtakoota):** the 36-point marriage compatibility match between two charts.
-- **Reference implementations to study/adapt:** Swiss Ephemeris, [VedAstro](https://github.com/VedAstro/VedAstro) (open-source Vedic library — excellent rules reference), Maitreya, `jyotisha` (Python).
+### Kundli (Vedic / Jyotish)
+- **Ephemeris:** Swiss Ephemeris (`pyswisseph`) — arc-second accuracy, NASA-JPL-derived.
+  **Licensing decision required:** it is **dual-licensed AGPL or commercial**; AGPL forces
+  open-sourcing the whole networked app, so a proprietary SaaS needs the **commercial
+  license (CHF 750 first + CHF 400 per additional)**. ✅
+- **Zodiac:** sidereal; default **Lahiri / Chitrapaksha ayanamsa** — India's official
+  standard, adopted **1956** by the Calendar Reform Committee (chaired by physicist
+  Meghnad Saha; N.C. Lahiri, secretary). Support Raman & KP as options. ✅
+- **Inputs:** DOB, **exact birth time** (Lagna shifts ~every 2 min), place → lat/long +
+  **historical timezone/DST** resolution (a notorious bug source).
+- **Outputs:** 9 grahas (Navagraha incl. Rahu/Ketu), Lagna + houses (whole-sign), 27
+  **Nakshatras** + padas ✅, **Vargas** (D1/D9/D10 for MVP), **Vimshottari Dasha** tree
+  (from Moon's nakshatra ✅), **Yogas/Doshas** (Mangal, Kaal Sarpa, Sade Sati), **transits
+  (Gochar)** real-time, and **Gun Milan / Ashtakoota** = the **36-point** marriage match
+  (8 kootas; Nadi weighted highest). ✅
+- **Reference libs to study:** Swiss Ephemeris, VedAstro, `jyotisha`. ✅
 
-### 2.2 Numerology engine
-- Pure arithmetic, trivially exact. Support the systems Indians actually use:
-  - **Chaldean** (most popular in India) and **Pythagorean**.
-  - **Lo Shu grid** / Vedic "Ank Jyotish."
-  - Derived numbers: **Psychic/Driver** (birth day), **Destiny/Life-Path** (full DOB), **Name number**, missing numbers, repeating numbers.
-- Name analysis ties into "lucky spelling" recommendations (a common paid feature).
+### Numerology
+- Exact arithmetic. **Chaldean** (popular in India) + Pythagorean + **Lo Shu grid**;
+  Psychic/Driver, Destiny/Life-Path, Name numbers, missing/repeating numbers.
 
-### 2.3 Why this matters architecturally
-Because the engines are deterministic, they are **separately unit-tested against
-known reference charts** and never change their answer. The AI sits *on top* and
-only interprets their structured output — it never computes astrology itself
-(LLMs are bad at arithmetic and would hallucinate positions).
+**Architectural rule:** the AI **never** computes astrology — it only interprets the
+engines' structured output. (LLMs do arithmetic badly and would hallucinate positions.) `[S]`
 
 ---
 
-## 3. Core component 2 — Knowledge & Citation Engine (the heart)
+## 4. Core component 2 — Knowledge & Citation Engine (the heart)
 
-This is the most important and most labour-intensive part. It's a **RAG
-(Retrieval-Augmented Generation) system with rights-tracking and mandatory
-citation**. Your "reference everything" requirement lives here.
+A RAG system with **rights-tracking, provenance, and a structured retrieval layer**.
 
-### 3.1 Source tiers (legal safety baked in)
-Every document carries a **rights tag**. The retriever and the AI obey it.
-
+### 4.1 Source tiers (legal safety baked in)
 | Tier | Examples | Rule |
 |---|---|---|
-| **T1 – Public domain** | BPHS, Saravali, Phaladeepika, Lal Kitab, classical numerology/palmistry treatises | Ingest fully, quote freely, cite freely. **Bedrock.** |
-| **T2 – Licensed** | Modern authors/publishers we've signed deals with | Ingest only after license; cite by author; respect quote limits in contract. |
-| **T3 – Open web** | Reputable, attributable articles | **Supplementary only.** Never the sole authority for a claim; link out. |
-| **T4 – Expert-authored** | Original content from astrologers/numerologists we hire & pay | Ours to use; cite the named expert. **Highest trust, fills gaps the classics don't cover.** |
+| **T1 Public domain** | BPHS, Saravali, Phaladeepika, Lal Kitab, classical numerology/palmistry | Ingest fully, cite freely. Bedrock. |
+| **T2 Licensed** | Modern authors/publishers under signed deals | Ingest only after license; cite by author; respect quote limits. |
+| **T3 Open web** | Reputable, attributable articles | **Supplementary only**, never sole authority. |
+| **T4 Expert-authored** | Original content from hired, credentialed astrologers | Ours; cite the named expert. Fills gaps the classics don't cover. |
 
-> **Hard guardrail:** the ingestion pipeline refuses to store any document without
-> a rights tag and provenance (source, author, page/section, license). The AI can
-> only retrieve and quote within what each tag permits. **This is how "use all
-> sources" stays legal.**
+> **Hard guardrail:** ingestion refuses any document lacking a rights tag + provenance.
+> The AI quotes only within what each tag permits. This is how "use all sources" stays legal. `[S]`
 
-### 3.2 Ingestion pipeline ("automatically updated")
+### 4.2 Provenance & integrity (how the DB is "sure")
+- **Store verbatim source, never paraphrase.** Each passage gets a stable **citation
+  handle** (`BPHS:7:12`) + a **hash of the source file** so stored text is provably the
+  source's. `[S]`
+- **Metadata per chunk:** title, author, **translation/edition**, page/verse, rights tier,
+  who digitized, who verified, date. No metadata → rejected. `[S]`
+- **Human-verified ingestion — the honest trade-off:** classical texts are OCR'd from
+  scans of translations; OCR errors are rampant, so a qualified human confirms each
+  passage. **This means ingestion is not 100% automatic.** You can have "auto-updated" OR
+  "100% sure" at this gate, not both — we put verification on the critical path. 🛠️
+
+### 4.3 Structured Knowledge Map (the hard part, now explicit)
+Plain vector search is **not** enough to be *sure the right source is retrieved* — RAG
+retrieves the right document and still generates wrong answers `✅` (§16). So we build an
+**expert-curated ontology**: `chart-feature → canonical concept → source passages`
+(e.g. "Mars in 7th / Manglik" → the specific verses across texts). Retrieval becomes
+auditable and largely deterministic, not a similarity guess. Vector search is the fallback,
+not the primary path. `[S]` ⚖️
+
+### 4.4 Tech
+pgvector (single Postgres early; dedicated vector store at scale) + embeddings + reranker;
+immutable, versioned source store.
+
+---
+
+## 5. Core component 3 — AI Interpretation Layer (how we use Claude)
+
+Multi-agent, orchestrated with the **Claude Agent SDK**. Claude reasons; engines + KB are tools.
+
+### 5.1 Agents
+- **Orchestrator** — routes the user's question + charts to specialists.
+- **Astrology / Numerology agents** — interpret; retrieve + cite from the KB.
+- **Synthesis & Remedy agent** — reconciles disciplines, proposes cited remedies, flags
+  contradictions honestly.
+- **Verification + Safety Guard** — enforces no-uncited-claim + safety/positioning policy.
+
+### 5.2 The traceable claim object (citation + meaning are the unit of generation)
+The AI emits **structured claims**, then prose is *rendered from them* — it cannot produce
+a "naked" sentence because the schema has no field for one. `[S]`
+
 ```
-Source (PDF/EPUB/scan/web) → OCR/parse → clean & structure →
-chunk (by chapter/verse/concept) → tag (discipline, topic, rights, provenance) →
-embed (vector) → store (vector DB + source-of-truth doc store) → index
+Claim {
+  chart_fact:     "Mars in 7th house (D1), Manglik"   // from engine, has an ID
+  source_refs:    ["BPHS:7:12 (Sharma trans., 1998)"] // must resolve to a REAL passage
+  verbatim_quote: "...exact stored text..."
+  meaning:        "Plain-language: traditionally read as friction in early marriage..."
+  type:           sourced | synthesis | personalization
+  confidence:     high | medium | low
+  caveats:        "KP tradition reads this differently"
+}
 ```
-- Runs as scheduled + on-demand jobs (this delivers the **"automatically updated"**
-  property — new texts/expert content flow in continuously).
-- Each chunk keeps a **stable citation handle** (`BPHS:7:12` = Brihat Parashara
-  Hora Shastra, ch. 7, verse 12) so citations are precise and verifiable.
 
-### 3.3 Retrieval + citation enforcement
-- Agents retrieve top-k relevant chunks for the specific chart facts in play
-  (e.g. "Mars in 7th house, Manglik"), then **must compose their answer only from
-  those chunks**, attaching the citation handle to each statement.
-- A dedicated **Verification Guard** (a final Claude pass + rule check) rejects any
-  output sentence that lacks a backing citation, or whose citation doesn't support
-  it. Failing claims are dropped or regenerated. **No uncited claim reaches the user.**
+**Generation pipeline:**
+1. Engine → structured chart facts (IDs).
+2. Retrieve passages via the Knowledge Map (+ vector fallback).
+3. Generate claim objects — `source_refs`, `verbatim_quote`, **and** `meaning` mandatory.
+4. **Resolve & validate citations** — every ref looked up; quote must **byte-match** the
+   store. *(Defeats fabricated citations — LLMs fabricate references at 14–95% rates `✅`.)* `[S]`
+5. **Entailment check** — separate pass confirms `meaning` *follows from* `verbatim_quote`. `[S]`
+6. Synthesis agent renders narrative as a *view* of claim objects; every UI sentence links
+   back to source + meaning.
 
-### 3.4 Tech
-- **Vector DB:** pgvector (Postgres extension — keeps everything in one DB early) or a dedicated store (Qdrant/Weaviate) at scale.
-- **Embeddings + reranking:** standard embedding model + a reranker for precision.
-- **Source store:** the original documents + structured chunks, immutable, versioned.
+### 5.3 Claude features
+Tool use (engines/KB as tools); structured JSON outputs; **prompt caching** for the large
+stable system/knowledge prompts; **model tiering** (Opus for deep paid reports;
+Sonnet/Haiku for routing/chat); an **eval harness** of reference charts + expected cited
+claims, reviewed by experts.
 
----
-
-## 4. Core component 3 — AI Interpretation Layer (how we use Claude)
-
-A **multi-agent system** orchestrated with the **Claude Agent SDK**. Claude is the
-reasoning engine; the engines and knowledge base are its tools.
-
-### 4.1 Agents
-- **Orchestrator** — receives the user's question + their computed charts, decides which specialists to invoke, manages the flow.
-- **Astrology Agent** — interprets kundli facts; retrieves + cites from the KB.
-- **Numerology Agent** — interprets numerology profile; retrieves + cites.
-- **Synthesis & Remedy Agent** — reconciles the disciplines into one coherent narrative + concrete remedies, flags contradictions honestly, attaches the "why."
-- **Verification/Citation Guard** — enforces the no-uncited-claim rule; also enforces the **disclaimer/positioning** policy (refers health/finance/legal out).
-
-### 4.2 Claude features we lean on
-- **Tool use** — agents call the kundli/numerology engines and the KB retriever as tools; Claude never does the math itself.
-- **Retrieval grounding + citations** — answers are composed strictly from retrieved chunks, with source attribution returned to the UI.
-- **Structured outputs (JSON)** — interpretations come back as structured objects (`claim`, `citation`, `confidence`, `topic`) so the front end can render "why" and source links cleanly, and the Guard can validate machine-readably.
-- **Prompt caching** — the large system prompts + stable knowledge context are cached, cutting cost and latency dramatically (these prompts are big and reused constantly).
-- **Model tiering** — Opus for deep synthesis/nuanced reports; Sonnet/Haiku for cheap, high-volume tasks (chat turns, classification, routing). Always default to the latest Claude models.
-- **Eval harness** — a regression suite of reference charts + expected cited claims, reviewed by hired experts, so we catch interpretation drift when prompts/models change.
-
-### 4.3 Honest treatment of "future-proof / real-time / fully AI"
-- **Future-proof** = modular. New disciplines (palmistry, tarot, vastu) are new agents + new KB tiers; nothing else changes. New Claude models drop in behind the agent interface.
-- **Real-time** = transits/dashas recompute on demand against live ephemeris; KB updates flow through ingestion continuously.
-- **Fully AI** = AI does all *interpretation and routing*, but **deliberately not the math** (engines) — that's a feature, not a gap. "Fully AI for everything including arithmetic" would *reduce* accuracy.
+### 5.4 Safeguards (full set)
+| Safeguard | Purpose | Type |
+|---|---|---|
+| Citation resolution + byte-match | No fabricated/wrong citations | `[S]` |
+| Entailment verifier | Claim must be supported, not just adjacent | `[S]` |
+| **Refuse-rather-than-guess** | No coverage → "no sourced guidance," never invent | `[S]` |
+| `synthesis`/`personalization` labels | Mark inferences & personal application vs sourced tradition | `[S]` |
+| Synthesis depth cap | Stop the AI over-extrapolating beyond sources | `[S]` |
+| **Red-line classifier** | Health/finance/legal/self-harm → disclaimer + human referral, never directive | `[S]` |
+| Tone/emotional-safety guard | No fear-mongering, bullying, catastrophic warnings | `[S]` |
+| **Always disclose AI vs human** | Transparency; no covert AI | `[S]` |
+| Prompt-injection isolation | Treat user text as untrusted | `[S]` |
+| Conflict surfacing | Show disagreeing sources, don't pick silently | `[S]` |
+| Translation provenance | Cite translator/edition, not just the text | `[S]` |
+| Absence via engine only | "No dosha" comes from deterministic check, not prose | `[S]` |
+| Immutable audit log | Reconstruct any answer (chunks + handles + model version) | `[S]` |
+| Sampled human audit | Experts review live outputs → corrections become T4 | `🛠️` |
+| Unsupported-claim-rate metric | Production alert if guardrails slip | `[S]` |
 
 ---
 
-## 5. Core component 4 — Marketplace / "Full Cycle"
+## 6. Core component 4 — Marketplace / "full cycle"
 
-### 5.1 Model (per your decision): vetted directory + referral first
-- **Provider directory:** astrologers, pandits/priests, gemstone & rudraksha sellers, puja services, vastu consultants, remedy specialists — each with profile, specialities, languages, region, verification status, ratings.
-- **Remedy → Provider matcher:** when the Synthesis Agent prescribes a remedy
-  (e.g. "blue sapphire after a trial period," "Mangal Shanti puja"), the matcher
-  finds the right vetted provider(s) by speciality + language + region and presents
-  the hand-off.
-- **Referral/lead tracking:** track the lead from recommendation → click/contact →
-  conversion, for your revenue + provider reporting.
+Model: **verified directory + referral first** (booking/payments later).
 
-### 5.2 Vendor acquisition (your cold-email play)
-- **Vendor CRM** with a **compliant cold-email** workflow: 3-months-free, no-commission
-  onboarding offer.
-- **Compliance built in** (non-negotiable): CAN-SPAM (US), GDPR/PECR (EU/UK),
-  India **DPDP Act**, Canada CASL — verified opt-out, sender identity, suppression
-  lists, consent records. We design the sequence to be legal in every diaspora market.
-- **Verification gate:** providers are vetted (credentials, reviews, ID) before they
-  appear to users — trust is the whole product.
-
-### 5.3 Later phase
-Add in-app booking + payments + commission once the directory has liquidity. Built
-so this bolts on without re-architecting.
+- **Verified-credential-only directory** — ID + qualification vetting as a public promise
+  (directly attacks the "most astrologers are fake" complaint `✅`). Profiles show
+  specialities, languages, region, ratings. 🛠️
+- **Remedy → provider matcher** — cited remedies route to the right vetted provider by
+  speciality/language/region.
+- **Integrity remedies** — cited, optional, transparently priced, only when the chart
+  supports them; **no fear-selling, no kickback-driven gemstone pushes**, harmful remedies
+  banned (industry's most-criticized practice `✅`). 🛠️ + `[S]` (Guard policy)
+- **Referral/lead tracking** for revenue + provider reporting.
+- **Vendor acquisition** — compliant cold-email (3-months-free, no-commission). Cold email
+  is **regulated, not banned**, and varies by country: **US CAN-SPAM = opt-out** (first
+  email legal with sender info + unsubscribe), **CASL = consent**, **GDPR = lawful basis**,
+  **UK PECR = B2B carve-out** `✅`. Build per-country handling + suppression/consent logs. 🛠️
+- **Supply doubles as the India play** — India-recruited astrologers serve high-ARPU NRIs now.
 
 ---
 
-## 6. User-facing app & channels
+## 7. Living systems — Review-mining pipeline
 
-- **Recommended start: Web app + WhatsApp.**
-  - **Web** = fastest to build/iterate, shareable, great for the rich chart visuals + cited reports.
-  - **WhatsApp** = dominant channel for the Indian diaspora; perfect for conversational guidance, daily transit/panchang nudges, and remedy reminders. Native mobile apps come later.
-- **Pricing (your decision): freemium + subscription.**
-  - Free: basic kundli + numerology snapshot (the hook).
-  - Paid: deep cited reports, ongoing AI guidance, gun-milan matching, dasha forecasts, reminders.
-  - Plus referral revenue from the marketplace.
-- **Personalisation engine:** daily/periodic push (panchang, transit alerts, dasha
-  changes, auspicious timing/muhurta) — high retention, and a natural subscription driver.
+A scheduled pipeline ingests reviews (Trustpilot, MouthShut, PissedConsumer, app stores,
+Reddit), classifies them into the **pain taxonomy** (§8), and tracks frequency over time —
+keeping the pain database current, flagging emerging issues (incl. our own), and feeding the
+roadmap. *(The existing `pantrypilot` repo already has scheduled-scraper plumbing to adapt.)* 🛠️
 
 ---
 
-## 7. Data model (key entities, early)
+## 8. Differentiation by pain point (evidence-based)
 
-- **User** (auth, locale, subscription tier, consent flags)
-- **BirthProfile** (DOB, exact time, place→lat/long, TZ, ayanamsa pref; can hold multiple people — self, partner, family)
-- **ChartComputation** (immutable snapshot of engine output for a profile; versioned by engine version)
-- **Interpretation** (claim, citation_handle, confidence, topic, agent, model_version)
-- **Source / Chunk** (text, discipline, topic, rights_tier, provenance, citation_handle, embedding)
-- **Remedy** (description, type, citation, links to provider category)
-- **Provider** (profile, specialities, languages, region, verification status, ratings)
-- **Referral / Lead** (user → provider, status, attribution, revenue)
-- **VendorOutreach** (cold-email sequence state, consent/opt-out, compliance log)
+Derived from reviews across AstroTalk, AstroSage, Astroyogi, InstaAstro, GaneshaSpeaks,
+Co-Star, The Pattern, Nebula, Hint, Astroline `✅`. **Key insight:** ~⅓ of complaints are
+*technology* problems we solve structurally `[S]`; ~⅔ are *business-model/integrity*
+problems we solve by **incentive alignment** `🛠️` — which incumbents can't copy without
+breaking their revenue (the innovator's dilemma moat).
 
----
-
-## 8. Recommended tech stack
-
-| Concern | Choice (pragmatic) |
-|---|---|
-| Engines | **Python** (pyswisseph is Python-native; best ephemeris support) as a calc microservice |
-| App/API | **TypeScript / Node** (or Python) BFF + REST/GraphQL |
-| AI orchestration | **Claude via the Claude Agent SDK** (multi-agent, tool use, caching) |
-| DB | **Postgres + pgvector** (one DB to start; split out vector store at scale) |
-| Web | Next.js / React |
-| WhatsApp | WhatsApp Business Cloud API |
-| Infra | Containerised; start on a managed host, scale later |
-| Auth/Payments | Managed auth + Stripe (global) / Razorpay (India) for the diaspora split |
-
-Start as a **modular monolith** with clean internal boundaries (engines, KB, AI,
-marketplace) — not premature microservices. Split out only what needs to scale.
+| Documented pain | Our answer | |
+|---|---|---|
+| Fake/unqualified astrologers | Verified-credential-only marketplace | `🛠️` |
+| Same Q → different answer; bad chart math | Deterministic engines = exact + reproducible | `[S]` |
+| Vague "applies-to-anyone" readings | Claim tied to chart fact + cited source + "why"; generic blocked | `[S]` |
+| Fear-mongering & scare tactics | Tone guard: describe, don't catastrophize | `[S]` |
+| Exploitative gemstone/puja upsell | Integrity remedies: cited, optional, transparent | `[S]+🛠️` |
+| Per-minute meter anxiety / markups | AI-first → flat transparent pricing, no meter | `[S]` |
+| Hidden charges / price jumps / +50% intl | All-in pricing, forex shown, fair NRI pricing | `🛠️` |
+| Sub traps: charged after cancel, hard to cancel | One-tap cancel, pre-renewal reminders | `🛠️` |
+| Refund refusal / wallet-only / pathetic CS | Real refunds + ticketed grievance redressal | `🛠️` |
+| Data → profiling → targeted upsell | Privacy-by-design, no manipulative profiling | `[S]+🛠️` |
+| Bullying/harmful notifications | Emotional-safety guard + red-line classifier | `[S]` |
+| Covert AI | Always disclose AI vs human | `[S]` |
+| NRI: timezone / trust / payment / language | TZ-aware + async cited reports; vetted native-language providers; localized rails | `[S]+🛠️` |
 
 ---
 
-## 9. Accuracy, trust & ethics framework
+## 9. Two-market strategy — NRI-first → India
 
-1. **Engines unit-tested** against published reference charts → math is provably correct.
-2. **No uncited interpretive claim** ever reaches a user (Verification Guard).
-3. **Confidence + honest disagreement:** where sources differ, the AI says so and cites both, rather than faking certainty.
-4. **Expert review loop:** hired astrologers/numerologists review the eval suite and a sample of live outputs; their corrections feed back as T4 content.
-5. **Positioning (your decision):** framed as **spiritual/traditional guidance with clear disclaimers** — explicitly *not* medical, financial, or legal advice; serious matters are **referred to qualified professionals**, not "decided" by the chart. This is in the Guard's policy and the UI.
-6. **Privacy:** birth data is sensitive personal data. DPDP/GDPR-compliant consent, storage, deletion, and export from day one.
+**Sequence: win NRIs first, then India. One platform core, per-market layers.**
 
----
-
-## 10. Phased roadmap
-
-**Phase 0 — Foundations (no user-facing product yet)**
-- Kundli engine + numerology engine, unit-tested against reference charts.
-- KB schema + ingestion pipeline + rights tagger; ingest the first T1 public-domain texts.
-- Eval harness with a handful of reference charts.
-
-**Phase 1 — MVP (the full loop, narrow)**
-- Web app: birth-data input → exact charts → **cited** AI interpretation (astrology + numerology) → remedies.
-- Verification Guard + disclaimer policy live.
-- Provider directory (manual seed) + remedy→provider hand-off (referral tracked).
-- Freemium/subscription wired.
-
-**Phase 2 — Reach & retention**
-- WhatsApp channel; daily panchang/transit/dasha nudges & reminders.
-- Gun-milan matchmaking; more vargas/yogas/doshas.
-- Vendor cold-email acquisition engine (compliant) → grow the directory.
-
-**Phase 3 — Depth & breadth**
-- Licensed (T2) content deals; hire experts (T4) to fill gaps.
-- Multilingual (Hindi + regional).
-- Add disciplines: palmistry (computer vision on palm photos), vastu, tarot, muhurta.
-
-**Phase 4 — Marketplace maturity**
-- In-app booking + payments + commission.
-- Provider analytics, ratings/trust at scale.
+- **Why NRI-first:** diaspora ~**35.4M** (≈15.85M NRIs + 19.57M PIOs) `✅`; **UAE & US
+  ~17% of emigrants each** `✅`; **~$120B remittances (2023)** `✅`; NRIs **pay ~30% more**
+  `✅`; underserved by India-optimized incumbents; and they're the bridge to India supply.
+- **Beachhead markets:** lead **US** (ARPU, subscriptions) + **UAE/Gulf** (density); fast-
+  follow UK/Canada/Australia/Singapore. ⚖️
+- **Killer NRI wedge:** **marriage / Gun Milan matching** — NRI families pay premium and
+  already expect astrological matching `✅`; partner with NRI matrimony verticals (B2B2C). ⚖️
+- **Product shape differs by market:**
+  - **NRI = AI-first + cited reports + subscription** (fits the original design — less
+    rework); human consults are the premium/connection layer.
+  - **India = human-consultation-primary, per-minute, deep-vernacular** (the inversion) —
+    that's where ~80% of incumbent revenue sits `✅`. Comes in Phase 3+.
+- **Architecture:** **market-agnostic shared core** (engines, KB, AI, marketplace, payments
+  abstraction) + **thin per-market config layers** (language pack, payment rail
+  Stripe↔Razorpay/UPI, pricing model, channel mix, compliance profile). Adding India = a
+  config flip, not a rebuild. ⚖️
+- **Synergy:** NRI demand (margin) funds + attracts India supply (volume). Solves the
+  marketplace cold-start.
 
 ---
 
-## 11. Cost & effort reality check
+## 10. Competitive moat
 
-- **Biggest cost is not code — it's curated knowledge:** OCR/cleaning classical
-  texts, licensing modern books, and paying experts to author/verify content. Budget
-  real money and time here; it's the moat.
-- **AI inference:** controlled via model tiering + aggressive prompt caching. The
-  expensive Opus calls are reserved for deep paid reports.
-- **Swiss Ephemeris licensing:** decide AGPL-compliance vs commercial license before launch.
-- **Compliance:** privacy (DPDP/GDPR) + cold-email law + per-jurisdiction astrology
-  consumer-protection/disclaimer rules. Worth a one-time legal review.
+The incumbent (**AstroTalk**: ~₹1,210 Cr FY25 revenue, ~30M users, ~40% share, targeting a
+$1.3–1.5B IPO valuation `✅`) grows on per-minute + upsell — the very practices generating
+fraud exposés and calls for regulation `✅`. **Don't fight them head-on.** Win on:
+1. **Trust/transparency brand** (the unoccupied position). ⚖️
+2. **AI-first economics** they can't match without cannibalizing per-minute revenue. ⚖️
+3. **Verified supply** + AI-empowered astrologers. 🛠️
+4. **NRI beachhead** (uncontested, higher ARPU). ⚖️
+5. **Regulatory tailwind** — advocates demand transparent pricing, verified credentials,
+   grievance redressal `✅`; be compliant-by-design before it's mandatory. ⚖️
 
----
-
-## 12. Top risks & mitigations
-
-| Risk | Mitigation |
-|---|---|
-| Copyright infringement from "ingesting books" | Rights-tier pipeline; T1 public-domain bedrock; license before T2; web is supplementary only. |
-| AI hallucinating astrology claims | No-uncited-claim Guard; engines do the math, not the AI; eval harness. |
-| Liability from "deciding" health/money/legal | Disclaimer policy in the Guard + UI; refer serious matters to professionals. |
-| Wrong birth-time/timezone → wrong chart | Robust historical TZ/DST resolution; ask users to confirm exact time; offer birth-time rectification later. |
-| Cold-email legal trouble | Built-in CAN-SPAM/GDPR/DPDP/CASL compliance, opt-out, consent logging. |
-| Sensitive personal (birth) data breach | Privacy-by-design, encryption, consent, deletion/export. |
-| Over-scoping (all disciplines at once) | Phased roadmap; nail kundli+numerology loop first. |
+**Honest risks:** trust compounds slowly; some users want comfort not transparency
+(validate willingness-to-pay cheaply); pure AI won't satisfy the emotional/ritual need
+(hence the human layer); don't fight a capital war; cold-start is real.
 
 ---
 
-## 13. Open questions for the next session
+## 11. Data model (key entities)
+User · BirthProfile (multi-person) · ChartComputation (immutable, engine-versioned) ·
+Claim (chart_fact, source_refs, verbatim_quote, meaning, type, confidence) ·
+Source/Chunk (text, rights_tier, provenance, handle, hash, embedding) · KnowledgeMap edges ·
+Remedy · Provider (verification status) · Referral/Lead · VendorOutreach (consent/opt-out) ·
+ReviewItem (mined, pain-tagged) · AuditRecord · Consent.
 
-1. **Swiss Ephemeris licensing** — are we OK complying with AGPL, or should I budget a commercial license? (Affects how the engine service is built.)
-2. **Product name & brand** — "Darpan" is just my placeholder.
-3. **Repo** — this blueprint lives in the `pantrypilot` repo (an unrelated grocery tool). I recommend a **fresh dedicated repository** for this product. Want me to set that up?
-4. **Ayanamsa default** — Lahiri (I've assumed this — the standard) confirmed?
-5. **Expert access** — do you already know astrologers/numerologists we can hire for T4 content + the eval review loop?
-6. **Target launch markets** — which diaspora countries first (US, UK, Canada, Australia, Gulf)? Affects compliance + payment rails priority.
+## 12. Tech stack ⚖️
+Python calc microservice (pyswisseph) · TS/Node BFF · Claude Agent SDK · Postgres+pgvector ·
+Next.js web · WhatsApp Business Cloud API · Stripe (global) + Razorpay/UPI (India) ·
+modular monolith with clean boundaries (not premature microservices).
+
+## 13. Compliance / ethics / legal
+- **Positioning:** spiritual guidance + **clear disclaimers**; not medical/financial/legal
+  advice; serious matters → qualified professionals (enforced by red-line classifier). `[S]`
+- **Privacy:** birth data is sensitive. **India DPDP Act** — enacted 2023, consent must be
+  "free, specific, informed, unambiguous," easy withdrawal; **full compliance deadline 13
+  May 2027** (phased) `✅`. Plus GDPR/UK, CCPA for NRI markets. Privacy-by-design from day 1.
+- **Advertising:** India **ASCI** — no "guaranteed prediction" claims.
+- **Cold email:** per-country (CAN-SPAM/CASL/GDPR/PECR) `✅`; opt-out + consent logs.
+- **Swiss Ephemeris:** choose AGPL-compliance vs commercial license before launch `✅`.
+
+## 14. Phased roadmap
+- **Phase 0 — Foundations:** kundli + numerology engines (tested vs reference charts); KB
+  schema + rights tagger + provenance/hashing; ingest first T1 texts; Knowledge Map v1;
+  eval harness.
+- **Phase 1 — NRI MVP:** web app, exact charts → **cited** interpretation (+meaning) →
+  honest remedies; full Guard + safeguards; verified provider directory (seed) + referral;
+  freemium/subscription (Stripe); **Gun Milan** matching.
+- **Phase 2 — NRI reach:** WhatsApp; panchang/transit/dasha nudges; multilingual *consult*
+  layer; compliant vendor cold-email engine; review-mining pipeline live.
+- **Phase 3 — India entry:** market-config flip — vernacular UI + voice, Razorpay/UPI,
+  per-minute human-consult marketplace (inverted product), Tier-2/3 GTM.
+- **Phase 4 — Depth & marketplace maturity:** T2 licenses + T4 experts; palmistry (CV),
+  vastu, tarot, muhurta; in-app booking + payments + commission.
+
+## 15. Cost & top risks
+- **Biggest cost is curated knowledge** (OCR/cleaning, licensing, expert authoring + the
+  human verification loop) — the moat, not the code.
+- **AI inference** controlled via tiering + prompt caching.
+- **Risks:** copyright (rights tiers) · AI hallucination (engines + Guard + eval) · liability
+  (disclaimers + referral) · wrong birth-time/TZ (robust resolution + rectification later) ·
+  cold-email law (built-in compliance) · data breach (privacy-by-design) · over-scoping
+  (NRI-first, phased) · trust-takes-time + capital asymmetry (win on wedge, not spend).
+
+## 16. Sources (verified claims)
+- Swiss Ephemeris dual license + fees — [RoxyAPI](https://roxyapi.com/blogs/swiss-ephemeris-explained-developers), [Astrodienst contract](http://www.astro.com/swisseph/secont_e.pdf)
+- Lahiri ayanamsa / 1956 Calendar Reform Committee — [Jagannath Hora](https://jagannathhora.com/lahiri-ayanamsa-value/), [CRC report](https://www.scribd.com/document/519050654/Report-of-the-Calendar-Reform-Committee-of-India)
+- Ashtakoota 36-point / 27 nakshatras / Vimshottari — [Zodii](https://zodii.in/knowledge/what-is-ashtakoot-gun-milan), [DashaClub](https://dashaclub.com/learn/moon-nakshatra)
+- LLMs fabricate citations (14–95%) — [GhostCite (arXiv)](https://arxiv.org/pdf/2602.06718), [StudyFinds](https://studyfinds.org/chatgpts-hallucination-problem-fabricated-references/)
+- RAG hallucinates with correct retrieval — [Faithfulness/RAG (arXiv)](https://arxiv.org/html/2505.21072v1)
+- India DPDP Act 2023 + May 2027 deadline — [Wikipedia](https://en.wikipedia.org/wiki/Digital_Personal_Data_Protection_Act,_2023), [Hogan Lovells](https://www.hoganlovells.com/en/publications/indias-digital-personal-data-protection-act-2023-brought-into-force-)
+- Cold-email law by jurisdiction — [Mailshake](https://mailshake.com/blog/cold-email-compliance/), [email-laws comparison](https://reviewmyemails.com/emailalmanac/consent-and-compliance/legal-frameworks-global-laws/main-international-email-laws-comparison)
+- AstroTalk scale/model + per-minute, ~80% revenue, NRIs +30% — [Tracxn](https://tracxn.com/d/companies/astrotalk/__sTg3gbYwkUxNp9wq2HfHRbzuERV96vuK727e-raZ6x0), [Miracuves](https://miracuves.com/blog/business-model-of-astrotalk/), [Inc42](https://inc42.com/buzz/astrotalk-in-talks-to-raise-50-mn-at-unicorn-valuation/)
+- Incumbent complaints (fake astrologers, fear-selling, meter, billing, refunds) — [AstroTalk exposé](https://the420.in/astrotalk-accused-of-fraudulent-astrology-services-by-popular-youtuber-in-expose-video/), [fear-upsell critique](https://hinduscript.com/how-astrology-fools-millions-of-indians-truth-about-horoscopes/), [Astroyogi MouthShut](https://www.mouthshut.com/websites/astroyogi-reviews-926023457), [InstaAstro](https://play.google.com/store/apps/details?id=com.instaastro.onlineastrology), [Co-Star reviews](https://justuseapp.com/en/app/1264782561/co-star-personalized-astrology/reviews), [Nebula billing](https://www.sikayetvar.com/en/nebula-horoscope-astrology-us/i-tried-to-cancel-nebula-but-im-still-being-charged-how-can-i-stop-those-payments-q-27020)
+- Diaspora size & distribution + remittances — [India MEA](https://www.mea.gov.in/images/attach/nris-and-pios_1.pdf), [Visual Capitalist](https://www.visualcapitalist.com/ranked-top-countries-by-indian-immigrant-populations/)
+- NRI premium for astrology-infused matchmaking — [BharatMatrimony NRI](https://www.bharatmatrimony.com/nri-matrimony), [NRI astrology services](https://nayku.com/blog/best-indian-astrology-services-for-nris)
 
 ---
 
-*This is a blueprint, not code. Once you've reviewed it, the natural next step is
-Phase 0: scaffold the calculation engines + KB schema in a dedicated repo.*
+*Blueprint, not code. Recommended next step: Phase 0 — scaffold the calculation engines +
+KB schema with provenance/rights in a dedicated repository.*
