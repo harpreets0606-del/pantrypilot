@@ -32,19 +32,13 @@ A New Zealand pharmacist's guide to liver detox supplements — milk thistle, NA
 
 ---
 
-## ▶ Pre-publish action required (E-E-A-T)
+## Compliance / E-E-A-T trade-off (deliberate)
 
-The HTML file contains two placeholders that must be replaced with a real NZ-registered pharmacist's details before publishing — this is required for YMYL E-E-A-T after the Dec 2025 Google Core Update.
+After independent compliance review against the new ASA Therapeutic and Health Advertising Code (effective 1 April 2026), Medsafe Dietary Supplements Regulations 1985 and Medicines Act 1981 s.58, this article uses an **Organisation-level reviewer** ("Reviewed by the Bargain Chemist Pharmacy Team") rather than a named pharmacist with APC number.
 
-Search the HTML file for and replace both occurrences of:
-- `[REVIEWING_PHARMACIST_NAME]` → e.g. `Jane Smith`
-- `[APC_NUMBER]` → the pharmacist's Annual Practising Certificate number from the Pharmacy Council of NZ register
+The reason: naming a specific NZ-registered pharmacist with their APC number alongside a branded product comparison table creates a credible Medicines Act s.58 risk (HCP endorsement implying therapeutic benefit). Picking the safer reviewer wording avoids that.
 
-Both appear in:
-1. The visible "Medically reviewed by..." line near the top of the article
-2. The `MedicalWebPage` JSON-LD schema at the bottom (in `reviewedBy.name` and `identifier.value`)
-
-If a named pharmacist is not available, replace with `Bargain Chemist Pharmacy Team` in both places and remove the `identifier` block from the schema — but the named approach delivers materially stronger E-E-A-T and AI Overview citation signals (Princeton GEO +28% lift for named expert attribution).
+If at any point you want to upgrade to a named pharmacist for stronger E-E-A-T, also remove the product comparison table from the article and keep the post as purely educational content. Do not have both a named/APC pharmacist reviewer AND a branded product list in the same article.
 
 ---
 
