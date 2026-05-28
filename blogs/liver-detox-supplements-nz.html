@@ -1,25 +1,22 @@
 <!--
   ============================================================================
-  Bargain Chemist — Wellbeing Hub Blog Post
+  Bargain Chemist — Wellbeing Hub Blog Post (v4 — plain-language)
   Title:  Liver Detox Supplements NZ: A Pharmacist's Evidence-Based Guide (2026)
   Slug:   liver-detox-supplements-nz-pharmacist-guide
   Author: Bargain Chemist Pharmacy Team
-  Style:  Plain Kiwi English. No em dashes. Short sentences.
+  Targets: FRE 60-70, FK grade 7-8, ~2,800 words, no sentence over 25 words
   ============================================================================
   HOW TO PASTE INTO SHOPIFY:
   1. Online Store, Blog posts, Create new in "Wellbeing Hub"
   2. Set title, slug, tags and featured image per liver-detox-supplements-nz.meta.md
   3. In content editor click "Show HTML" (the <> icon)
   4. Copy EVERYTHING from <style> below to end of file, paste in
-  5. Save, Preview, Publish
-
-  NOTE on E-E-A-T trade-off: the visible reviewer line and MedicalWebPage
-  schema now read "Bargain Chemist Pharmacy Team" rather than a named
-  pharmacist with an APC number. This is intentional. Naming a specific
-  pharmacist + APC alongside branded product listings carries Medicines
-  Act 1981 s.58 risk (HCP endorsement implying therapeutic benefit). If
-  you decide to add a named pharmacist later, also remove the product
-  comparison table to keep the article strictly educational.
+  5. Replace [REVIEWING_PHARMACIST_NAME] and [APC_NUMBER] with a real
+     NZ-registered pharmacist's details (appears twice: visible line + schema)
+  6. Generate 2 AI images using the prompts in liver-detox-supplements-nz.meta.md
+  7. Upload images to Shopify CDN and replace the [HERO_IMAGE_URL] and
+     [MID_IMAGE_URL] placeholders
+  8. Save, Preview, Publish
   ============================================================================
 -->
 
@@ -52,6 +49,9 @@
   .bc-success strong { color: #057857; }
   .bc-figure { margin: 2rem 0; text-align: center; background: #f6f7fb; padding: 1.5rem 1rem; border-radius: 8px; }
   .bc-figure figcaption { font-size: .85rem; color: #6b7280; margin-top: .75rem; font-style: italic; }
+  .bc-ai-image { margin: 2rem 0; }
+  .bc-ai-image img { width: 100%; height: auto; border-radius: 8px; display: block; }
+  .bc-ai-image figcaption { font-size: .8rem; color: #6b7280; margin-top: .5rem; text-align: center; font-style: italic; }
   .bc-phase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .75rem; margin: 1rem 0; }
   .bc-phase { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; text-align: left; }
   .bc-phase-no { font-size: .8rem; color: #ee964b; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
@@ -66,14 +66,6 @@
   .bc-evidence-moderate { color: #057857; font-weight: 600; }
   .bc-evidence-limited { color: #b25e18; font-weight: 600; }
   .bc-evidence-insufficient { color: #a51c1c; font-weight: 600; }
-  .bc-products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .bc-product { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; }
-  .bc-product-tier { font-size: .7rem; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
-  .bc-product-title { font-weight: 600; color: #0d3b66; margin: .25rem 0 .25rem; font-size: .95rem; line-height: 1.3; }
-  .bc-product-price { color: #ee964b; font-weight: 700; font-size: 1.05rem; margin: .25rem 0; }
-  .bc-product-nz { display: inline-block; background: #06a77d; color: #ffffff; font-size: .7rem; padding: .15rem .45rem; border-radius: 3px; font-weight: 700; margin-bottom: .35rem; }
-  .bc-product-desc { font-size: .85rem; color: #4b5563; margin: .5rem 0; }
-  .bc-product a.bc-product-cta { display: inline-block; background: #0d3b66; color: #ffffff !important; text-decoration: none; padding: .4rem .75rem; border-radius: 4px; font-size: .85rem; font-weight: 600; margin-top: .5rem; }
   .bc-faq h3 { color: #0d3b66; margin: 1.25rem 0 .35rem; font-size: 1.05rem; }
   .bc-bibliography { background: #f6f7fb; border-radius: 6px; padding: 1rem 1.5rem; font-size: .85rem; margin: 2rem 0 1.5rem; }
   .bc-bibliography ol { margin: .5rem 0; padding-left: 1.25rem; }
@@ -88,187 +80,221 @@
 <div class="bc-blog">
 
 <h1>Liver Detox Supplements NZ: A Pharmacist's Evidence-Based Guide (2026)</h1>
-<p class="bc-subhead">Milk thistle, NAC, globe artichoke and the rest. What the science actually supports for liver health in New Zealand.</p>
+<p class="bc-subhead">Milk thistle, NAC, globe artichoke and the rest. What the science says, in plain English.</p>
 
 <p class="bc-meta">
   <span>By Bargain Chemist Pharmacy Team</span>
   <span>Published 28 May 2026. Last reviewed 28 May 2026</span>
-  <span>13 min read</span>
+  <span>11 min read</span>
 </p>
 
 <p class="bc-reviewer">
-  <strong>Reviewed by the Bargain Chemist Pharmacy Team.</strong>
-  Content written and reviewed in line with the <a href="https://pharmacycouncil.org.nz/wp-content/uploads/2021/03/Code-of-Ethics-2018-FINAL.pdf">Pharmacy Council of New Zealand Code of Ethics</a>.
+  <strong>Reviewed by [REVIEWING_PHARMACIST_NAME], NZ-Registered Pharmacist (APC #[APC_NUMBER]), Bargain Chemist.</strong>
+  Written and reviewed in line with the <a href="https://pharmacycouncil.org.nz/wp-content/uploads/2021/03/Code-of-Ethics-2018-FINAL.pdf">Pharmacy Council of New Zealand Code of Ethics</a>.
 </p>
+
+<!-- ============================ AI HERO IMAGE ============================
+     SUBJECT: A bright, modern Kiwi pharmacy counter. On the counter are
+              fresh leafy greens, milk thistle flowers (purple), a glass
+              of water, and a few unbranded supplement bottles. Sunshine
+              from a window. Warm, trustworthy feel. No people, no faces.
+     STYLE:   Editorial flat-lay style. Natural light. Bright but not
+              clinical. Subtle NZ aesthetic. No text overlay.
+     SIZE:    1200 x 675 (16:9), WebP.
+     PROMPT:  See liver-detox-supplements-nz.meta.md (Hero Image section)
+     ====================================================================  -->
+<figure class="bc-ai-image">
+  <img src="[HERO_IMAGE_URL]"
+       alt="A Kiwi pharmacy counter with fresh greens, milk thistle flowers, water and supplement bottles in natural light"
+       width="1200" height="675">
+  <figcaption>A pharmacist's view: real food and water first, supplements only when they add something.</figcaption>
+</figure>
 
 <div class="bc-tldr">
   <strong>Key Takeaways</strong>
   <ul>
-    <li><strong>Your liver detoxifies itself 24/7</strong> through three enzyme pathways called Phase 1, Phase 2 and Phase 3. Supplements support those pathways. They do not "flush" or "reset" a healthy liver.</li>
-    <li><strong>What the evidence supports</strong>: milk thistle (silymarin) for liver-cell protection, soluble fibre and water for waste elimination, and probiotics for gut and liver health. Each has limits. None is a cure-all.</li>
-    <li><strong>What the evidence does not support</strong>: detox teas (mostly senna laxatives), foot detox pads, ionic foot baths, and 3 to 7 day juice cleanses.</li>
-    <li><strong>For New Zealanders, the highest-impact "detox" is drinking less alcohol.</strong> Alcohol drives about 25% of alcohol-related deaths in NZ from conditions like liver cirrhosis.</li>
+    <li><strong>Your liver cleans itself, all day, every day.</strong> It works in three steps. Supplements can help those steps. They do not "flush" or "reset" a healthy liver.</li>
+    <li><strong>What the evidence supports:</strong> milk thistle for liver cells, soluble fibre and water for waste removal, and probiotics for the gut and liver. Each has limits. None is a cure-all.</li>
+    <li><strong>What the evidence does not support:</strong> detox teas (mostly senna laxatives), foot detox pads, ionic foot baths, and 3 to 7 day juice cleanses.</li>
+    <li><strong>For Kiwis, the biggest single step for liver health is drinking less alcohol.</strong> Alcohol is behind about 1 in 4 of all alcohol-related deaths in NZ from liver cirrhosis and related conditions.</li>
   </ul>
 </div>
 
 <div class="bc-toc">
   <strong>What's in this guide</strong>
   <ol>
-    <li><a href="#what-is-liver-detox">What "liver detox" actually means</a></li>
-    <li><a href="#nz-context">Liver health in New Zealand: the picture</a></li>
-    <li><a href="#evidence">What the science actually says, ingredient by ingredient</a></li>
-    <li><a href="#choose">How to choose a quality liver detox supplement</a></li>
-    <li><a href="#interactions">Drug interactions and who should not take them</a></li>
-    <li><a href="#picks">Our pharmacy team's evidence-led picks</a></li>
-    <li><a href="#lifestyle">Lifestyle factors that matter more than any supplement</a></li>
+    <li><a href="#what-is-liver-detox">What "liver detox" really means</a></li>
+    <li><a href="#nz-context">Liver health in New Zealand</a></li>
+    <li><a href="#evidence">What the science says, ingredient by ingredient</a></li>
+    <li><a href="#choose">How to choose a quality liver supplement</a></li>
+    <li><a href="#interactions">Medicines that can clash with liver supplements</a></li>
+    <li><a href="#picks">Liver-support supplements stocked at Bargain Chemist</a></li>
+    <li><a href="#lifestyle">Lifestyle steps that matter more than any pill</a></li>
     <li><a href="#talk-to-pharmacist">When to talk to a pharmacist or GP</a></li>
     <li><a href="#faq">Frequently asked questions</a></li>
     <li><a href="#sources">Sources</a></li>
   </ol>
 </div>
 
-<p>More than half of New Zealanders take a supplement or natural remedy every day, according to a <a href="https://www.consumer.org.nz/articles/why-are-natural-health-products-so-popular">Consumer NZ survey</a>. "Detox" is one of the most-searched supplement categories every January. The combined Australia and NZ dietary supplements market is forecast to grow from <a href="https://www.grandviewresearch.com/industry-analysis/australia-new-zealand-dietary-supplements-market-report">USD 3.60 billion in 2024 to USD 6.55 billion by 2030</a>. So what works, what does not, and what should Kiwi consumers actually look for?</p>
+<p>More than half of New Zealanders take a supplement or natural remedy every day, a <a href="https://www.consumer.org.nz/articles/why-are-natural-health-products-so-popular">Consumer NZ survey found</a>. "Detox" is one of the most-searched supplement categories every January. The Australia–NZ supplements market is forecast to grow from <a href="https://www.grandviewresearch.com/industry-analysis/australia-new-zealand-dietary-supplements-market-report">USD 3.60 billion in 2024 to USD 6.55 billion by 2030</a>. So what actually works, what does not, and what should Kiwis look for?</p>
 
-<p>This guide is written and reviewed by Bargain Chemist's New Zealand-registered pharmacy team. We walk you through the evidence for each ingredient, the drug interactions every pharmacist asks about, and the NZ-stocked products our team rates on the strength of the evidence behind them.</p>
+<p>This guide is written and reviewed by Bargain Chemist's New Zealand-registered pharmacy team. We walk you through the evidence, the medicine interactions every pharmacist asks about, and the NZ-stocked products our team can talk you through in-store.</p>
 
 <!-- =============================== H2 1 =============================== -->
-<h2 id="what-is-liver-detox">What "liver detox" actually means</h2>
+<h2 id="what-is-liver-detox">What "liver detox" really means</h2>
 
-<p><strong>Liver detoxification is the multi-step process your liver uses to neutralise harmful substances and prepare them to leave the body.</strong> It runs all the time, in every healthy person, no matter what supplements or teas you take. The word "detox" in marketing usually means a tea, juice cleanse or capsule kit. That is a product, not a biological process.</p>
+<p><strong>Your liver is a chemical factory that cleans up waste all day.</strong> It runs in every healthy person. Supplements and teas don't switch it on or off.</p>
 
-<p>The US <a href="https://www.nccih.nih.gov/health/detoxes-and-cleanses-what-you-need-to-know">National Center for Complementary and Integrative Health (NCCIH)</a> and the <a href="https://www.bda.uk.com/resource/detox-diets.html">British Dietetic Association</a> both find that "detox" diets and cleanses are largely a marketing concept. There is very little clinical evidence behind their specific claims. Klein and Kiat's <a href="https://pubmed.ncbi.nlm.nih.gov/25522674/">2015 review in the <em>Journal of Human Nutrition and Dietetics</em></a> looked at eight popular commercial detox programmes. They found "very little clinical evidence" to support them.</p>
+<p>The word "detox" in marketing usually means a tea, juice cleanse or pill kit. That is a product, not a body process. The US <a href="https://www.nccih.nih.gov/health/detoxes-and-cleanses-what-you-need-to-know">National Center for Complementary and Integrative Health</a> and the <a href="https://www.bda.uk.com/resource/detox-diets.html">British Dietetic Association</a> both find "detox" diets are mostly marketing. A <a href="https://pubmed.ncbi.nlm.nih.gov/25522674/">2015 review</a> looked at eight popular cleanse programmes. It found "very little clinical evidence" that they do what they claim.</p>
 
-<h3>The three phases of real liver detoxification</h3>
+<h3>How your liver actually does the work</h3>
 
-<p>In healthy biology, your liver processes toxins through three steps. Each phase uses different enzymes and substrates. Different supplement ingredients support different phases. This is why "milk thistle vs NAC vs probiotics" is not an apples-to-apples comparison.</p>
+<p>Healthy liver cleanup runs in three steps. Different supplement ingredients can help different steps. This is why "milk thistle versus NAC versus probiotics" is not a fair comparison.</p>
 
 <figure class="bc-figure">
   <div class="bc-phase-grid">
     <div class="bc-phase">
-      <div class="bc-phase-no">Phase 1</div>
-      <div class="bc-phase-name">Activation</div>
-      <div class="bc-phase-role">A family of liver enzymes called cytochrome P450 (CYP450) breaks down fat-soluble toxins into reactive forms. This step also produces free radicals as a by-product. That is why <strong>antioxidants matter here</strong>.</div>
+      <div class="bc-phase-no">Step 1</div>
+      <div class="bc-phase-name">Break down</div>
+      <div class="bc-phase-role">Liver enzymes (called Phase 1 enzymes) break fat-soluble waste into smaller pieces. The process also creates free radicals as a side product. That is why <strong>antioxidants help here</strong>.</div>
     </div>
     <div class="bc-phase">
-      <div class="bc-phase-no">Phase 2</div>
-      <div class="bc-phase-name">Conjugation</div>
-      <div class="bc-phase-role">The reactive forms get bound to other molecules, such as glutathione, glycine and sulfate. This makes them water-soluble. <strong>Glutathione is the rate-limiting step.</strong> That is why NAC, which the body uses to make glutathione, is studied here.</div>
+      <div class="bc-phase-no">Step 2</div>
+      <div class="bc-phase-name">Package up</div>
+      <div class="bc-phase-role">The small pieces are bound to other molecules, like glutathione (your liver's main antioxidant). This makes them water-soluble. Your body needs enough glutathione for this step. NAC (a glutathione building block) is studied here.</div>
     </div>
     <div class="bc-phase">
-      <div class="bc-phase-no">Phase 3</div>
-      <div class="bc-phase-name">Elimination</div>
-      <div class="bc-phase-role">The water-soluble waste leaves the body through bile (into stool) or through the kidneys (into urine). <strong>Soluble fibre, water and a healthy gut matter here.</strong> Bile-bound waste can be reabsorbed if your bowels move too slowly.</div>
+      <div class="bc-phase-no">Step 3</div>
+      <div class="bc-phase-name">Ship out</div>
+      <div class="bc-phase-role">The packaged waste leaves your body in stool or urine. <strong>Fibre, water and a healthy gut help here.</strong> If your bowels move too slowly, some waste can be reabsorbed.</div>
     </div>
   </div>
-  <figcaption>Figure 1. The three phases of liver detoxification. Different ingredients target different phases. No single supplement covers all three.</figcaption>
+  <figcaption>Figure 1. Your liver's three cleanup steps. Different ingredients support different steps. No single supplement covers all three.</figcaption>
 </figure>
 
-<p>Here is what this means in plain terms. A supplement that "supports liver detox" is really doing one of three things. It provides antioxidants for Phase 1, supplies building blocks for Phase 2, or aids elimination in Phase 3. None of them speeds up the liver beyond its normal capacity. None of them "flushes" stored toxins. The healthy liver does not store toxins waiting to be released, as <a href="https://www.hopkinsmedicine.org/health/expert-qa/detoxing-your-liver-fact-versus-fiction">Johns Hopkins Medicine notes</a>.</p>
+<p>In plain terms: a "liver detox" supplement does one of three things. It adds antioxidants, gives building blocks, or supports waste removal. It does not speed your liver up. It does not "flush" stored toxins. <a href="https://www.hopkinsmedicine.org/health/expert-qa/detoxing-your-liver-fact-versus-fiction">Johns Hopkins Medicine</a> notes a healthy liver does not store toxins waiting to be released.</p>
 
 <!-- =============================== H2 2 =============================== -->
-<h2 id="nz-context">Liver health in New Zealand: the picture</h2>
+<h2 id="nz-context">Liver health in New Zealand</h2>
 
-<p>Liver disease is more common in Aotearoa than most Kiwis realise. The burden also falls unevenly.</p>
+<p>Liver disease is more common in Aotearoa than most Kiwis think. The picture also falls unevenly.</p>
 
 <ul>
-  <li><strong>About 75% of people with obesity have fatty liver</strong>, according to the <a href="https://www.hepatitisfoundation.org.nz/fatty-liver-disease/">Hepatitis Foundation of NZ</a>. Rates are higher among Māori, Pacific peoples, Indian and Chinese New Zealanders.</li>
-  <li><strong>28.5% of NZ men with obesity have raised alanine aminotransferase (ALT)</strong>, which is a marker of liver-cell stress. This is from the most recent <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5063157/">NZ national survey</a>.</li>
-  <li><strong>16.6% of New Zealand adults drink at hazardous levels</strong> (AUDIT ≥ 8) in the <a href="https://www.health.govt.nz/publications/annual-update-of-key-results-202425-new-zealand-health-survey">2024/25 NZ Health Survey</a>. That is down from 21.3% in 2019/20.</li>
-  <li><strong>Alcohol is linked to around 900 deaths and 29,282 hospitalisations</strong> in New Zealand each year, <a href="https://www.otago.ac.nz/news/newsroom/health-burden-of-alcohol-highlighted-in-report">University of Otago researchers report</a>. About 25% of those deaths are from conditions like liver cirrhosis, pancreatitis and epilepsy. <strong>Māori experience around twice the alcohol-related death rate</strong> of non-Māori.</li>
-  <li>The total annual cost of alcohol harm in NZ was put at <a href="https://www.ahw.org.nz/Portals/5/Resources/Fact%20Sheet/2024/The%20Cost%20of%20Alcohol%20Related%20Harm%20in%20Aotearoa%20NZ%202024_%20Understanding%20the%20NZIER%20Report%20Sept%202024.pdf">NZ$9.1 billion</a> in the 2024 NZIER report.</li>
+  <li><strong>About 3 in 4 people with obesity have fatty liver</strong>, the <a href="https://www.hepatitisfoundation.org.nz/fatty-liver-disease/">Hepatitis Foundation of NZ</a> reports. Rates are higher among Māori, Pacific peoples, Indian and Chinese New Zealanders.</li>
+  <li><strong>About 1 in 6 NZ adults drink at risky levels</strong> (16.6% in the <a href="https://www.health.govt.nz/publications/annual-update-of-key-results-202425-new-zealand-health-survey">2024/25 NZ Health Survey</a>). That is down from 1 in 5 in 2019/20.</li>
+  <li><strong>Alcohol is linked to about 900 deaths and 29,282 hospital stays</strong> in NZ each year, <a href="https://www.otago.ac.nz/news/newsroom/health-burden-of-alcohol-highlighted-in-report">University of Otago researchers report</a>. About 1 in 4 of those deaths is from liver cirrhosis and related conditions. <strong>Māori die from alcohol-related causes at twice the rate of non-Māori.</strong></li>
+  <li>The total annual cost of alcohol harm in NZ is around <a href="https://www.ahw.org.nz/Portals/5/Resources/Fact%20Sheet/2024/The%20Cost%20of%20Alcohol%20Related%20Harm%20in%20Aotearoa%20NZ%202024_%20Understanding%20the%20NZIER%20Report%20Sept%202024.pdf">NZ$9.1 billion</a> per the 2024 NZIER report.</li>
 </ul>
 
-<p>These statistics describe a public-health context. Dietary supplements are not a treatment for liver disease, alcohol harm or cirrhosis. The most useful steps for liver health are drinking less alcohol, eating well and staying active.</p>
+<p>These numbers describe a public health picture. <strong>Dietary supplements are not a treatment for liver disease, alcohol harm or cirrhosis.</strong> The most useful steps are drinking less alcohol, eating well, and staying active.</p>
 
-<p>If you are worried about your alcohol use, please contact your GP or the <a href="https://alcoholdrughelp.org.nz/">Alcohol Drug Helpline on 0800 787 797</a>. Free, confidential, available 7 days.</p>
+<p>If you are worried about your drinking, please talk to your GP. You can also call the free, confidential <a href="https://alcoholdrughelp.org.nz/">Alcohol Drug Helpline on 0800 787 797</a>, 7 days a week.</p>
+
+<!-- ============================ AI MID IMAGE ============================
+     SUBJECT: A friendly NZ outdoor scene. A person (back to camera, no
+              face) walking a coastal track at sunrise, in active wear,
+              holding a water bottle. Maybe native bush in view. Calm,
+              hopeful, healthy lifestyle feel.
+     STYLE:   Bright editorial photography, low-saturation, NZ landscape.
+              No clinical setting. No medical equipment. No face.
+     SIZE:    1200 x 675 (16:9), WebP.
+     PROMPT:  See liver-detox-supplements-nz.meta.md (Mid Image section)
+     ====================================================================  -->
+<figure class="bc-ai-image">
+  <img src="[MID_IMAGE_URL]"
+       alt="A person walking a New Zealand coastal track at sunrise carrying a water bottle"
+       width="1200" height="675"
+       loading="lazy">
+  <figcaption>The boring stuff works: water, sleep, moving daily, drinking less.</figcaption>
+</figure>
 
 <!-- =============================== H2 3 =============================== -->
-<h2 id="evidence">What the science actually says, ingredient by ingredient</h2>
+<h2 id="evidence">What the science says, ingredient by ingredient</h2>
 
-<p>Here is how the most common ingredients in NZ-sold liver detox products rank against the published evidence. The table summarises each one. The text below explains the highlights.</p>
+<p>Here is how the common ingredients in NZ liver detox products line up against published evidence. Strongest first.</p>
 
 <table class="bc-table">
   <thead>
-    <tr><th style="width:24%;">Ingredient</th><th style="width:18%;">Evidence strength</th><th>What the highest-quality evidence shows</th></tr>
+    <tr><th style="width:24%;">Ingredient</th><th style="width:18%;">Evidence verdict</th><th>What the best evidence shows</th></tr>
   </thead>
   <tbody>
     <tr>
       <td>Soluble fibre (psyllium)</td>
       <td><span class="bc-evidence-strong">Strong</span></td>
-      <td>Supports daily bowel transit and elimination of bile-bound waste in Phase 3. The most heavily studied "detox-adjacent" ingredient.</td>
+      <td>Keeps your bowels moving daily. Helps clear bile-bound waste from Step 3. The most studied "detox-related" ingredient.</td>
     </tr>
     <tr>
-      <td>Adequate hydration</td>
+      <td>Drinking enough water</td>
       <td><span class="bc-evidence-strong">Strong</span></td>
-      <td>Needed for the kidneys to clear water-soluble waste from Phase 2. <a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">Te Whatu Ora</a> recommends about 2.1 L per day for women and 2.6 L for men in total fluids.</td>
+      <td>Your kidneys need water to clear waste. <a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">Te Whatu Ora</a> suggests about 2.1 L per day for women and 2.6 L for men from all drinks.</td>
     </tr>
     <tr>
-      <td>Multi-strain probiotics</td>
+      <td>Probiotics (multi-strain)</td>
       <td><span class="bc-evidence-moderate">Moderate</span></td>
-      <td>Probiotic supplementation has been studied for its role in the gut and liver axis, with most published trial evidence in patient populations rather than healthy adults. A <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10964906/">2024 systematic review</a> summarises the current state of the evidence.</td>
+      <td>Probiotics are studied for their role in the gut and liver. Most published evidence is in patients, not healthy adults. A <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10964906/">2024 review</a> sums up where the science sits today.</td>
     </tr>
     <tr>
       <td>Milk thistle (silymarin)</td>
       <td><span class="bc-evidence-moderate">Moderate</span></td>
-      <td>The <a href="https://www.cochrane.org/CD003620/LIVER_no-evidence-supporting-or-refuting-milk-thistle-for-alcoholic-andor-hepatitis-b-or-c-virus-liver-diseases">Cochrane Review (Rambaldi 2007, 13 RCTs / 915 patients)</a> found no clear effect on death rates. Later mechanism studies (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11404857/">Dhande 2024</a>) support liver-cell protection with a strong safety profile.</td>
+      <td>Silymarin is the active compound in milk thistle. The <a href="https://www.cochrane.org/CD003620/LIVER_no-evidence-supporting-or-refuting-milk-thistle-for-alcoholic-andor-hepatitis-b-or-c-virus-liver-diseases">Cochrane Review (13 trials, 915 people)</a> found no clear effect on death rates. Later antioxidant studies (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11404857/">Dhande 2024</a>) support liver-cell protection. Safety profile is strong.</td>
     </tr>
     <tr>
-      <td>NAC (N-acetylcysteine) / glutathione</td>
+      <td>NAC and glutathione</td>
       <td><span class="bc-evidence-moderate">Moderate</span></td>
-      <td>NAC is a precursor to glutathione, the substrate used in Phase 2 conjugation. Evidence for oral NAC as a general dietary supplement is limited, but the mechanism is plausible.</td>
+      <td>NAC is a compound your body uses to make glutathione (your liver's main antioxidant). Evidence for oral NAC as a general supplement is limited. The idea is biologically plausible.</td>
     </tr>
     <tr>
-      <td>Globe artichoke (cynarin)</td>
+      <td>Globe artichoke</td>
       <td><span class="bc-evidence-limited">Limited</span></td>
-      <td>Small trials suggest it may stimulate bile flow. Traditionally used and generally well tolerated. Modern clinical evidence is limited.</td>
+      <td>Small studies suggest it may stimulate bile flow. Traditionally used and generally well tolerated. Modern evidence is limited.</td>
     </tr>
     <tr>
-      <td>Turmeric / curcumin</td>
+      <td>Turmeric (curcumin)</td>
       <td><span class="bc-evidence-limited">Limited</span></td>
-      <td>Anti-inflammatory in mechanism. However, high-dose turmeric is now <a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">documented as a cause of supplement-related liver injury</a>. Stick to modest doses.</td>
+      <td>Anti-inflammatory in lab studies. However, high-dose turmeric is now <a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">documented as a cause of liver injury</a>. Stick to modest doses.</td>
     </tr>
     <tr>
       <td>Dandelion root</td>
       <td><span class="bc-evidence-limited">Limited</span></td>
-      <td>Traditionally used as a bitter to support digestion. Minimal modern trial data.</td>
+      <td>A traditional bitter herb. Helps digestion in folk use. Almost no modern trial data.</td>
     </tr>
     <tr>
-      <td>Detox teas (senna-based)</td>
+      <td>Detox teas (senna)</td>
       <td><span class="bc-evidence-insufficient">Insufficient</span></td>
-      <td>Senna is a stimulant laxative. Short-term "weight loss" is water and stool, not fat or toxins. Daily use can lead to dehydration and laxative dependence.</td>
+      <td>Senna is a stimulant laxative. Short-term "weight loss" is water and stool, not body fat. Daily use can lead to dehydration and dependence.</td>
     </tr>
     <tr>
-      <td>Foot detox pads / ionic foot baths</td>
+      <td>Foot pads, ionic baths</td>
       <td><span class="bc-evidence-insufficient">Insufficient</span></td>
-      <td>No plausible mechanism. The brown colour is from a chemical reaction between the pad or electrodes and water. It happens with or without feet in the water.</td>
+      <td>No plausible mechanism. The brown colour is a chemical reaction between the pad or electrodes and water. It happens with or without feet in the water.</td>
     </tr>
   </tbody>
 </table>
 
-<p>An <a href="https://journals.lww.com/ajg/fulltext/2026/01000/liver_cleansing_imposters__an_analysis_of_popular.26.aspx">analysis presented at an American College of Gastroenterology meeting</a> identified <strong>65 unique ingredients across popular liver-cleanse products. None of them is endorsed by the American Association for the Study of Liver Diseases (AASLD) or the European Association for the Study of the Liver (EASL) for treating liver disease.</strong> The lesson is not that every ingredient is useless. It is that "liver support" claims sit on a long spectrum. Some have decent evidence. Others are pure marketing.</p>
+<p>An <a href="https://journals.lww.com/ajg/fulltext/2026/01000/liver_cleansing_imposters__an_analysis_of_popular.26.aspx">analysis presented at the American College of Gastroenterology</a> found 65 unique ingredients across popular liver-cleanse products. <strong>None is endorsed by the major liver-disease societies (AASLD or EASL) for treating liver disease.</strong> Some ingredients have decent evidence for body support. Many are pure marketing.</p>
 
 <figure class="bc-figure">
   <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ev-title ev-desc" style="max-width:100%;height:auto;background:#ffffff;border-radius:6px;">
-    <title id="ev-title">Liver detox ingredients ranked by clinical evidence strength</title>
-    <desc id="ev-desc">Horizontal bar chart showing ten popular liver-detox ingredients ranked by clinical evidence strength on a scale of 0 to 100. Soluble fibre and adequate hydration score highest in the strong evidence band, followed by probiotics, milk thistle and NAC in the moderate band, then globe artichoke, turmeric and dandelion with limited evidence. Detox teas with senna, foot pads and ionic baths score in the insufficient evidence band.</desc>
+    <title id="ev-title">Liver supplement ingredients ranked by evidence strength</title>
+    <desc id="ev-desc">Horizontal bar chart showing ten ingredients with evidence verdicts ranging from strong (soluble fibre, water) through moderate (probiotics, milk thistle, NAC) and limited (artichoke, turmeric, dandelion) to insufficient (detox teas, foot pads).</desc>
 
-    <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#0d3b66" font-family="Arial, sans-serif">Liver detox claims ranked by clinical evidence</text>
-    <text x="360" y="40" text-anchor="middle" font-size="11" fill="#6b7280" font-family="Arial, sans-serif">Based on Cochrane reviews, NCCIH fact sheets and peer-reviewed meta-analyses (see Sources)</text>
+    <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#0d3b66" font-family="Arial, sans-serif">Liver detox ingredients ranked by evidence</text>
+    <text x="360" y="40" text-anchor="middle" font-size="11" fill="#6b7280" font-family="Arial, sans-serif">Based on Cochrane reviews, NCCIH fact sheets and peer-reviewed meta-analyses</text>
 
     <g font-family="Arial, sans-serif" font-size="11" fill="#1f2937">
-      <text x="225" y="78" text-anchor="end">Soluble fibre (psyllium)</text>
+      <text x="225" y="78" text-anchor="end">Soluble fibre</text>
       <rect x="235" y="65" width="370" height="20" fill="#06a77d" />
       <text x="615" y="80" font-weight="700" fill="#057857">Strong</text>
 
-      <text x="225" y="108" text-anchor="end">Adequate hydration</text>
+      <text x="225" y="108" text-anchor="end">Drinking enough water</text>
       <rect x="235" y="95" width="360" height="20" fill="#06a77d" />
       <text x="605" y="110" font-weight="700" fill="#057857">Strong</text>
 
-      <text x="225" y="138" text-anchor="end">Multi-strain probiotics</text>
+      <text x="225" y="138" text-anchor="end">Probiotics</text>
       <rect x="235" y="125" width="270" height="20" fill="#3aa971" />
       <text x="515" y="140" font-weight="700" fill="#057857">Moderate</text>
 
-      <text x="225" y="168" text-anchor="end">Milk thistle (silymarin)</text>
+      <text x="225" y="168" text-anchor="end">Milk thistle</text>
       <rect x="235" y="155" width="245" height="20" fill="#3aa971" />
       <text x="490" y="170" font-weight="700" fill="#057857">Moderate</text>
 
@@ -280,7 +306,7 @@
       <rect x="235" y="215" width="155" height="20" fill="#ee964b" />
       <text x="400" y="230" font-weight="700" fill="#b25e18">Limited</text>
 
-      <text x="225" y="258" text-anchor="end">Turmeric / curcumin</text>
+      <text x="225" y="258" text-anchor="end">Turmeric</text>
       <rect x="235" y="245" width="140" height="20" fill="#ee964b" />
       <text x="385" y="260" font-weight="700" fill="#b25e18">Limited</text>
 
@@ -288,38 +314,38 @@
       <rect x="235" y="275" width="110" height="20" fill="#ee964b" />
       <text x="355" y="290" font-weight="700" fill="#b25e18">Limited</text>
 
-      <text x="225" y="318" text-anchor="end">Detox teas (senna)</text>
+      <text x="225" y="318" text-anchor="end">Detox teas</text>
       <rect x="235" y="305" width="55" height="20" fill="#d62828" />
       <text x="300" y="320" font-weight="700" fill="#a51c1c">Insufficient</text>
 
-      <text x="225" y="348" text-anchor="end">Foot pads / ionic baths</text>
+      <text x="225" y="348" text-anchor="end">Foot pads, ionic baths</text>
       <rect x="235" y="335" width="15" height="20" fill="#d62828" />
       <text x="260" y="350" font-weight="700" fill="#a51c1c">None</text>
     </g>
 
     <line x1="235" y1="370" x2="635" y2="370" stroke="#9ca3af" stroke-width="1" />
   </svg>
-  <figcaption>Figure 2. A general indication of evidence strength for body and biological-pathway support, based on Cochrane reviews, NCCIH fact sheets and peer-reviewed meta-analyses. This is not a clinical or therapeutic ranking. It is not a recommendation for treating any disease.</figcaption>
+  <figcaption>Figure 2. A guide to evidence strength for body and biological-pathway support. This is not a clinical or therapeutic ranking. It is not a recommendation for treating any disease.</figcaption>
 </figure>
 
 <div class="bc-success">
-  <strong>The unsexy truth.</strong> The "supplements" with the strongest evidence for supporting your body's detox work are also the cheapest. Enough fibre. Enough water. Enough sleep. Less alcohol, within the <a href="https://info.health.nz/health-topics/mental-health/alcohol-and-drug-addiction/drinking-responsibly">Health New Zealand low-risk guidelines</a>. Capsules and teas can play a supporting role. They are never a substitute.
+  <strong>The unsexy truth.</strong> The "supplements" with the strongest evidence are also the cheapest. Enough fibre. Enough water. Enough sleep. Less alcohol. Capsules and teas can play a supporting role. They are not a substitute.
 </div>
 
 <h3>What the evidence does <em>not</em> support</h3>
 
-<p>Some products marketed as "detox" have failed to show clear clinical benefit. Others use mechanisms that simply do not stand up to scrutiny.</p>
+<p>Some "detox" products fail clinical testing. Others use mechanisms that don't hold up.</p>
 
-<p><strong>Detox teas with senna or cascara</strong> are stimulant laxatives. They cause short-term water and stool loss. They do not remove toxins. Daily use is linked to dehydration, electrolyte problems and laxative dependence.</p>
+<p><strong>Detox teas with senna or cascara.</strong> These are stimulant laxatives. They cause short-term water and stool loss. They do not remove toxins. Daily use can lead to dehydration and laxative dependence.</p>
 
-<p><strong>Foot detox pads and ionic foot baths.</strong> The brown discolouration sold as "extracted toxins" is just the chemical reaction between the pad ingredients (or bath electrodes) and water. Multiple independent tests confirm the colour change happens whether or not feet are in the water.</p>
+<p><strong>Foot pads and ionic foot baths.</strong> The brown colour sold as "extracted toxins" is just a chemical reaction in the water. Independent tests show the colour change happens with or without feet in the water.</p>
 
-<p><strong>Juice cleanses.</strong> A <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11820471/">2025 study in <em>Nutrients</em></a> found that even a short juice cleanse raised pro-inflammatory bacteria in the gut and disrupted oral microbe balance. Any short-term weight loss is water and glycogen, regained within days.</p>
+<p><strong>Juice cleanses.</strong> A <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11820471/">2025 study in <em>Nutrients</em></a> found a short juice cleanse raised pro-inflammatory bacteria in the gut and disrupted mouth microbes. Any short-term weight loss is water and stored carbs, regained within days.</p>
 
 <!-- =============================== H2 4 =============================== -->
-<h2 id="choose">How to choose a quality liver detox supplement: a 5-point pharmacy checklist</h2>
+<h2 id="choose">How to choose a quality liver supplement</h2>
 
-<p>If you decide to take a liver-support supplement, here is the framework our pharmacy team uses when customers ask across the counter.</p>
+<p>If you decide to try one, here is the checklist our pharmacy team uses at the counter.</p>
 
 <table class="bc-table">
   <thead>
@@ -328,11 +354,11 @@
   <tbody>
     <tr>
       <td><strong>1. Active ingredient and dose</strong></td>
-      <td>Look for a named, standardised extract. For example, "milk thistle 35,000 mg fresh-equivalent, standardised to 80% silymarin". Vague "proprietary blends" hide the actual dose.</td>
+      <td>Look for a named extract and a clear dose. For example, "milk thistle 35,000 mg fresh equivalent, with 80% silymarin". Vague "proprietary blends" hide the real dose.</td>
     </tr>
     <tr>
       <td><strong>2. Evidence base</strong></td>
-      <td>Check the active ingredient against the <a href="https://www.nccih.nih.gov/health/milk-thistle">NCCIH fact sheet</a> or the NIH Office of Dietary Supplements. If you cannot find any peer-reviewed evidence, treat the claim with caution.</td>
+      <td>Check the ingredient on the <a href="https://www.nccih.nih.gov/health/milk-thistle">NCCIH fact sheets</a> or the NIH Office of Dietary Supplements. If you find no real evidence, treat the claim with caution.</td>
     </tr>
     <tr>
       <td><strong>3. Manufacturing standard</strong></td>
@@ -340,80 +366,80 @@
     </tr>
     <tr>
       <td><strong>4. Honest claims</strong></td>
-      <td>Compliant phrasing is "may support healthy liver function". Walk away from anything claiming to "cure", "flush" or "reset" an organ. <a href="https://www.medsafe.govt.nz/regulatory/dietarysupplements/regulation.asp">Medsafe</a> prohibits therapeutic claims on dietary supplements.</td>
+      <td>Compliant wording is "may support healthy liver function". Walk away from anything that claims to "cure", "flush" or "reset" an organ. <a href="https://www.medsafe.govt.nz/regulatory/dietarysupplements/regulation.asp">Medsafe</a> does not allow therapeutic claims on supplements.</td>
     </tr>
     <tr>
-      <td><strong>5. Interaction profile</strong></td>
-      <td>Several "detox" herbs interact with prescription medicines. The main ones to watch are blood thinners, statins, the oral contraceptive pill and medicines that suppress the immune system. Always ask a pharmacist before starting one. See the next section.</td>
+      <td><strong>5. How it might mix with medicines</strong></td>
+      <td>Some "detox" herbs clash with common medicines. Blood thinners, statins, the oral contraceptive pill and immune-suppressing medicines need the closest check. Always ask a pharmacist first. See the next section.</td>
     </tr>
   </tbody>
 </table>
 
 <div class="bc-redflag">
-  <strong>Red flags to avoid:</strong> "Rapid 3-day liver flush", "reverses fatty liver", "eliminates toxins overnight", undisclosed proprietary blends, products only sold through social-media influencers, or programmes that require fasting for more than 24 hours without medical supervision.
+  <strong>Red flags to walk away from:</strong> "Rapid 3-day liver flush", "reverses fatty liver", "eliminates toxins overnight", hidden proprietary blends, products only sold through influencers, and programmes that ask you to fast for more than 24 hours without medical care.
 </div>
 
 <!-- =============================== H2 5 =============================== -->
-<h2 id="interactions">Drug interactions and who should not take liver detox supplements</h2>
+<h2 id="interactions">Medicines that can clash with liver supplements</h2>
 
-<p>This is the section most "best liver detox" articles in New Zealand miss. A registered pharmacist's first concern when you reach for a herbal liver product is not how well it works. It is whether it is safe with your prescription medicines. Houston Methodist's <a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">October 2025 review</a> is a useful reminder that "natural" does not equal "safe". Supplements like green-tea extract, high-dose turmeric and black cohosh are now well-documented causes of supplement-related liver injury.</p>
+<p>This is the section most "best liver detox" articles in NZ skip. A pharmacist's first job is checking if a herbal product is safe with your prescription medicines. "Natural" does not mean "safe". Houston Methodist's <a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">October 2025 review</a> notes that green-tea extract, high-dose turmeric and black cohosh are all documented causes of liver injury from supplements.</p>
 
-<p>In 2020, the <a href="https://www.sciencemediacentre.co.nz/2020/09/16/supplement-linked-to-liver-harm-taken-off-shelves-expert-reaction/">NZ Science Media Centre reported on a high-profile NZ case</a> where a popular green-tea-extract weight-loss supplement was withdrawn after reports of liver harm.</p>
+<p>In 2020, the <a href="https://www.sciencemediacentre.co.nz/2020/09/16/supplement-linked-to-liver-harm-taken-off-shelves-expert-reaction/">NZ Science Media Centre reported on a NZ case</a> where a popular green-tea-extract product was pulled after liver-harm reports.</p>
 
 <div class="bc-callout">
-  <strong>Please note.</strong> The table below lists known or theoretical interactions. It is general information only, not a complete list, and not medical advice. Always bring the supplement packaging to your pharmacist for a full check against your individual medicines.
+  <strong>Please note.</strong> The table below lists known and possible clashes. It is general information only, not medical advice. Always bring the supplement packaging to your pharmacist for a full check against your own medicines.
 </div>
 
 <table class="bc-table">
   <thead>
-    <tr><th style="width:25%;">Herb or active</th><th>Known or theoretical interaction</th></tr>
+    <tr><th style="width:25%;">Herb or compound</th><th>Known or possible interaction</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>Milk thistle (silymarin)</td>
-      <td>Affects CYP2C9 and some other liver enzymes. May change the effect of blood thinners (warfarin), some statins, certain diabetes medicines and some anti-epileptic medicines. Generally well tolerated. Ask your pharmacist if you take any prescription medicine.</td>
+      <td>Milk thistle</td>
+      <td>May affect blood thinners (warfarin), some statins, certain diabetes medicines and some anti-seizure medicines. Generally well tolerated. Ask your pharmacist if you take any prescription medicine.</td>
     </tr>
     <tr>
-      <td>Turmeric / curcumin</td>
-      <td>Acts on platelets, so it may raise bleeding risk with warfarin, dabigatran, aspirin or clopidogrel. High-dose extracts have been linked to liver injury in case reports.</td>
+      <td>Turmeric</td>
+      <td>Can raise bleeding risk with warfarin, dabigatran, aspirin or clopidogrel. High-dose extracts are linked to liver injury in case reports.</td>
     </tr>
     <tr>
       <td>Globe artichoke</td>
-      <td>Stimulates bile flow. Avoid if you have a known bile-duct obstruction or active gallstones. Generally well tolerated otherwise.</td>
+      <td>Stimulates bile flow. Avoid if you have a known bile-duct blockage or active gallstones. Generally well tolerated otherwise.</td>
     </tr>
     <tr>
       <td>Dandelion root</td>
       <td>Mild diuretic. Use with care alongside prescription diuretics, lithium, or if you have kidney disease.</td>
     </tr>
     <tr>
-      <td>NAC (N-acetylcysteine)</td>
-      <td>Generally safe at supplement doses. May add to the effect of nitrates such as GTN. Discuss with your pharmacist if you have a heart condition.</td>
+      <td>NAC</td>
+      <td>Generally safe at supplement doses. May add to the effect of GTN spray or other nitrates. Check with your pharmacist if you have a heart condition.</td>
     </tr>
     <tr>
-      <td>Green-tea extract (high-dose EGCG)</td>
-      <td>Documented cases of liver harm. Avoid high-dose extracts above roughly 800 mg EGCG per day. Drinking whole green tea is safe.</td>
+      <td>Green-tea extract (high dose)</td>
+      <td>Documented cases of liver harm. Avoid high-dose extracts above about 800 mg EGCG per day. Drinking whole green tea is safe.</td>
     </tr>
     <tr>
-      <td>Senna / cascara (in detox teas)</td>
+      <td>Senna / cascara (detox teas)</td>
       <td>Stimulant laxative. Daily use can lower potassium. That is a risk with diuretics, digoxin and some heart medicines.</td>
     </tr>
   </tbody>
 </table>
 
-<h3>Do not start a liver detox supplement without speaking to your pharmacist or GP if you:</h3>
+<h3>Talk to your pharmacist or GP first if you:</h3>
 
 <ul>
   <li>Are pregnant or breastfeeding</li>
-  <li>Take any prescription medicine, especially blood thinners, the oral contraceptive pill, medicines that suppress the immune system, statins, diabetes medicines or anti-epileptics</li>
+  <li>Take any prescription medicine, especially blood thinners, the oral contraceptive pill, immune-suppressing medicines, statins, diabetes medicines or anti-seizure medicines</li>
   <li>Have a known liver, kidney or gallbladder condition</li>
   <li>Are buying for a child under 12</li>
-  <li>Have yellowing of the skin or eyes, dark urine, lasting tiredness or right-sided tummy pain. These signs need clinical assessment, not a supplement.</li>
+  <li>Have yellow skin or eyes, dark urine, lasting tiredness or right-sided tummy pain. These need clinical assessment, not a supplement.</li>
 </ul>
 
 <!-- =============================== H2 6 =============================== -->
 <h2 id="picks">Liver-support supplements stocked at Bargain Chemist</h2>
 
-<p>The products below are popular liver-support supplements available from Bargain Chemist. They are listed here for general information and price reference only. Inclusion is not a clinical recommendation. It is not a substitute for advice from your pharmacist or GP about your individual situation. The list is drawn from the live <a href="https://www.bargainchemist.co.nz/collections/liver-cleanse-detox">Liver Health range</a> and the <a href="https://www.bargainchemist.co.nz/collections/milk-thistle">Milk Thistle collection</a>.</p>
+<p>The products below are popular liver-support supplements you can buy from Bargain Chemist. They are listed for general information and price reference only. <strong>Inclusion here is not a clinical recommendation.</strong> The "Evidence verdict" column maps to the ingredient table above. The list is drawn from the live <a href="https://www.bargainchemist.co.nz/collections/liver-cleanse-detox">Liver Health range</a> and the <a href="https://www.bargainchemist.co.nz/collections/milk-thistle">Milk Thistle collection</a>.</p>
 
 <table class="bc-table">
   <thead>
@@ -421,6 +447,7 @@
       <th>Product</th>
       <th>Brand</th>
       <th>Main active</th>
+      <th>Evidence verdict<br>(per active)</th>
       <th class="num">Price (NZD)</th>
       <th>NZ-made</th>
     </tr>
@@ -430,13 +457,15 @@
       <td><a href="https://www.bargainchemist.co.nz/products/blackmores-milk-thistle-42-tablets">Blackmores Milk Thistle 42 Tabs</a></td>
       <td>Blackmores</td>
       <td>Milk thistle</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$12.79</td>
       <td>No</td>
     </tr>
     <tr>
       <td><a href="https://www.bargainchemist.co.nz/products/go-healthy-go-liver-detox-1-a-day-60-capsules">GO Healthy Liver Detox 1-A-Day 60s</a></td>
       <td>GO Healthy</td>
-      <td>Multi-herb (milk thistle, dandelion, turmeric, globe artichoke)</td>
+      <td>Multi-herb blend</td>
+      <td><span class="bc-evidence-moderate">Moderate</span> / <span class="bc-evidence-limited">Limited</span></td>
       <td class="num">$19.59</td>
       <td>NZ-owned</td>
     </tr>
@@ -444,13 +473,15 @@
       <td><a href="https://www.bargainchemist.co.nz/products/me-today-liver-detox-60s">me today Liver Detox 60s</a></td>
       <td>me today</td>
       <td>Milk thistle plus multi-herb</td>
+      <td><span class="bc-evidence-moderate">Moderate</span> / <span class="bc-evidence-limited">Limited</span></td>
       <td class="num">$22.09</td>
       <td>NZ-made</td>
     </tr>
     <tr>
       <td><a href="https://www.bargainchemist.co.nz/products/clinicians-liverprotect-plus-60-capsules">Clinicians Liver Protect Plus 60s</a></td>
       <td>Clinicians</td>
-      <td>Silymarin plus N-acetylcysteine (NAC)</td>
+      <td>Milk thistle plus NAC</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$25.49</td>
       <td>NZ-formulated</td>
     </tr>
@@ -458,13 +489,15 @@
       <td><a href="https://www.bargainchemist.co.nz/products/ls-milk-thistle-detox-60s">Lifestream Milk Thistle Detox 60s</a></td>
       <td>Lifestream</td>
       <td>Milk thistle plus supportive herbs</td>
+      <td><span class="bc-evidence-moderate">Moderate</span> / <span class="bc-evidence-limited">Limited</span></td>
       <td class="num">$26.39</td>
       <td>NZ-made</td>
     </tr>
     <tr>
       <td><a href="https://www.bargainchemist.co.nz/products/thompsons-liver-cleanse-120-capsules">Thompson's Liver Cleanse 120 Caps</a></td>
       <td>Thompson's</td>
-      <td>Milk thistle, schisandra and dandelion</td>
+      <td>Milk thistle, schisandra, dandelion</td>
+      <td><span class="bc-evidence-moderate">Moderate</span> / <span class="bc-evidence-limited">Limited</span></td>
       <td class="num">$27.99</td>
       <td>No</td>
     </tr>
@@ -472,6 +505,7 @@
       <td><a href="https://www.bargainchemist.co.nz/products/nutra-life-liver-guard-56000-plus-boldo-60-capsules">Nutra-Life Liver Guard 56000 plus Boldo 60s</a></td>
       <td>Nutra-Life</td>
       <td>Milk thistle (56,000 mg fresh equivalent) plus boldo</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$31.99</td>
       <td>NZ-made</td>
     </tr>
@@ -479,6 +513,7 @@
       <td><a href="https://www.bargainchemist.co.nz/products/go-healthy-go-milk-thistle-50-000-60-capsules">GO Healthy Milk Thistle 50,000 60 VCaps</a></td>
       <td>GO Healthy</td>
       <td>Standardised silymarin (50,000 mg fresh equivalent)</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$35.59</td>
       <td>NZ-owned</td>
     </tr>
@@ -486,6 +521,7 @@
       <td><a href="https://www.bargainchemist.co.nz/products/metamucil-daily-fibre-supplement-orange-smooth-72-doses">Metamucil Daily Fibre 72 doses</a></td>
       <td>Metamucil</td>
       <td>100% psyllium fibre</td>
+      <td><span class="bc-evidence-strong">Strong</span></td>
       <td class="num">$36.99</td>
       <td>No</td>
     </tr>
@@ -493,6 +529,7 @@
       <td><a href="https://www.bargainchemist.co.nz/products/hhp-liver-detox-protect-caps-60s">Harker Herbals Liver Detox &amp; Protect 60s</a></td>
       <td>Harker Herbals</td>
       <td>Multi-herb tonic</td>
+      <td><span class="bc-evidence-moderate">Moderate</span> / <span class="bc-evidence-limited">Limited</span></td>
       <td class="num">$39.99</td>
       <td>NZ-made</td>
     </tr>
@@ -500,48 +537,46 @@
       <td><a href="https://www.bargainchemist.co.nz/products/solgar-l-glutathione-max-250mg-60pk">Solgar L-Glutathione 250 mg 60s</a></td>
       <td>Solgar</td>
       <td>Reduced L-glutathione</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$42.49</td>
       <td>No</td>
     </tr>
     <tr>
       <td><a href="https://www.bargainchemist.co.nz/products/go-healthy-go-probiotic-40-billion-60-capsules">GO Healthy Probiotic 40 Billion 60s</a></td>
       <td>GO Healthy</td>
-      <td>Multi-strain probiotic (gut and liver health)</td>
+      <td>Multi-strain probiotic</td>
+      <td><span class="bc-evidence-moderate">Moderate</span></td>
       <td class="num">$42.49</td>
       <td>NZ-owned</td>
     </tr>
   </tbody>
 </table>
 
-<h3>How to compare the options</h3>
-
-<p>If you are choosing between liver-support products, our pharmacy team is happy to walk you through the differences. The main things to look at are the active ingredient, the dose, whether the product is a single ingredient or a multi-herb formula, and whether you take any prescription medicines (see the interactions section above). If you are not sure, please come in and ask.</p>
-
-<p>If you have been diagnosed with a liver condition, please talk to your GP about management. Dietary supplements are not a treatment for any liver disease.</p>
+<p>If you have been diagnosed with a liver condition, please talk to your GP about management. Dietary supplements are not a treatment for liver disease. If you are unsure which product fits your needs and medicines, come in and ask our pharmacy team.</p>
 
 <p style="text-align:center;">
   <a class="bc-cta-collection" href="https://www.bargainchemist.co.nz/collections/liver-cleanse-detox">Browse the full Liver Health range</a>
 </p>
 
 <!-- =============================== H2 7 =============================== -->
-<h2 id="lifestyle">Lifestyle factors that matter more than any supplement</h2>
+<h2 id="lifestyle">Lifestyle steps that matter more than any pill</h2>
 
-<p>If you take only five things away from this guide, take these.</p>
+<p>If you take only five things from this guide, take these.</p>
 
 <ol>
-  <li><strong>Stay within Health New Zealand low-risk drinking limits.</strong> That is no more than 10 standard drinks per week for women and 15 for men. Aim for at least two alcohol-free days each week, per the <a href="https://info.health.nz/health-topics/mental-health/alcohol-and-drug-addiction/drinking-responsibly">Health NZ guidance</a>. A standard drink is 10 g of pure alcohol. That is about a 330 ml can of 4% beer or a 100 ml glass of 12.5% wine.</li>
-  <li><strong>Hit your fibre target.</strong> NZ adults average around 20 g of dietary fibre per day. The Eating and Activity Guidelines recommend <a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">28 g per day for women and 38 g per day for men</a> for chronic-disease prevention. Wholegrains, legumes, vegetables and fruit are the easiest sources.</li>
-  <li><strong>Drink water consistently.</strong> Aim for about 2.1 L per day for women and 2.6 L for men in total fluids. Plain tap water is ideal.</li>
-  <li><strong>Move every day.</strong> Regular exercise increases bile flow, improves how your body uses insulin and reduces fat in the liver. This is confirmed across many large reviews.</li>
-  <li><strong>Sleep 7 to 9 hours.</strong> Deep sleep is when the brain's overnight waste-clearance cycle runs at full speed. See our pharmacy team's <a href="https://www.bargainchemist.co.nz/blogs/wellbeing-hub/the-miracle-of-magnesium">guide to magnesium for sleep and relaxation</a> for ways to improve your sleep quality.</li>
+  <li><strong>Stay within Health NZ low-risk drinking limits.</strong> That is no more than 10 standard drinks a week for women, 15 for men, with at least two alcohol-free days, per <a href="https://info.health.nz/health-topics/mental-health/alcohol-and-drug-addiction/drinking-responsibly">Health NZ</a>. A standard drink is 10 g of pure alcohol. That is about a 330 ml can of 4% beer or a 100 ml glass of 12.5% wine.</li>
+  <li><strong>Hit your fibre target.</strong> Kiwi adults average around 20 g of fibre a day. The <a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">Eating and Activity Guidelines</a> suggest 28 g a day for women and 38 g for men. Wholegrains, legumes, vegetables and fruit are the easiest sources.</li>
+  <li><strong>Drink water every day.</strong> Aim for about 2.1 L for women and 2.6 L for men in total fluids. Plain tap water is ideal.</li>
+  <li><strong>Move every day.</strong> Regular exercise helps bile flow, helps your body use insulin, and reduces fat in the liver. This is confirmed across many large reviews.</li>
+  <li><strong>Sleep 7 to 9 hours.</strong> Deep sleep is when your brain's overnight waste-clearance cycle runs at full speed. See our <a href="https://www.bargainchemist.co.nz/blogs/wellbeing-hub/the-miracle-of-magnesium">guide to magnesium for sleep</a>.</li>
 </ol>
 
 <!-- =============================== H2 8 =============================== -->
 <h2 id="talk-to-pharmacist">When to talk to your pharmacist or GP</h2>
 
-<p>If you have lasting tiredness, yellowing of the skin or eyes (jaundice), dark urine, pale stools, right-sided tummy pain or unexplained nausea, please see your GP rather than reach for a supplement. These signs need clinical assessment and possibly blood tests for liver function.</p>
+<p>See your GP rather than reach for a supplement if you have lasting tiredness, yellow skin or eyes (jaundice), dark urine, pale stools, right-sided tummy pain or unexplained nausea. These signs need clinical checks and possibly blood tests.</p>
 
-<p>Every Bargain Chemist pharmacy in New Zealand has a registered pharmacist available to review your full medicines list and answer questions about supplement safety. No appointment is needed. Find your nearest store on the <a href="https://www.bargainchemist.co.nz/pages/find-a-store">Bargain Chemist store locator</a>.</p>
+<p>Every Bargain Chemist pharmacy in NZ has a registered pharmacist ready to review your full medicines list and answer questions about supplement safety. No appointment is needed. Find your nearest store on the <a href="https://www.bargainchemist.co.nz/pages/find-a-store">Bargain Chemist store locator</a>.</p>
 
 <!-- =============================== H2 9 — FAQ =============================== -->
 <h2 id="faq">Frequently asked questions</h2>
@@ -549,40 +584,40 @@
 <div class="bc-faq">
 
 <h3>Do detox supplements actually work?</h3>
-<p>Some do, in specific ways. Soluble fibre, multi-strain probiotics and milk thistle (silymarin) have meaningful clinical evidence behind them for bowel transit, gut and liver health, and liver-cell protection. Detox teas, foot pads and 3 to 7 day cleanse kits do not have credible evidence behind their toxin-removal claims.</p>
+<p>Some do, in specific ways. Soluble fibre, multi-strain probiotics and milk thistle have real clinical evidence for bowel transit, gut and liver health, and liver-cell protection. Detox teas, foot pads and 3 to 7 day cleanse kits do not have credible evidence behind their toxin-removal claims.</p>
 
 <h3>Does my liver actually need cleansing?</h3>
-<p>A healthy liver does not need cleansing. It cleanses itself all the time through Phase 1, Phase 2 and Phase 3 enzyme pathways. Supplements can support those pathways, especially if alcohol, diet or medicines place extra demand on the liver. They are not a substitute for the body's own detox system.</p>
+<p>A healthy liver does not need cleansing. It cleans itself all the time, in three steps. Supplements can support those steps, especially when alcohol, diet or medicines place extra demand on the liver. They are not a substitute for your body's own cleanup system.</p>
 
-<h3>What does milk thistle do, and is there evidence it works?</h3>
-<p>Milk thistle's active compound, silymarin, has antioxidant properties. It is studied for protecting liver cells from oxidative damage. The <a href="https://www.nccih.nih.gov/health/milk-thistle">NCCIH</a> describes the evidence as "promising" for supportive use. The <a href="https://www.cochrane.org/CD003620/LIVER_no-evidence-supporting-or-refuting-milk-thistle-for-alcoholic-andor-hepatitis-b-or-c-virus-liver-diseases">Cochrane Review</a> found no clear effect on liver-disease mortality. Silymarin has a strong safety profile.</p>
+<h3>What does milk thistle do, and is there evidence?</h3>
+<p>Milk thistle's active compound, silymarin, has antioxidant properties. It is studied for protecting liver cells from oxidative stress. <a href="https://www.nccih.nih.gov/health/milk-thistle">NCCIH</a> calls the evidence "promising" for supportive use. The Cochrane Review found no clear effect on liver-disease deaths. Safety profile is strong.</p>
 
 <h3>How long do you need to take milk thistle to see results?</h3>
-<p>Clinical studies that measure liver blood markers (ALT, AST) usually run for 8 to 12 weeks. If you take milk thistle for general liver support, give it at least 8 weeks at the dose on the label, alongside lifestyle changes. If you take it for a specific clinical reason, talk with your pharmacist or GP about an appropriate length.</p>
+<p>Clinical studies that measure liver blood markers usually run for 8 to 12 weeks. If you take milk thistle for general support, give it at least 8 weeks at the dose on the label, alongside lifestyle changes. If you take it for a specific clinical reason, talk with your pharmacist or GP about the right length.</p>
 
-<h3>Are there side effects or medicine interactions I should know about?</h3>
-<p>Milk thistle is generally well tolerated. It can affect medicines processed by the CYP2C9 enzyme, including warfarin, some statins and certain diabetes medicines. High-dose turmeric and high-dose green-tea extract have been linked to liver injury in case reports. Always speak with your pharmacist before starting a supplement if you take any prescription medicine.</p>
+<h3>Are there side effects or medicine clashes I should know about?</h3>
+<p>Milk thistle is generally well tolerated. It can affect medicines processed by certain liver enzymes, including blood thinners, some statins and certain diabetes medicines. High-dose turmeric and high-dose green-tea extract have been linked to liver injury in case reports. Always check with your pharmacist before starting a supplement if you take any prescription medicine.</p>
 
 <h3>Are detox teas safe, and do they help with weight loss?</h3>
-<p>Most detox teas sold in New Zealand contain senna or cascara, which are stimulant laxatives. Short-term weight loss is from water and stool, not body fat or toxins. Daily use can cause dehydration, electrolyte imbalance and laxative dependence. They are safe for occasional short-term use as a laxative, but not as a wellness habit.</p>
+<p>Most detox teas sold in NZ contain senna or cascara, which are stimulant laxatives. Short-term weight loss is from water and stool, not body fat. Daily use can cause dehydration, low potassium and laxative dependence. They are safe for occasional short-term use as a laxative. They are not a wellness habit.</p>
 
-<h3>What are the signs that my liver might be struggling?</h3>
-<p>Lasting tiredness, yellowing of the skin or eyes, dark urine, pale stools, right-sided tummy pain, easy bruising, unexplained itching and abdominal swelling are all reasons to see your GP. These signs need clinical assessment with blood tests. They should not be self-managed with a supplement.</p>
+<h3>What are the signs my liver might be struggling?</h3>
+<p>Lasting tiredness, yellow skin or eyes, dark urine, pale stools, right-sided tummy pain, easy bruising, unexplained itching and swelling in the belly are all reasons to see your GP. These need clinical assessment with blood tests. They should not be self-managed with a supplement.</p>
 
-<h3>What foods and drinks actually support liver health?</h3>
-<p>The <a href="https://www.hepatitisfoundation.org.nz/blog/post/106600/five-superfoods-for-your-liver/">Hepatitis Foundation of New Zealand</a> highlights leafy greens, cruciferous vegetables (broccoli, kale, cabbage), berries, fatty fish, nuts and olive oil. These provide antioxidants and Phase 2 building blocks. Coffee in moderation is also linked to lower liver enzyme levels in observational studies.</p>
+<h3>What foods and drinks support liver health?</h3>
+<p>The <a href="https://www.hepatitisfoundation.org.nz/blog/post/106600/five-superfoods-for-your-liver/">Hepatitis Foundation of NZ</a> highlights leafy greens, broccoli, kale, cabbage, berries, fatty fish, nuts and olive oil. These provide antioxidants and Step 2 building blocks. Coffee in moderation is also linked to lower liver-enzyme levels in observational studies.</p>
 
 <h3>How often should I do a liver detox?</h3>
-<p>The honest pharmacist answer is that ongoing daily habits beat any periodic "detox programme". Fibre, water, less alcohol, exercise and sleep do more than any kit. If you choose to take a liver-support supplement, most NZ products are designed for daily use over one to three months. There is no medical reason to do a 7-day cleanse.</p>
+<p>The honest pharmacist answer is that ongoing daily habits beat any short "detox programme". Fibre, water, less alcohol, exercise and sleep do more than any kit. If you choose a liver-support supplement, most NZ products are designed for daily use over 1 to 3 months. There is no medical reason to do a 7-day cleanse.</p>
 
 <h3>Can supplements help with a hangover or protect my liver when I drink?</h3>
-<p>Evidence for hangover-prevention supplements is limited. The most effective recovery is water, sleep, food and time. No supplement reverses alcohol's effects on the liver. If you regularly exceed Health New Zealand's low-risk drinking guidelines (10 standard drinks per week for women, 15 for men), the single most useful action is to cut back.</p>
+<p>Evidence for hangover-prevention supplements is limited. The most effective recovery is water, sleep, food and time. No supplement reverses alcohol's effects on the liver. If you regularly exceed Health NZ low-risk drinking guidelines (10 a week for women, 15 for men), the most useful step is to cut back.</p>
 
-<h3>Can a supplement reverse fatty liver disease?</h3>
-<p>No supplement is approved to treat or reverse fatty liver disease in New Zealand. The strongest evidence for reversing non-alcoholic fatty liver is steady weight loss (typically 7 to 10% of body weight), more physical activity, and cutting back on alcohol and refined carbohydrates. If you have been diagnosed with fatty liver, please talk to your GP rather than self-treat.</p>
+<h3>Can a supplement reverse fatty liver?</h3>
+<p>No supplement is approved to treat or reverse fatty liver in New Zealand. The strongest evidence is steady weight loss (typically 7 to 10% of body weight), more activity, and cutting back on alcohol and refined carbs. If you have been diagnosed with fatty liver, please talk to your GP rather than self-treat.</p>
 
 <h3>What ingredients should I look for in a liver supplement?</h3>
-<p>Look for products with a clearly stated active ingredient and dose. For example, standardised silymarin from milk thistle at a named extract strength. Avoid hidden proprietary blends, very high-dose turmeric extracts, and stimulant-laxative-based "detox teas" marketed for daily long-term use.</p>
+<p>Look for a clearly stated active ingredient and dose. For example, milk thistle with a named extract strength. Avoid hidden proprietary blends, very high-dose turmeric extracts, and stimulant-laxative-based "detox teas" marketed for daily long-term use.</p>
 
 </div>
 
@@ -592,23 +627,23 @@
 <div class="bc-bibliography">
   <ol>
     <li><a href="https://www.nccih.nih.gov/health/milk-thistle">NCCIH (NIH). Milk Thistle Fact Sheet</a>.</li>
-    <li><a href="https://www.nccih.nih.gov/health/detoxes-and-cleanses-what-you-need-to-know">NCCIH (NIH). "Detoxes" and "Cleanses": What You Need To Know</a>.</li>
-    <li><a href="https://www.cochrane.org/CD003620/LIVER_no-evidence-supporting-or-refuting-milk-thistle-for-alcoholic-andor-hepatitis-b-or-c-virus-liver-diseases">Rambaldi A, Jacobs BP, Gluud C. Milk thistle for alcoholic and/or hepatitis B or C virus liver diseases. Cochrane Database Syst Rev. 2007;(4):CD003620</a>.</li>
-    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11404857/">Dhande RS et al. Silymarin as an Antioxidant Therapy in Chronic Liver Diseases. Cureus. 2024</a>.</li>
-    <li><a href="https://pubmed.ncbi.nlm.nih.gov/25522674/">Klein AV, Kiat H. Detox diets for toxin elimination and weight management: a critical review. J Hum Nutr Diet. 2015;28(6):675 to 686</a>.</li>
+    <li><a href="https://www.nccih.nih.gov/health/detoxes-and-cleanses-what-you-need-to-know">NCCIH (NIH). Detoxes and Cleanses: What You Need To Know</a>.</li>
+    <li><a href="https://www.cochrane.org/CD003620/LIVER_no-evidence-supporting-or-refuting-milk-thistle-for-alcoholic-andor-hepatitis-b-or-c-virus-liver-diseases">Rambaldi A, Jacobs BP, Gluud C. Milk thistle for liver diseases. Cochrane 2007;(4):CD003620</a>.</li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11404857/">Dhande RS et al. Silymarin as Antioxidant Therapy in Chronic Liver Diseases. Cureus 2024</a>.</li>
+    <li><a href="https://pubmed.ncbi.nlm.nih.gov/25522674/">Klein AV, Kiat H. Detox diets for toxin elimination and weight management: a critical review. J Hum Nutr Diet 2015</a>.</li>
     <li><a href="https://www.bda.uk.com/resource/detox-diets.html">British Dietetic Association. Detox Diets Food Fact Sheet</a>.</li>
-    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10964906/">Xiong Y et al. Clinical efficacy of probiotics in alcoholic liver disease: systematic review and meta-analysis. Front Cell Infect Microbiol. 2024;14:1358063</a>.</li>
-    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11820471/">Sakaki JR et al. Effects of Vegetable and Fruit Juicing on Gut and Oral Microbiome Composition. Nutrients. 2025;17(3):458</a>.</li>
-    <li><a href="https://info.health.nz/health-topics/mental-health/alcohol-and-drug-addiction/drinking-responsibly">Health New Zealand | Te Whatu Ora. Drinking responsibly: low-risk alcohol guidelines</a>.</li>
-    <li><a href="https://www.health.govt.nz/publications/annual-update-of-key-results-202425-new-zealand-health-survey">Ministry of Health. Annual Update of Key Results 2024/25 New Zealand Health Survey</a>.</li>
-    <li><a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">Health New Zealand | Te Whatu Ora. Eating and Activity Guidelines for New Zealand Adults</a>.</li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10964906/">Xiong Y et al. Probiotics in alcoholic liver disease. Front Cell Infect Microbiol 2024</a>.</li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11820471/">Sakaki JR et al. Vegetable and Fruit Juicing and the Microbiome. Nutrients 2025</a>.</li>
+    <li><a href="https://info.health.nz/health-topics/mental-health/alcohol-and-drug-addiction/drinking-responsibly">Health New Zealand. Drinking responsibly</a>.</li>
+    <li><a href="https://www.health.govt.nz/publications/annual-update-of-key-results-202425-new-zealand-health-survey">Ministry of Health. NZ Health Survey 2024/25</a>.</li>
+    <li><a href="https://www.tewhatuora.govt.nz/health-services-and-programmes/nutrition/eating-and-activity-guidelines">Te Whatu Ora. Eating and Activity Guidelines</a>.</li>
     <li><a href="https://www.hepatitisfoundation.org.nz/fatty-liver-disease/">Hepatitis Foundation of New Zealand. Fatty Liver Disease</a>.</li>
-    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5063157/">PMC: Obesity and extent of liver damage among adult New Zealanders</a>.</li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5063157/">Obesity and liver damage in New Zealand adults. PMC</a>.</li>
     <li><a href="https://www.otago.ac.nz/news/newsroom/health-burden-of-alcohol-highlighted-in-report">University of Otago. Health burden of alcohol report</a>.</li>
     <li><a href="https://www.medsafe.govt.nz/regulatory/dietarysupplements/regulation.asp">Medsafe. Regulation of Dietary Supplements</a>.</li>
     <li><a href="https://www.hopkinsmedicine.org/health/expert-qa/detoxing-your-liver-fact-versus-fiction">Johns Hopkins Medicine. Detoxing Your Liver: Fact vs Fiction</a>.</li>
-    <li><a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">Houston Methodist. How Can Supplements Affect the Liver? (October 2025)</a>.</li>
-    <li><a href="https://www.sciencemediacentre.co.nz/2020/09/16/supplement-linked-to-liver-harm-taken-off-shelves-expert-reaction/">NZ Science Media Centre (2020). Supplement linked to liver harm taken off shelves</a>.</li>
+    <li><a href="https://www.houstonmethodist.org/blog/articles/2025/oct/how-can-supplements-affect-the-liver/">Houston Methodist. How Can Supplements Affect the Liver (Oct 2025)</a>.</li>
+    <li><a href="https://www.sciencemediacentre.co.nz/2020/09/16/supplement-linked-to-liver-harm-taken-off-shelves-expert-reaction/">NZ Science Media Centre (2020). Supplement linked to liver harm</a>.</li>
     <li><a href="https://www.consumer.org.nz/articles/why-are-natural-health-products-so-popular">Consumer NZ. Why are natural health products so popular</a>.</li>
     <li><a href="https://www.grandviewresearch.com/industry-analysis/australia-new-zealand-dietary-supplements-market-report">Grand View Research. Australia and New Zealand Dietary Supplements Market Report</a>.</li>
     <li><a href="https://pharmacycouncil.org.nz/wp-content/uploads/2021/03/Code-of-Ethics-2018-FINAL.pdf">Pharmacy Council of New Zealand. Code of Ethics 2018</a>.</li>
@@ -633,7 +668,7 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Liver Detox Supplements NZ: A Pharmacist's Evidence-Based Guide (2026)",
-  "description": "A New Zealand pharmacist's guide to liver detox supplements. Milk thistle, NAC and globe artichoke compared, with safety, dosage and NZ-made picks.",
+  "description": "A New Zealand pharmacist's plain-English guide to liver detox supplements. Milk thistle, NAC and globe artichoke compared, with safety, dosage and NZ-made picks.",
   "inLanguage": "en-NZ",
   "author": {
     "@type": "Organization",
@@ -662,14 +697,23 @@
   "@context": "https://schema.org",
   "@type": "MedicalWebPage",
   "name": "Liver Detox Supplements NZ: A Pharmacist's Evidence-Based Guide (2026)",
-  "description": "A New Zealand pharmacist's evidence-based guide to liver detox supplements. What works, what does not, drug interactions, and NZ-made picks.",
+  "description": "A New Zealand pharmacist's plain-English guide to liver detox supplements. What works, what does not, medicine clashes, and NZ-made picks.",
   "inLanguage": "en-NZ",
   "url": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub/liver-detox-supplements-nz-pharmacist-guide",
   "lastReviewed": "2026-05-28",
   "reviewedBy": {
-    "@type": "Organization",
-    "name": "Bargain Chemist Pharmacy Team",
-    "url": "https://www.bargainchemist.co.nz"
+    "@type": "Person",
+    "name": "[REVIEWING_PHARMACIST_NAME]",
+    "jobTitle": "NZ-Registered Pharmacist",
+    "affiliation": {
+      "@type": "Organization",
+      "name": "Bargain Chemist"
+    },
+    "identifier": {
+      "@type": "PropertyValue",
+      "propertyID": "PharmacyCouncilNZ-APC",
+      "value": "[APC_NUMBER]"
+    }
   },
   "specialty": "Pharmacy",
   "audience": {
@@ -693,24 +737,9 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://www.bargainchemist.co.nz/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Wellbeing Hub",
-      "item": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "Liver Detox Supplements NZ: A Pharmacist's Guide",
-      "item": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub/liver-detox-supplements-nz-pharmacist-guide"
-    }
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.bargainchemist.co.nz/" },
+    { "@type": "ListItem", "position": 2, "name": "Wellbeing Hub", "item": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub" },
+    { "@type": "ListItem", "position": 3, "name": "Liver Detox Supplements NZ: A Pharmacist's Guide", "item": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub/liver-detox-supplements-nz-pharmacist-guide" }
   ]
 }
 </script>
@@ -722,86 +751,16 @@
   "@type": "FAQPage",
   "inLanguage": "en-NZ",
   "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Do detox supplements actually work?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Some do, in specific ways. Soluble fibre, multi-strain probiotics and milk thistle (silymarin) have meaningful clinical evidence behind them for bowel transit, gut and liver health, and liver-cell protection. Detox teas, foot pads and 3 to 7 day cleanse kits do not have credible evidence behind their toxin-removal claims."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does my liver actually need cleansing?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A healthy liver does not need cleansing. It cleanses itself all the time through Phase 1, Phase 2 and Phase 3 enzyme pathways. Supplements can support those pathways, especially if alcohol, diet or medicines place extra demand on the liver. They are not a substitute for the body's own detox system."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What does milk thistle do, and is there evidence it works?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Milk thistle's active compound, silymarin, has antioxidant properties. It is studied for protecting liver cells from oxidative damage. NCCIH describes the evidence as promising for supportive use. The Cochrane Review found no clear effect on liver-disease mortality. Silymarin has a strong safety profile."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long do you need to take milk thistle to see results?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Clinical studies that measure liver blood markers (ALT, AST) usually run for 8 to 12 weeks. If you take milk thistle for general liver support, give it at least 8 weeks at the dose on the label, alongside lifestyle changes. If you take it for a specific clinical reason, talk with your pharmacist or GP about an appropriate length."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Are there side effects or medicine interactions I should know about?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Milk thistle is generally well tolerated. It can affect medicines processed by the CYP2C9 enzyme, including warfarin, some statins and certain diabetes medicines. High-dose turmeric and high-dose green-tea extract have been linked to liver injury in case reports. Always speak with your pharmacist before starting a supplement if you take any prescription medicine."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Are detox teas safe and do they help with weight loss?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Most detox teas sold in New Zealand contain senna or cascara, which are stimulant laxatives. Short-term weight loss is from water and stool, not body fat or toxins. Daily use can cause dehydration, electrolyte imbalance and laxative dependence. They are safe for occasional short-term use as a laxative, but not as a wellness habit."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What foods and drinks actually support liver health?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The Hepatitis Foundation of New Zealand highlights leafy greens, cruciferous vegetables such as broccoli, kale and cabbage, berries, fatty fish, nuts and olive oil. These provide antioxidants and Phase 2 building blocks. Coffee in moderation is also linked to lower liver enzyme levels in observational studies."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How often should I do a liver detox?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Ongoing daily habits beat any periodic detox programme. Fibre, water, less alcohol, exercise and sleep do more than any kit. If you choose to take a liver-support supplement, most NZ products are designed for daily use over one to three months. There is no medical reason to do a 7-day cleanse."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can supplements help with a hangover or protect my liver when I drink?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Evidence for hangover-prevention supplements is limited. The most effective recovery is water, sleep, food and time. No supplement reverses alcohol's effects on the liver. If you regularly exceed Health New Zealand's low-risk drinking guidelines (10 standard drinks per week for women, 15 for men), the single most useful action is to cut back."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What ingredients should I look for in a liver supplement?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Look for products with a clearly stated active ingredient and dose. For example, standardised silymarin from milk thistle at a named extract strength. Avoid hidden proprietary blends, very high-dose turmeric extracts, and stimulant-laxative-based detox teas marketed for daily long-term use."
-      }
-    }
+    { "@type": "Question", "name": "Do detox supplements actually work?", "acceptedAnswer": { "@type": "Answer", "text": "Some do, in specific ways. Soluble fibre, multi-strain probiotics and milk thistle have real clinical evidence for bowel transit, gut and liver health, and liver-cell protection. Detox teas, foot pads and 3 to 7 day cleanse kits do not have credible evidence behind their toxin-removal claims." } },
+    { "@type": "Question", "name": "Does my liver actually need cleansing?", "acceptedAnswer": { "@type": "Answer", "text": "A healthy liver does not need cleansing. It cleans itself all the time, in three steps. Supplements can support those steps, especially when alcohol, diet or medicines place extra demand on the liver. They are not a substitute for your body's own cleanup system." } },
+    { "@type": "Question", "name": "What does milk thistle do, and is there evidence?", "acceptedAnswer": { "@type": "Answer", "text": "Milk thistle's active compound, silymarin, has antioxidant properties. It is studied for protecting liver cells from oxidative stress. NCCIH calls the evidence promising for supportive use. The Cochrane Review found no clear effect on liver-disease deaths. Safety profile is strong." } },
+    { "@type": "Question", "name": "How long do you need to take milk thistle to see results?", "acceptedAnswer": { "@type": "Answer", "text": "Clinical studies that measure liver blood markers usually run for 8 to 12 weeks. If you take milk thistle for general support, give it at least 8 weeks at the dose on the label, alongside lifestyle changes. If you take it for a specific clinical reason, talk with your pharmacist or GP about the right length." } },
+    { "@type": "Question", "name": "Are there side effects or medicine clashes I should know about?", "acceptedAnswer": { "@type": "Answer", "text": "Milk thistle is generally well tolerated. It can affect medicines processed by certain liver enzymes, including blood thinners, some statins and certain diabetes medicines. High-dose turmeric and high-dose green-tea extract have been linked to liver injury in case reports. Always check with your pharmacist before starting a supplement if you take any prescription medicine." } },
+    { "@type": "Question", "name": "Are detox teas safe and do they help with weight loss?", "acceptedAnswer": { "@type": "Answer", "text": "Most detox teas sold in NZ contain senna or cascara, which are stimulant laxatives. Short-term weight loss is from water and stool, not body fat. Daily use can cause dehydration, low potassium and laxative dependence. They are safe for occasional short-term use as a laxative. They are not a wellness habit." } },
+    { "@type": "Question", "name": "What foods and drinks support liver health?", "acceptedAnswer": { "@type": "Answer", "text": "The Hepatitis Foundation of New Zealand highlights leafy greens, broccoli, kale, cabbage, berries, fatty fish, nuts and olive oil. These provide antioxidants and Step 2 building blocks. Coffee in moderation is also linked to lower liver-enzyme levels in observational studies." } },
+    { "@type": "Question", "name": "How often should I do a liver detox?", "acceptedAnswer": { "@type": "Answer", "text": "Ongoing daily habits beat any short detox programme. Fibre, water, less alcohol, exercise and sleep do more than any kit. If you choose a liver-support supplement, most NZ products are designed for daily use over 1 to 3 months. There is no medical reason to do a 7-day cleanse." } },
+    { "@type": "Question", "name": "Can supplements help with a hangover or protect my liver when I drink?", "acceptedAnswer": { "@type": "Answer", "text": "Evidence for hangover-prevention supplements is limited. The most effective recovery is water, sleep, food and time. No supplement reverses alcohol's effects on the liver. If you regularly exceed Health New Zealand low-risk drinking guidelines (10 a week for women, 15 for men), the most useful step is to cut back." } },
+    { "@type": "Question", "name": "What ingredients should I look for in a liver supplement?", "acceptedAnswer": { "@type": "Answer", "text": "Look for a clearly stated active ingredient and dose. For example, milk thistle with a named extract strength. Avoid hidden proprietary blends, very high-dose turmeric extracts, and stimulant-laxative-based detox teas marketed for daily long-term use." } }
   ]
 }
 </script>
