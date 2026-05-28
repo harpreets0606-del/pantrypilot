@@ -1,207 +1,226 @@
-# Bargain Chemist Blogger Playbook
+# Bargain Chemist Blogger Playbook (v2 — research-validated)
 
-This file is auto-loaded by Claude Code on every session. It is the reusable house style + SEO/GEO/AEO playbook for the Bargain Chemist Wellbeing Hub blog. When the user asks to "write a blog" or "draft a blog post", follow this playbook end-to-end without re-asking the standard questions.
+This file auto-loads every Claude Code session. It is the durable house style + SEO/GEO/AEO operations manual for the Bargain Chemist Wellbeing Hub blog. Validated against 2025–2026 best practices, NZ regulatory framework, and live NZ SERP competitor analysis (May 2026).
 
-The only questions to ask up front each time are:
-1. Blog topic / angle
-2. Audience focus (general NZ, parents, seniors, athletes, etc.)
-3. Any seasonal or campaign tie-in (e.g. winter immunity, hay fever season)
-4. Any specific products or brands to prioritise (otherwise pick from the product map)
+When the user asks to "write a blog", follow this playbook end-to-end and ask **only** these four questions up front:
 
-Everything else (length, format, tone, schema, structure) defaults to what's in this playbook.
+1. Topic and angle
+2. Audience focus (general NZ, parents, seniors, athletes)
+3. Seasonal or campaign tie-in
+4. Specific products or brands to prioritise (otherwise pick from `/research/` dossiers + live Shopify search)
+
+Everything else (length, tone, schema, structure, citations approach) defaults to what is in this playbook.
 
 ---
 
-## 1. About Bargain Chemist (use for context and E-E-A-T blocks)
+## 1. About Bargain Chemist (context for every blog)
 
-- **Business**: New Zealand pharmacy chain + ecommerce on Shopify Plus
-- **Positioning**: "New Zealand's Cheapest Chemist" — value, price-beat guarantee
+- **Business**: NZ pharmacy chain + Shopify Plus ecommerce
+- **Positioning**: "New Zealand's Cheapest Chemist" — price-beat guarantee, value-led
 - **Domain**: `https://www.bargainchemist.co.nz`
 - **Blog path**: `https://www.bargainchemist.co.nz/blogs/wellbeing-hub/<article-handle>`
-- **Country / locale**: New Zealand (NZD, NZ English spelling, NZ Medsafe regulatory context)
-- **Author byline for every blog**: "Bargain Chemist Pharmacy Team" (unless user specifies a named pharmacist)
+- **Locale**: New Zealand (NZD, NZ English spelling, NZ Medsafe/MoH/ASA regulatory framework)
+- **Standard byline**: "Bargain Chemist Pharmacy Team" — unless the user names a registered NZ pharmacist as the lead author
+- **Standard reviewer line**: every blog includes a visible "Medically reviewed by [Name, role] on [date]" line at the top (required for YMYL E-E-A-T after Dec 2025 Core Update)
 
 ---
 
-## 2. SEO + GEO + AEO Framework
+## 2. SEO + GEO + AEO Framework (2025–26 validated)
 
-Every blog must be optimised for three layers simultaneously:
+### 2.1 SEO — current Google ranking factors for YMYL health
+- **Sept 2025 SQRG update**: low-effort AI-generated or paraphrased content is now explicitly classified "lowest quality". AI-assisted drafting must always have a human + clinician editorial layer.
+- **Dec 2025 Core Update**: ~67% of YMYL health pages lacking physician/pharmacist authorship lost rankings on symptom/treatment queries.
+- **Trust** is the dominant E-E-A-T pillar for YMYL: transparent contact, NZ physical pharmacy address, editorial policy page, reviewer policy.
+- **Experience** is weighted on par with credentials — include real pharmacy-counter examples / NZ-specific scenarios.
+- Targets per post: primary keyword in H1, slug, first 100 words, one H2, image alt; 10–15 contextual internal links; ≥3 inline NZ-first citations; ≥1 product or collection link; ≥2 related-blog links.
 
-### SEO (traditional Google ranking)
-- 1 primary keyword + 3–5 secondary keywords identified before writing
-- Primary keyword in: H1, first 100 words, meta title, slug, at least one H2, image alt text
-- Internal links to at least 3 Bargain Chemist collection pages and 2–4 product pages
-- 1–2 outbound authority links to non-competing sources (Ministry of Health NZ, Medsafe, NIH ODS, Cochrane, WHO)
-- Image alt text on every visual (descriptive, keyword-aware, never stuffed)
-- URL slug: lowercase, hyphenated, max 5 words, primary keyword included
+### 2.2 GEO — Princeton 2024 + 2025–26 industry data
+- **Statistics with named source** → +41% AI Overview visibility
+- **Direct quotes from named experts** → +28% on subjective impression metrics
+- **Inline source citation** → up to +115% visibility for lower-ranked pages
+- **Fluency + authoritative declarative voice** are in the top 5 tactics
+- **55% of AI Overview citations are pulled from the top 30% of a page** — front-load the direct answer in the first 100–150 words
+- **Content <3 months old is ~3× more likely to be cited** — refresh every 90–120 days; substantive update, not date-bump
+- **Multi-modal pages (text + image + video + table) show +156% AI selection rate**
+- **YouTube is the most-cited AIO domain (+34% in 6 months)** — embed a short explainer or include a video transcript where relevant
 
-### GEO (Generative Engine Optimisation — for AI Overviews, ChatGPT, Perplexity, Gemini)
-- Open with a clear, citation-ready **definition** in section 1 — AI engines love definitional answers
-- Use **structured "What / Why / How" patterns** in H2s
-- Include at least one **data table or comparison chart** — AI engines extract these into answers
-- Cite **named sources inline** (e.g. "According to the NZ Ministry of Health…") — AI engines need named entities, not vague "studies show"
-- Use **clear factual statements** in the first sentence of each section (the "topic sentence" pattern)
-- Reference **New Zealand specifically** in headings and body (e.g. "in New Zealand", "for Kiwi consumers", "NZ Medsafe") — strengthens geographic relevance for AI engines
-- Include a **TL;DR / Key Takeaways** box near the top — directly answers the query in 2–4 sentences
+### 2.3 AEO — Answer Engines + voice + Google PAA
+- Pose at least 4–6 H2/H3s as natural questions ("Does milk thistle actually work?")
+- Direct answer in ≤55 words immediately below each question heading (featured-snippet and voice-search target)
+- FAQ section at the end: 8–12 Q&As, each Q an H3, each A 40–60 words
+- FAQPage JSON-LD schema for every post — Google removed FAQ rich results in May 2026 but LLMs (ChatGPT, Perplexity, Gemini, Claude, Copilot) still parse the schema
+- Match real "People Also Ask" phrasing — research before writing (see workflow section 12)
 
-### AEO (Answer Engine Optimisation — Google PAA, voice search, featured snippets)
-- Every blog ends with a **FAQ section of 8–12 Q&As** targeting "People Also Ask"
-- Every FAQ has **FAQPage JSON-LD schema** embedded at the bottom of the blog body
-- Each FAQ answer: 40–60 words, full-sentence, self-contained (no "see above")
-- Include 1–2 **how-to lists** (numbered) inside the body — featured-snippet friendly
-- Use **question-style H2s** where natural (e.g. "Do detox supplements actually work?")
+### 2.4 LLM-specific source biases (use when prioritising)
+- ChatGPT favours Wikipedia (~48% of citations)
+- Perplexity favours Reddit (~47%) and real-time news
+- Claude favours bulleted/tabular structure (+30% citation likelihood) → use bullets and tables generously
+- Gemini overlaps ~54% with Google organic
+- **Implication for our blog**: maintain bullet + table structure (Claude), seed authoritative NZ entity references (all engines), front-load the answer (all engines)
 
 ---
 
-## 3. House Voice & Tone
+## 3. House Voice & Tone (NZ pharmacy)
 
-- **Second person** ("you", "your") — direct, helpful
-- **Plain Kiwi English**: NZ spelling (colour, fibre, paediatric, optimise), no Americanisms
-- **Pharmacy team voice**: knowledgeable but warm, never preachy
-- **Evidence-led but consumer-friendly**: cite studies in plain language ("a 2021 Cochrane review found…" not "the literature suggests…")
-- **No hype, no fear-mongering**: balanced, fair, honest about what's proven vs marketed
-- **Use "may support" / "may help"** for supplement benefits (NZ regulatory safe)
-- **Never claim cure / treat / prevent disease** for supplements (Medsafe / Therapeutic Products compliance)
-- **Acknowledge limitations** ("evidence is mixed", "more research needed") — builds trust and AI engines reward this
+- **Second person** ("you", "your") — direct, helpful, pharmacy-counter tone
+- **Plain Kiwi English** with NZ spelling (colour, fibre, paediatric, optimise)
+- **Evidence-led but consumer-friendly**: "A 2024 Cureus review of silymarin found…" not "studies suggest…"
+- **Compliant supplement phrasing**: "may support healthy liver function", "traditionally used to support digestion", "contains evidence-backed silymarin at a clinically studied dose" — focus on the ingredient + the evidence, NOT the disease + the cure
+- **Acknowledge limitations** ("evidence is mixed", "the Cochrane review found insufficient evidence") — builds trust + AI engines reward this
 - Avoid emojis in body content
-- Sentence length: vary, but keep most sentences ≤ 25 words for scannability
+- Sentence length: vary, keep most ≤ 25 words for scannability
+- Use **declarative, authoritative voice** (Princeton GEO finding) — fewer "might possibly maybes"; clear statements backed by citations
 
 ---
 
-## 4. Standard Blog Structure (long-form pillar, 2,000–3,000 words)
+## 4. Standard long-form pillar structure (target 3,200–4,000 words)
 
-Every blog follows this skeleton:
+Pillar posts beat NZ competitor average length (1,000–1,800 words) by 1.7–2×.
 
 ```
 1. Hero
-   - H1 (includes primary keyword + year if topical)
-   - 1-line subhead (the "promise")
-   - TL;DR / Key Takeaways box (3-4 bullets — AEO + GEO gold)
-   - Reading time
-   - "By Bargain Chemist Pharmacy Team · Reviewed: <month year>"
+   - H1 (primary keyword + year)
+   - 1-line subhead (the promise)
+   - Reviewed-by line: "Medically reviewed by [Name, role] on [date]"
+   - Byline + reading time
+   - Table of contents (anchor links to all H2s)
 
-2. Intro (100-150 words)
-   - Hook with a NZ-relevant fact or statistic
+2. TL;DR / Key Takeaways box (3–4 bullets — AEO + GEO gold, will likely be the AIO citation surface)
+
+3. Intro (100–150 words)
+   - Hook with a NZ statistic with named source (Princeton GEO +41% lever)
    - State what the reader will learn (3 bullets)
-   - Define the topic in 1 sentence (GEO ranking signal)
+   - Define the topic in 1 sentence
 
-3. Definitional H2: "What is [topic]?"
-   - Clear textbook-style definition
+4. Definitional H2: "What is [topic]?"
+   - Textbook-style definition
    - Inline infographic OR table
 
-4. Context H2: "[Topic] in New Zealand"
-   - NZ-specific data or framing
-   - Mention Ministry of Health / Medsafe where relevant
+5. Mechanism H2: "How [topic] actually works"
+   - Biology / pharmacology
+   - SVG diagram
 
-5. Evidence H2: "What the science actually says"
-   - Sub-section "What works" (with citations)
-   - Sub-section "What doesn't work / weak evidence"
+6. Context H2: "[Topic] in New Zealand"
+   - NZ statistic + citation
+   - Reference to Medsafe / Te Whatu Ora / Healthify NZ / Hepatitis Foundation NZ etc.
+
+7. Evidence H2: "What the science actually says"
+   - Sub-section "What works" with evidence-tier table (Strong / Moderate / Limited / Insufficient) with one citation per row
+   - Sub-section "What doesn't / weak evidence"
    - Bar chart or comparison table (SVG)
 
-6. Buyer's guide H2: "How to choose [product type]"
+8. Buyer's guide H2: "How to choose [product type]"
    - Numbered list of 5 criteria
    - Red flags / what to avoid
 
-7. Product picks H2: "Our pharmacy team's top picks"
-   - 4-6 internally-linked product cards
-   - Mix of price points (budget / mid / premium)
-   - Link to relevant collection page at end of section
+9. Safety H2: "Drug interactions and who should not take this"
+   - Pharmacist-reviewed interaction table (unique pharmacy moat)
+   - Pregnancy / breastfeeding / children / chronic-condition caveats
 
-8. Lifestyle H2: "Beyond supplements: lifestyle factors that matter"
-   - The "boring" evidence-backed advice (sleep, hydration, diet, exercise)
+10. Product picks H2: "Our pharmacy team's evidence-led picks"
+    - Comparison table (price / active ingredient mg / cost-per-active-mg / NZ-made yes-no)
+    - 4–8 internally linked product cards across budget / mid / premium tiers
+    - Include at least 2 NZ-made options when available
+    - End with link to the relevant collection page
 
-9. Safety H2: "When to talk to a pharmacist or GP"
-   - Interactions, contraindications, pregnancy/breastfeeding, kids
-   - CTA: "Pop into your local Bargain Chemist and chat to our pharmacy team"
+11. Lifestyle H2: "Beyond supplements: lifestyle factors that matter"
+    - The unsexy evidence-backed advice (sleep, hydration, diet, exercise, alcohol limits)
+    - Each with NZ MoH / Te Whatu Ora citation
 
-10. FAQ H2: "Frequently asked questions"
-    - 8-12 Q&As
-    - Each answer 40-60 words
+12. CTA H2: "When to talk to a pharmacist or GP"
+    - Warning signs
+    - In-store CTA
 
-11. Disclaimer + Author block
-    - Standard medical disclaimer
-    - Bargain Chemist Pharmacy Team byline + brief credentials line
+13. FAQ H2: "Frequently asked questions"
+    - 8–12 Q&As sourced from real PAA + Reddit + Quora + Healthify NZ research
+    - Each Q an H3, each A 40–60 words
 
-12. FAQPage JSON-LD schema (inside <script type="application/ld+json">)
+14. Disclaimer + Author block (Pharmacy Council credentials)
+
+15. Bibliography / Sources section
+    - All inline citations listed with URLs (E-E-A-T + GEO signal)
+
+16. Schema scripts at bottom:
+    - Article OR BlogPosting + MedicalWebPage + FAQPage + BreadcrumbList (see section 7)
 ```
 
 ---
 
-## 5. Meta Title & Meta Description Formulas
+## 5. Meta Title & Meta Description (2025–26)
 
-### Meta title (50-60 chars, keep under 60)
-Formulas (pick one):
-- `[Primary Keyword]: [Benefit/Hook] | Bargain Chemist NZ`
-- `The Truth About [Topic]: [Year] NZ Guide`
-- `[Number] [Things] for [Outcome] | NZ Pharmacy Guide`
-- `[Topic] in NZ: What Works & What Doesn't ([Year])`
+### Meta title (≤ 60 chars, target 53–58)
+Validated formulas (pick one):
+- `[Primary Keyword] NZ: A Pharmacist's [Year] Guide`  ← strongest for our topic mix
+- `[Primary Keyword]: [Hook] | Bargain Chemist NZ`
+- `The Truth About [Topic] in NZ ([Year])`
+- `[Number] [Things] for [Outcome] — NZ Pharmacy Guide`
 
-Always include: primary keyword, NZ or "Kiwi" signal, current year if topical.
+Always include: primary keyword, NZ signal, current year (if topical).
 
-### Meta description (140-155 chars)
+### Meta description (≤ 155 chars, target 145–155)
 Formula:
-`[Hook sentence with primary keyword]. [Value promise — what reader gets]. [Soft CTA / brand mention].`
+`[NZ pharmacist hook with primary keyword]. [Specific value — what you'll learn]. [Soft CTA / brand mention].`
 
-Example:
-`A NZ pharmacist's evidence-based guide to detox supplements. Discover what really works, what doesn't, and how to choose. Shop online or in-store.`
-
-Always include: primary keyword in first 60 chars, NZ-relevant phrasing, soft CTA.
+Always include: primary keyword in first 60 chars, "New Zealand" or "NZ" signal, soft CTA.
 
 ---
 
 ## 6. Internal Linking Rules
 
 Every blog must include:
-- **At least 3 collection links** (e.g. `/collections/detox-antioxidants`)
-- **At least 2 product links** (e.g. `/products/go-healthy-go-liver-detox-1-a-day-60-capsules`)
-- **At least 1 internal blog link** (link to another Wellbeing Hub article when relevant)
-- Use descriptive anchor text, never "click here" or "this product"
+- **≥ 3 collection links** with descriptive anchor text (vary phrasing — no exact-match repetition)
+- **≥ 2 product links**
+- **≥ 1 internal blog link** (to existing or planned Wellbeing Hub post — supports hub-and-spoke topical authority)
+- Total: 10–15 contextual internal links per 2,500-word post
+- Never "click here" / "this product" — descriptive anchor only
 
-### Public-facing collection map (most useful for blog linking)
+### Verified live collection map (cross-check before linking)
 
-Use these collection handles — they are confirmed live on the site:
+Confirmed live as of 28 May 2026 — `productsCount > 0`:
 
-**Concern / Category collections**
-- `/collections/vitamins-supplements` — Vitamins & Supplements (1,783 products)
-- `/collections/detox-antioxidants` — Antioxidant / Detox (21 products) ⭐ best detox/cleanse anchor
-- `/collections/immunity` — Immune Support (136 products)
-- `/collections/energy` — Energy, Sleep & Fatigue (134 products)
-- `/collections/multivitamins` — Multivitamin Supplements (87 products)
-- `/collections/weight-loss` — Weight Loss (112 products)
+**Concern / category**
+- `/collections/vitamins-supplements` — Vitamins & Supplements (1,783)
+- `/collections/liver-cleanse-detox` — **Liver Health** (26) ← primary anchor for liver/detox content
+- `/collections/milk-thistle` — Milk Thistle (7)
+- `/collections/detox-antioxidants` — Antioxidant (21) — distinct from "Liver Health"; link only when topic is antioxidants specifically
+- `/collections/immunity` — Immune Support (136)
+- `/collections/energy` — Energy, Sleep & Fatigue (134)
+- `/collections/multivitamins` — Multivitamins (87)
+- `/collections/weight-loss` — Weight Loss (112)
 - `/collections/sleep-stress-anxiety` — Sleep, Stress & Anxiety
-- `/collections/heart-circulation` — Heart & Circulation (43 products)
-- `/collections/bone-joint-health` — Bone Health (17 products)
-- `/collections/eye-health` — Eye Health Supplements (19 products)
-- `/collections/menopause` — Menopause (11 products)
-- `/collections/mens-health` — Men's Health (37 products)
-- `/collections/mum-health` — Mum Health (37 products)
-- `/collections/childrens-health` — Children's Health (132 products)
-- `/collections/mother-baby` — Mother & Baby (545 products)
-- `/collections/allergies-hay-fever-sinus` — Allergies, Hayfever & Sinus (78 products)
-- `/collections/cold-flu` — Cold & Flu Medication (186 products)
-- `/collections/stomach-bowel-treatments` — Stomach & Bowel Treatments (75 products)
-- `/collections/skin-care` — Skin Care (1,070 products)
-- `/collections/sun-care` — Sun Care (112 products)
-- `/collections/first-aid` — First Aid (337 products)
+- `/collections/heart-circulation` — Heart & Circulation (43)
+- `/collections/bone-joint-health` — Bone Health (17)
+- `/collections/eye-health` — Eye Health (19)
+- `/collections/menopause` — Menopause (11)
+- `/collections/mens-health` — Men's Health (37)
+- `/collections/mum-health` — Mum Health (37)
+- `/collections/childrens-health` — Children's Health (132)
+- `/collections/mother-baby` — Mother & Baby (545)
+- `/collections/allergies-hay-fever-sinus` — Allergies, Hayfever & Sinus (78)
+- `/collections/cold-flu` — Cold & Flu (186)
+- `/collections/stomach-bowel-treatments` — Stomach & Bowel (75)
+- `/collections/skin-care` — Skin Care (1,070)
+- `/collections/sun-care` — Sun Care (112)
+- `/collections/first-aid` — First Aid (337)
 
-**Brand collections (use for ingredient/brand-focused posts)**
-- `/collections/clinicians` (99 products)
-- `/collections/blackmores` (82 products)
-- `/collections/good-health` — Good Health Supplements (135 products)
-- `/collections/nutralife` — Nutra-Life Supplements (82 products)
-- `/collections/thompsons` — Thompson's (59 products)
-- `/collections/natures-way` — Nature's Way Supplements (82 products)
-- `/collections/radiance` (71 products)
-- `/collections/sanderson` (73 products)
-- `/collections/elevit` (12 products)
-- `/collections/inner-health` (46 products)
-- `/collections/optislim` — Weight Loss (72 products)
-- `/collections/balance` — Sports Nutrition (25 products)
-- `/collections/codral` (20 products)
-- `/collections/nurofen` (34 products)
-- `/collections/trilogy` (74 products)
+**Brand**
+- `/collections/clinicians` (99)
+- `/collections/blackmores` (82)
+- `/collections/good-health` (135) — NZ-owned
+- `/collections/nutralife` (82) — NZ-made
+- `/collections/thompsons` (59)
+- `/collections/natures-way` (82)
+- `/collections/radiance` (71)
+- `/collections/sanderson` (73)
+- `/collections/elevit` (12)
+- `/collections/inner-health` (46)
+- `/collections/optislim` (72)
+- `/collections/balance` (25)
+- `/collections/codral` (20)
+- `/collections/nurofen` (34)
+- `/collections/trilogy` (74)
 
-### Reference blog posts to link to (existing Wellbeing Hub articles)
+### Existing Wellbeing Hub posts (for cross-linking)
 - `/blogs/wellbeing-hub/the-miracle-of-magnesium`
 - `/blogs/wellbeing-hub/joint-health`
 - `/blogs/wellbeing-hub/pain-relief-the-best-treatment-for-your-pain`
@@ -210,146 +229,211 @@ Use these collection handles — they are confirmed live on the site:
 
 ---
 
-## 7. Visuals Standard
+## 7. Schema markup priorities (2025–26)
 
-Every long-form pillar blog must include **at least 3 visuals**:
-1. **One hero/section infographic** — pure HTML/CSS divs, no external images needed. Used for "how it works" diagrams (e.g. "How your body detoxes").
-2. **One SVG chart** — inline SVG (bar or pie), embedded directly in HTML. Renders as an image in Shopify when pasted.
-3. **One comparison table or "claim vs evidence" infographic** — styled HTML divs.
+Every long-form pillar deploys **four** JSON-LD blocks:
+
+### USE — `Article` (or `BlogPosting`)
+Required properties: `headline`, `description`, `author` (with `jobTitle`, `affiliation`), `publisher` (Organization with logo), `datePublished`, `dateModified`, `image`, `mainEntityOfPage`, `about` (list of topical entities).
+
+### USE — `MedicalWebPage`
+Critical for YMYL after Dec 2025 Core Update. Required: `lastReviewed`, `reviewedBy` (Person with credentials, `jobTitle: "Pharmacist"`, `affiliation: "Bargain Chemist"`, ideally `identifier` with APC registration number), `specialty`, `audience: { @type: "MedicalAudience", audienceType: "Patient" }`, `about` (MedicalCondition).
+
+### USE — `FAQPage`
+8–12 Q&As. Plain-text answers (no HTML) inside `acceptedAnswer.text`. Each question and answer in the schema must exactly match the visible Q&A on the page (Google penalises mismatch). Note: Google retired FAQ rich results in SERPs in May 2026, but ChatGPT, Perplexity, Gemini, Copilot still parse the schema and use it for answer extraction.
+
+### USE — `BreadcrumbList`
+Even though Google removed mobile breadcrumb display in Jan 2025, the schema is more important for crawl + AI extraction. Required for every pillar.
+
+### USE site-wide — `Organization` / `Pharmacy` with NZBN
+At site level, `Organization` with `@type: "Pharmacy"` (MedicalOrganization subtype), `address` (NZ), `areaServed: "NZ"`, `inLanguage: "en-NZ"`, and `identifier: { @type: "PropertyValue", propertyID: "NZBN", value: "[NZBN]" }`. Anchors NZ entity for AI engines (2025+ disambiguation lever).
+
+### AVOID
+- `HowTo` — Google retired rich results Sept 2023. Don't deploy.
+- `Speakable` — BETA, US-English news only. Don't deploy for NZ pharmacy.
+
+### Important nuance
+**Schema alone does not cause AI citations** (Ahrefs May 2026 study: 1,885 pages vs 4,000 controls, statistically insignificant). Implement schema as hygiene; rely on content quality, original data, named experts and freshness for actual citation lifts.
+
+---
+
+## 8. Visuals Standard (multi-modal +156% AIO selection)
+
+Every long-form pillar must include **at least 4 visuals**:
+
+1. **Mechanism infographic** (HTML or inline SVG) — e.g. "How your liver detoxifies (Phase 1 / 2 / 3)" — content competitors typically lack
+2. **Evidence-ranking SVG bar chart** — ingredient × evidence strength, with citation footnotes
+3. **Comparison table** — products / claims / evidence side-by-side
+4. **Decision matrix or callout block** — e.g. "Which option for which goal"
 
 Visual rules:
-- All inline SVG — no external image URLs (so blog stays self-contained, no broken images)
+- All inline SVG / styled HTML divs (self-contained, render in Shopify editor without dependencies)
 - Brand palette: deep blue `#0d3b66`, accent orange `#ee964b`, neutral background `#f6f7fb`, success green `#06a77d`, alert red `#d62828`, text `#1f2937`
-- Every visual has `<figcaption>` with a 1-line description (SEO + accessibility)
-- Every SVG includes `<title>` and `<desc>` tags inside for accessibility / SEO
+- Every visual has a `<figcaption>` summarising the takeaway (SEO + accessibility)
+- Every SVG includes `<title>` and `<desc>` accessibility tags
+- WebP/AVIF for any raster images; hero NEVER lazy-loaded (kills LCP); below-the-fold lazy-loaded
+- Descriptive file names (`liver-detox-phase-1-2-3-diagram.svg`, not `IMG_123.svg`)
+- Alt text 80–125 chars: factual description + topical context (no keyword stuffing)
 
 ---
 
-## 8. Citation Standard (for GEO — AI engines need named sources)
+## 9. Citation Standard (Princeton GEO — +115% for low-ranked content)
 
-Acceptable inline citation sources (these carry weight with AI engines):
-- **NZ Ministry of Health** (`health.govt.nz`)
-- **Medsafe NZ** (`medsafe.govt.nz`)
-- **Pharmac NZ**
-- **NIH Office of Dietary Supplements** (`ods.od.nih.gov`)
-- **Cochrane Library** (`cochranelibrary.com`)
-- **World Health Organization** (`who.int`)
-- **NHS UK** (`nhs.uk`)
-- **Peer-reviewed journals**: BMJ, Lancet, NEJM, Cochrane Reviews, JAMA
-- **Specific year + source pattern**: "A 2021 Cochrane review of 18 trials found…"
+Every long-form pillar requires **≥ 8 inline citations** with hyperlinks. Cite NZ sources first.
 
-Avoid citing: Wikipedia, blogs, supplement brand sites, "studies show" without naming the study.
+### Priority order (cite first available)
+1. **NZ official**: Medsafe (medsafe.govt.nz), Health NZ / Te Whatu Ora (tewhatuora.govt.nz, info.health.nz), Ministry of Health (health.govt.nz), Stats NZ, Pharmac (Rx only)
+2. **NZ authoritative consumer / clinical**: Healthify NZ (healthify.nz), Hepatitis Foundation NZ, NZ Science Media Centre, ASA NZ, NZ Pharmacy Council, University of Otago / Auckland
+3. **NZ commercial / industry data**: Consumer NZ, NutraIngredients NZ coverage, NZIER reports
+4. **International authoritative**: NCCIH / NIH ODS (nih.gov), Cochrane Library, WHO, Mayo Clinic, Johns Hopkins, Cleveland Clinic, BDA (UK)
+5. **Peer-reviewed journals (specific paper + year + URL)**: PubMed / PMC, BMJ, JAMA, NEJM, Lancet, Cureus, J Hum Nutr Diet, Clin Nutr, Frontiers, etc.
 
-Outbound links: open in same tab, no `rel="nofollow"` for authority sources.
+### Avoid
+Wikipedia, brand sites (use their fact-sheets only for product specs), uncited "studies show", year-undated claims.
 
----
+### Inline citation format
+`Hyperlinked source name [(Year)]` — e.g. "[NCCIH](https://www.nccih.nih.gov/health/milk-thistle) (2024)" or "([Te Whatu Ora](https://info.health.nz/...))"
 
-## 9. Regulatory & Safety Compliance (NZ pharmacy)
-
-- **Never claim** a supplement cures, treats or prevents any disease
-- **Use approved phrasing**: "may support", "may help maintain", "traditionally used for"
-- **Always include** a medical disclaimer footer
-- **For OTC medicines**: state active ingredient, indication only as per Medsafe data sheet
-- **Pregnancy/breastfeeding**: always flag a "talk to your pharmacist first" caveat
-- **Children**: always flag age-appropriate dosing / consult pharmacist
-- **Drug interactions**: mention category-level warnings (e.g. "if you take blood thinners…")
-
-Standard disclaimer (paste at bottom of every blog):
-
-> **Disclaimer**: This article is for general information only and is not intended as medical advice. The information here does not replace advice from a registered pharmacist, GP or other healthcare professional. Always read the label, use only as directed, and consult your healthcare provider before starting any new supplement — especially if you are pregnant, breastfeeding, on prescription medication, or managing a health condition. If symptoms persist, see your healthcare professional.
+### Bibliography
+Always include a "Sources" section at the bottom listing every inline-cited URL with title + year. Both inline AND bibliography are required (Princeton GEO).
 
 ---
 
-## 10. Author E-E-A-T Block (paste at bottom of every blog)
+## 10. NZ Regulatory Compliance — Red Lines
+
+Refer to `research/detox-supplements-research-dossier.md` for full source URLs. Bake into every supplement-related post.
+
+| ❌ Never do this | Why |
+|---|---|
+| Claim a supplement "prevents", "cures", "treats", "alleviates" or "manages" a named disease | Medsafe Dietary Supplements Regulations 1985 ; Medicines Act 1981 s.58 |
+| Name disease states a supplement helps with ("for fatty liver") | Medsafe |
+| Name specific symptoms a supplement relieves | Medsafe |
+| Use HCP endorsements implying therapeutic benefit ("Pharmacist X recommends this for liver disease") | Medicines Act s.58(1)(c)(ii) |
+| Publish consumer testimonials implying therapeutic improvement | Medicines Act s.58(1)(c)(iii) ; ASA Code |
+| Apply off-label clinical evidence to justify a claim | ASA Therapeutic & Health Advertising Code |
+| Portray unrealistic outcomes / exploit emotional vulnerability / target low-health-literacy | Updated ASA Code (effective 1 Apr 2026) |
+| Make therapeutic claims on supplemented food | MPI / Food Standards Code 1.2.7 |
+| Promote a supplement without an evidence basis | Pharmacy Council Code of Ethics 2018 |
+
+**Compliant alternatives**: "may support healthy liver function", "traditionally used to support digestion", "contains evidence-backed silymarin at a clinically studied dose", "an ingredient with growing clinical research"
+
+**E-E-A-T framing for pharmacy-team byline**: write/review as an evidence-led pharmacy team. Recommend categories of *evidence-backed ingredient*, not a *therapeutic outcome for a named disease*.
+
+**Standard disclaimer** (paste at bottom of every blog):
+
+> **Disclaimer**: This article is general information only and is not medical advice. It does not replace advice from a registered pharmacist, GP or other healthcare professional. Always read the label, use only as directed, and consult your healthcare provider before starting any new supplement — especially if you are pregnant, breastfeeding, on prescription medication, or managing a health condition. If symptoms persist, see your healthcare professional.
+
+---
+
+## 11. Author E-E-A-T Block (paste at bottom of every blog)
 
 ```html
 <div class="bc-author-block">
-  <strong>About the Bargain Chemist Pharmacy Team</strong><br>
-  Our content is written and reviewed by Bargain Chemist's New Zealand-registered pharmacists and pharmacy team. We combine evidence from peer-reviewed research, NZ Ministry of Health and Medsafe guidance, and our day-to-day experience helping Kiwi families look after their health. Have a question? Visit us in-store or message our team via <a href="https://www.bargainchemist.co.nz/pages/contact">bargainchemist.co.nz/pages/contact</a>.
+  <strong>About the Bargain Chemist Pharmacy Team</strong>
+  This article was written and reviewed by Bargain Chemist's New Zealand-registered pharmacy team in line with the <a href="https://pharmacycouncil.org.nz/wp-content/uploads/2021/03/Code-of-Ethics-2018-FINAL.pdf">Pharmacy Council of New Zealand Code of Ethics</a> and our editorial commitment to evidence-based, unbiased information about supplement quality, safety and effectiveness. We combine peer-reviewed research, Medsafe and Te Whatu Ora guidance, and everyday experience helping Kiwi families. Visit any Bargain Chemist store or contact our team at <a href="https://www.bargainchemist.co.nz/pages/contact">bargainchemist.co.nz/pages/contact</a>.
 </div>
 ```
 
 ---
 
-## 11. FAQ + Schema Standard
+## 12. Workflow — when the user asks for a new blog
 
-Every blog ends with a FAQ section (8–12 questions) AND a `<script type="application/ld+json">` block containing `FAQPage` schema with all the same Q&As. The schema must be valid JSON — Q&As inside the schema must match the visible Q&As exactly (Google penalises mismatch).
-
-Schema template:
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "QUESTION HERE",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "ANSWER HERE (plain text, no HTML)"
-      }
-    }
-  ]
-}
-</script>
-```
-
-Also recommended: add `Article` schema at the top of the page. Template:
-
-```html
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "ARTICLE H1",
-  "description": "META DESCRIPTION",
-  "author": {
-    "@type": "Organization",
-    "name": "Bargain Chemist Pharmacy Team",
-    "url": "https://www.bargainchemist.co.nz"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Bargain Chemist",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://www.bargainchemist.co.nz/cdn/shop/files/logo.png"
-    }
-  },
-  "datePublished": "YYYY-MM-DD",
-  "dateModified": "YYYY-MM-DD",
-  "mainEntityOfPage": "https://www.bargainchemist.co.nz/blogs/wellbeing-hub/SLUG"
-}
-</script>
-```
+1. **Ask 4 questions** (topic, audience, season, products to prioritise)
+2. **Research-first** — run these in parallel for any new topic where we don't already have a `research/<topic>-research-dossier.md`:
+   - WebSearch / WebFetch for top 5 NZ ranking pages (competitor structure)
+   - Google PAA + Reddit + Quora + Healthify NZ sweep for real user questions
+   - Citation verification — every claim needs a real URL
+   - NZ regulatory check — Medsafe / Te Whatu Ora / ASA current guidance
+   - Shopify search via `mcp__shopify__graphql_query` for live products + collections (filter `status:active`)
+3. **Save the dossier** to `/research/<topic>-research-dossier.md`
+4. **Verify the collection URL handles are live** before writing
+5. **Draft `<slug>.html`** in `/blogs/` following the 16-section structure (section 4 above)
+6. **Draft `<slug>.meta.md`** in `/blogs/` with SEO brief (section 13)
+7. **Validate** using the Top 25 checklist (section 14 — every item must pass)
+8. **Commit** on the branch specified in the session header and push
+9. **Report**: file paths, meta title + description, slug, word count, internal link count, schema blocks deployed, any "could not verify" items flagged
 
 ---
 
-## 12. Deliverables per Blog
+## 13. SEO brief deliverable (every blog gets one `.meta.md`)
 
-Each blog produces **two files** in `/blogs/`:
-
-1. **`<slug>.html`** — single self-contained HTML file. User pastes the body into Shopify's blog editor (HTML view). Contains: full article body, inline SVG charts, infographic divs, FAQ section, and both JSON-LD schema blocks.
-
-2. **`<slug>.meta.md`** — the SEO brief. Contains:
-   - Meta title (with character count)
-   - Meta description (with character count)
-   - URL slug
-   - Primary keyword + secondary keywords
-   - Featured image brief (subject, alt text, suggested dimensions)
-   - Internal link map (every collection + product link used)
-   - Outbound citation list
-   - Suggested social share copy (1 line for FB, 1 for Insta, 1 for LinkedIn)
+`blogs/<slug>.meta.md` includes:
+- Shopify field values (title, slug, tags, author)
+- Meta title + character count
+- Meta description + character count
+- Primary keyword + secondary + long-tail + FAQ-targeted keywords (each with intent)
+- Keywords to AVOID (compliance + intent-mismatch)
+- Featured image brief (subject, style, file name, alt text, dimensions)
+- Internal link map (every collection + product + blog link used)
+- Outbound citation list with verified URLs
+- Suggested social copy (FB, IG, LinkedIn — 1 line each)
+- Post-publish QA checklist (test schemas, verify rendering, schedule first refresh +90 days)
 
 ---
 
-## 13. Workflow When User Asks for a New Blog
+## 14. TOP 25 MUST-DO CHECKLIST
 
-1. Confirm topic, audience, season, products to feature (4 questions max)
-2. Search Shopify for relevant products via `mcp__f4ea65a1-be91-4e1a-ab91-fe78027d6605__search_products` or `graphql_query` (filter by `status:active`)
-3. Confirm collection handles from section 6 above
-4. Draft both files (`<slug>.html` and `<slug>.meta.md`) in `/blogs/`
-5. Commit on the branch specified in the session instructions and push
-6. Report back: file paths, meta title, meta description, slug, and a 1-line summary of internal links used
+Verify YES/NO before publishing. Source: synthesised 2025–26 SEO/GEO/AEO research (see `research/detox-supplements-research-dossier.md` section 5).
+
+1. Primary keyword in H1 (exact or near-exact match)
+2. Primary keyword in URL slug (kebab-case, no stop words)
+3. Primary keyword + variant in first 100 words
+4. Direct answer to the headline question in the first 150 words (≤55 words)
+5. Meta title ≤60 chars, includes primary keyword + "NZ" or brand
+6. Meta description ≤155 chars, includes CTA + benefit
+7. ≥1 statistic with a named, dated source in the first 300 words (Princeton GEO +41%)
+8. ≥1 direct quote from a named, credentialled clinician or NZ authority (Princeton GEO +28%)
+9. ≥3 inline citations to authoritative sources, NZ-first (Medsafe / MoH / Healthify NZ / Te Whatu Ora) (Princeton GEO +115%)
+10. Byline links to an author page; credentials visible
+11. "Medically reviewed by [Name, role] on [date]" line visible at top
+12. `datePublished` AND `dateModified` shown to users AND in schema
+13. `Article` (or `BlogPosting`) + `MedicalWebPage` + `BreadcrumbList` + `FAQPage` schema deployed
+14. FAQPage schema block with 8–12 Q&As targeting PAA queries
+15. Each FAQ question is an H3 with a 40–60 word direct answer below
+16. ≥1 comparison table or bullet list (Claude favours; +30% AI citation)
+17. ≥1 image with descriptive filename + alt text 80–125 chars (WebP/AVIF preferred; hero NOT lazy-loaded; below-fold lazy)
+18. ≥1 multi-modal element beyond text (chart, infographic, video embed, transcript) — +156% AI selection
+19. 10–15 contextual internal links: ≥1 product/collection, ≥2 related blogs, ≥1 pillar
+20. Varied descriptive anchor text — no exact-match repetition, no "click here"
+21. NZ entity signals: NZD pricing, "in New Zealand", suburb/region mention where relevant, NZ phone format
+22. NZ Medicines Act compliance check: no unapproved therapeutic claims; no HCP endorsement implying therapeutic benefit; no consumer testimonials implying therapeutic improvement
+23. "Sources" bibliography at foot listing all inline citations with URLs
+24. Page expected to pass Core Web Vitals on mobile (LCP <2.5s, INP <200ms, CLS <0.1)
+25. Refresh scheduled at +90 days with owner + substantive update brief (not date-bump)
+
+---
+
+## 15. Refresh cadence + content lifecycle
+
+- **Every blog refresh logged at +90 days** in `/blogs/refresh-schedule.md` (or similar)
+- Refresh must include ≥1 substantive update: new stat, new regulatory change, new evidence, new product, new FAQ
+- Update `dateModified` AND a visible "Last reviewed by [Name] on [date]" line
+- Cosmetic date-bumping is detected by Google and devalued; never do it
+- Pages refreshed within 2 months earn ~28% more AI Overview citations
+
+---
+
+## 16. Topical cluster strategy (hub-and-spoke)
+
+Each pillar should anchor 3–5 supporting "spoke" posts (~1,200 words each) that link UP to the pillar; the pillar links DOWN to every spoke. This builds topical authority faster than isolated posts.
+
+Example clusters to plan:
+
+- **Liver health pillar** (this dossier) → milk thistle deep-dive, supplements + alcohol, MASLD/fatty liver NZ guide, liver-friendly diet NZ, gut-liver axis
+- **Immunity pillar** (future) → winter immunity NZ, kids immune support, vitamin C / zinc / elderberry comparisons, post-illness recovery
+- **Sleep pillar** (future) → magnesium for sleep (existing post), melatonin in NZ, sleep hygiene, shift-worker tips
+- **Hayfever pillar** (future) → antihistamines comparison (existing post), nasal sprays, child-friendly options, NZ pollen calendar
+
+---
+
+## 17. Deliverables per blog
+
+Two files in `/blogs/`:
+
+1. **`<slug>.html`** — single self-contained HTML file. Paste into Shopify blog editor's HTML view. Contains: hero, TOC, all body, inline SVG charts, infographics, FAQ, disclaimer, author block, plus all four JSON-LD schema scripts at the bottom.
+
+2. **`<slug>.meta.md`** — SEO brief. Contains Shopify field values, meta title + description with character counts, keyword strategy, featured image brief, internal link map, outbound citation list, social share copy, post-publish QA checklist.
+
+Plus one optional supporting file in `/research/`:
+
+3. **`research/<topic>-research-dossier.md`** — for any new topic with no existing dossier. Captures verified citations, keyword research, NZ user questions, competitor gaps, regulatory context. Reused for refresh cycles + spoke posts.
